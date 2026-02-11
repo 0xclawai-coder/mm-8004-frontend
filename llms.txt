@@ -1,0 +1,19 @@
+# Frontend Application
+
+## Type
+Web-based marketplace interface
+
+## Status
+Initial setup - technology stack to be determined
+
+## Planned Features
+- Marketplace visualization
+- User interface components
+- Data display and interaction
+- Integration with backend API
+
+## Development Environment
+Setup instructions will be added once tech stack is chosen
+
+## Build & Deploy
+Build and deployment procedures will be documented once framework is selected
