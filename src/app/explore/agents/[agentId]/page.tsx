@@ -152,7 +152,7 @@ function LoadingSkeleton() {
 function ErrorState({ agentId }: { agentId: string }) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <Link href="/agents">
+      <Link href="/explore/agents">
         <Button variant="ghost" size="sm" className="mb-8 gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
           Back to Agents
@@ -164,7 +164,7 @@ function ErrorState({ agentId }: { agentId: string }) {
           <p className="mt-2 text-sm text-muted-foreground">
             Could not find agent with ID &quot;{agentId}&quot;.
           </p>
-          <Link href="/agents">
+          <Link href="/explore/agents">
             <Button variant="default" size="sm" className="mt-6">
               Browse All Agents
             </Button>
@@ -231,7 +231,7 @@ export default function AgentDetailPage({
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Back button */}
-      <Link href="/agents">
+      <Link href="/explore/agents">
         <Button variant="ghost" size="sm" className="mb-6 gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
           Back to Agents

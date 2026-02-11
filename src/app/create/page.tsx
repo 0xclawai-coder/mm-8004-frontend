@@ -816,7 +816,7 @@ export default function CreateMoltPage() {
               )}
 
               <DialogFooter className="flex-col gap-2 sm:flex-col">
-                <Link href="/agents" className="w-full">
+                <Link href="/explore/agents" className="w-full">
                   <Button className="w-full" variant="outline">
                     <ExternalLink className="size-4" />
                     Browse Agents

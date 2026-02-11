@@ -21,6 +21,25 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
+  async redirects() {
+    return [
+      {
+        source: "/agents",
+        destination: "/explore/agents",
+        permanent: true,
+      },
+      {
+        source: "/agents/:agentId",
+        destination: "/explore/agents/:agentId",
+        permanent: true,
+      },
+      {
+        source: "/leaderboard",
+        destination: "/analytics/leaderboard",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
