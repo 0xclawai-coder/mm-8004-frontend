@@ -192,8 +192,13 @@ export function Header() {
                 })}
               </nav>
 
-              {/* Mobile ChainSwitcher at bottom */}
-              <div className="mt-auto border-t border-border px-4 pt-4">
+              {/* Mobile Create + ChainSwitcher at bottom */}
+              <div className="mt-auto space-y-3 border-t border-border px-4 pt-4">
+                <Link href="/create" onClick={() => setSheetOpen(false)}>
+                  <Button className="w-full gap-2 bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90">
+                    Create Molt
+                  </Button>
+                </Link>
                 <ChainSwitcher />
               </div>
             </SheetContent>

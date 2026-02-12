@@ -27,11 +27,16 @@ export function getTokenLabel(addr: string): string {
 export function formatPrice(raw: string, decimals = 18): string {
   const human = parseFloat(raw) / 10 ** decimals
   if (human === 0) return '0'
-  if (human >= 1_000_000) return `${(human / 1_000_000).toFixed(2)}M`
-  if (human >= 1_000) return `${(human / 1_000).toFixed(2)}K`
-  if (human >= 1) return human.toFixed(2)
-  if (human >= 0.001) return human.toFixed(4)
+  if (human >= 1_000_000) return `${trimTrailingZeros((human / 1_000_000).toFixed(2))}M`
+  if (human >= 1_000) return `${trimTrailingZeros((human / 1_000).toFixed(2))}K`
+  if (human >= 1) return trimTrailingZeros(human.toFixed(2))
+  if (human >= 0.001) return trimTrailingZeros(human.toFixed(4))
   return human.toExponential(2)
+}
+
+function trimTrailingZeros(s: string): string {
+  if (!s.includes('.')) return s
+  return s.replace(/\.?0+$/, '')
 }
 
 // ─── Time formatting ────────────────────────────────────────────────

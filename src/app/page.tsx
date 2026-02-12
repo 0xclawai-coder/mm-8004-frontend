@@ -33,39 +33,20 @@ function StatsBar() {
   const isLoading = statsLoading || mLoading
 
   const items = [
-    {
-      label: 'Total Agents',
-      value: stats?.total_agents ?? 0,
-      icon: <Users className="size-4" />,
-    },
-    {
-      label: 'Active Listings',
-      value: mStats?.active_listings ?? 0,
-      icon: <ShoppingBag className="size-4" />,
-    },
-    {
-      label: 'Total Sales',
-      value: mStats?.total_sales ?? 0,
-      icon: <TrendingUp className="size-4" />,
-    },
-    {
-      label: 'Active Auctions',
-      value: mStats?.active_auctions ?? 0,
-      icon: <Gavel className="size-4" />,
-    },
-    {
-      label: 'Total Feedbacks',
-      value: stats?.total_feedbacks ?? 0,
-      icon: <MessageSquare className="size-4" />,
-    },
+    { label: 'Total Agents', value: stats?.total_agents ?? 0, icon: <Users className="size-4" />, href: '/explore/agents' },
+    { label: 'Active Listings', value: mStats?.active_listings ?? 0, icon: <ShoppingBag className="size-4" />, href: '/trade/marketplace' },
+    { label: 'Total Sales', value: mStats?.total_sales ?? 0, icon: <TrendingUp className="size-4" />, href: '/analytics/overview' },
+    { label: 'Active Auctions', value: mStats?.active_auctions ?? 0, icon: <Gavel className="size-4" />, href: '/trade/auctions' },
+    { label: 'Total Feedbacks', value: stats?.total_feedbacks ?? 0, icon: <MessageSquare className="size-4" />, href: '/analytics/overview' },
   ]
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
       {items.map((item) => (
-        <div
+        <Link
           key={item.label}
-          className="rounded-xl border border-border/30 bg-card/40 p-4 text-center"
+          href={item.href}
+          className="rounded-xl border border-border/30 bg-card/40 p-4 text-center transition-colors hover:border-primary/30 hover:bg-card/60"
         >
           <div className="mb-2 flex items-center justify-center text-primary">
             {item.icon}
@@ -82,7 +63,7 @@ function StatsBar() {
           <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
             {item.label}
           </p>
-        </div>
+        </Link>
       ))}
     </div>
   )
