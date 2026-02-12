@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
   ArrowLeft,
   Gavel,
@@ -523,18 +524,22 @@ export default function AuctionDetailPage({
   const status = getAuctionStatus(auction)
   const token = getTokenLabel(auction.payment_token)
   const hasBids = auction.highest_bid !== null && parseFloat(auction.highest_bid) > 0
+  const router = useRouter()
   const hasReserve = parseFloat(auction.reserve_price) > 0
   const hasBuyNow = parseFloat(auction.buy_now_price) > 0
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Back button */}
-      <Link href="/trade/auctions">
-        <Button variant="ghost" size="sm" className="mb-6 gap-2 text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4" />
-          Back to Auctions
-        </Button>
-      </Link>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => router.back()}
+        className="mb-6 gap-2 text-muted-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" />
+        Back
+      </Button>
 
       {/* Header */}
       <div className="mb-6 space-y-2">

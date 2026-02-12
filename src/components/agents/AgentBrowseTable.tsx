@@ -196,15 +196,18 @@ export function AgentBrowseTable() {
               agents.map((agent) => {
                 const agentPath = `/explore/agents/${agent.chain_id}-${agent.agent_id}`;
                 return (
-                  <tr
+                  <Link
                     key={`${agent.chain_id}-${agent.agent_id}`}
-                    className="group border-b border-border/30 transition-colors hover:bg-accent/50"
+                    href={agentPath}
+                    className="contents"
+                  >
+                  <tr
+                    className="group cursor-pointer border-b border-border/30 transition-colors hover:bg-accent/50"
                   >
                     {/* Name */}
                     <td className="px-4 py-3">
-                      <Link
-                        href={agentPath}
-                        className="flex items-center gap-3 transition-opacity hover:opacity-80"
+                      <div
+                        className="flex items-center gap-3"
                       >
                         <Avatar className="size-8 shrink-0 ring-1 ring-border">
                           <AvatarImage
@@ -218,7 +221,7 @@ export function AgentBrowseTable() {
                         <span className="truncate text-sm font-medium text-foreground">
                           {agent.name || `Agent #${agent.agent_id}`}
                         </span>
-                      </Link>
+                      </div>
                     </td>
 
                     {/* Chain */}
@@ -291,6 +294,7 @@ export function AgentBrowseTable() {
                       </span>
                     </td>
                   </tr>
+                  </Link>
                 );
               })
             )}

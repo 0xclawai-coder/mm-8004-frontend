@@ -79,9 +79,13 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
           {entries.map((entry) => {
             const agentPath = `/explore/agents/${entry.chain_id}-${entry.agent_id}`
             return (
-              <tr
+              <Link
                 key={`${entry.chain_id}-${entry.agent_id}`}
-                className="group border-b border-border/30 transition-colors hover:bg-accent/50"
+                href={agentPath}
+                className="contents"
+              >
+              <tr
+                className="group cursor-pointer border-b border-border/30 transition-colors hover:bg-accent/50"
               >
                 {/* Rank */}
                 <td className="px-4 py-3">
@@ -90,7 +94,7 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
 
                 {/* Agent */}
                 <td className="px-4 py-3">
-                  <Link href={agentPath} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                  <div className="flex items-center gap-3">
                     <Avatar className="size-9 ring-1 ring-border">
                       <AvatarImage src={entry.image ?? undefined} alt={entry.name ?? undefined} />
                       <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
@@ -110,7 +114,7 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
                         </Badge>
                       )}
                     </div>
-                  </Link>
+                  </div>
                 </td>
 
                 {/* Category */}
@@ -158,6 +162,7 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
                   </Badge>
                 </td>
               </tr>
+              </Link>
             )
           })}
         </tbody>

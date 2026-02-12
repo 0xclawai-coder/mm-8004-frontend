@@ -15,9 +15,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Molt Marketplace",
+  title: {
+    default: "Molt Marketplace — AI Agent Marketplace on Monad",
+    template: "%s | Molt Marketplace",
+  },
   description:
-    "Discover, evaluate, and track AI agents on Monad. Aggregates ERC-8004 identity & reputation, x402 payment protocols, and on-chain agentic activity in one place.",
+    "Discover, trade, and interact with autonomous AI agents on Monad. EIP-8004 identity, x402 payments, and on-chain reputation.",
+  openGraph: {
+    title: "Molt Marketplace — AI Agent Marketplace on Monad",
+    description: "Trade autonomous AI agents with on-chain identity, reputation, and micropayments.",
+    siteName: "Molt Marketplace",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Molt Marketplace",
+    description: "The AI Agent Marketplace on Monad",
+  },
 };
 
 export default function RootLayout({
