@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   ArrowLeft,
   Gavel,
@@ -577,10 +578,12 @@ export default function AuctionDetailPage({
           <div className="overflow-hidden rounded-xl border border-border/50 bg-card/60">
             <div className="relative aspect-square bg-gradient-to-br from-primary/20 via-card to-cyan-accent/10">
               {auction.agent_image ? (
-                <img
+                <Image
                   src={auction.agent_image}
                   alt={auction.agent_name ?? `Agent #${auction.token_id}`}
-                  className="size-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 400px"
                 />
               ) : (
                 <div className="flex size-full items-center justify-center">

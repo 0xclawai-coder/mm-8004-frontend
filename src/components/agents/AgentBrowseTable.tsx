@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useAgents } from "@/hooks/useAgents";
 import { SearchBar } from "@/components/agents/SearchBar";
 import { ChainFilter } from "@/components/agents/ChainFilter";
@@ -185,11 +186,12 @@ export function AgentBrowseTable() {
               <TableSkeleton rows={limit} />
             ) : agents.length === 0 ? (
               <tr>
-                <td
-                  colSpan={7}
-                  className="px-4 py-12 text-center text-sm text-muted-foreground"
-                >
-                  No agents found
+                <td colSpan={7}>
+                  <EmptyState
+                    icon={Users}
+                    title="No Agents Found"
+                    description="No agents match your current search or filter criteria."
+                  />
                 </td>
               </tr>
             ) : (

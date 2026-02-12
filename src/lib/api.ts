@@ -10,6 +10,7 @@ import type {
   BundleFilters,
   BundlesResponse,
   DashboardStats,
+  GlobalActivitiesResponse,
   LeaderboardFilters,
   LeaderboardResponse,
   ListingFilters,
@@ -89,6 +90,19 @@ export function getAgentActivity(
     if (filters.limit !== undefined) params.limit = String(filters.limit)
   }
   return fetchApi<ActivitiesResponse>(`/agents/${id}/activity`, params)
+}
+
+/** GET /api/activity — global activity feed across all agents */
+export function getGlobalActivity(
+  filters?: ActivityFilters
+): Promise<GlobalActivitiesResponse> {
+  const params: Record<string, string | undefined> = {}
+  if (filters) {
+    if (filters.event_type) params.event_type = filters.event_type
+    if (filters.page !== undefined) params.page = String(filters.page)
+    if (filters.limit !== undefined) params.limit = String(filters.limit)
+  }
+  return fetchApi<GlobalActivitiesResponse>('/activity', params)
 }
 
 // ============================================================

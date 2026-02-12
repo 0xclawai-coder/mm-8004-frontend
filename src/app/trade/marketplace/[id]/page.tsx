@@ -2,6 +2,7 @@
 
 import { use, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   ArrowLeft,
   Shield,
@@ -29,6 +30,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { EmptyState } from '@/components/ui/empty-state'
 import { cn, formatAddress, formatPrice, getTokenLabel } from '@/lib/utils'
 import TimeCounter from '@/components/ui/time-counter'
 import { useListing } from '@/hooks/useListing'
@@ -457,9 +459,12 @@ function TopOffersTable({
             ))}
           </div>
         ) : offers.length === 0 ? (
-          <div className="px-4 py-8 text-center">
-            <p className="text-sm text-muted-foreground">No offers yet</p>
-          </div>
+          <EmptyState
+            icon={HandCoins}
+            title="No Offers Yet"
+            description="Be the first to make an offer on this agent."
+            className="py-8"
+          />
         ) : (
           <>
             {/* Header */}
@@ -656,11 +661,15 @@ export default function ListingDetailPage({
           {/* Agent Image */}
           <div className="overflow-hidden rounded-2xl border border-border/50 bg-card/60">
             {listing.agent_image || agent?.image ? (
-              <img
-                src={(agent?.image ?? listing.agent_image) || undefined}
-                alt={listing.agent_name ?? `Agent #${listing.token_id}`}
-                className="aspect-square w-full object-cover"
-              />
+              <div className="relative aspect-square w-full">
+                <Image
+                  src={(agent?.image ?? listing.agent_image)!}
+                  alt={listing.agent_name ?? `Agent #${listing.token_id}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </div>
             ) : (
               <div className="flex aspect-square w-full items-center justify-center bg-gradient-to-br from-primary/30 via-violet-500/20 to-cyan-500/20">
                 <Cpu className="size-24 text-primary/30" />

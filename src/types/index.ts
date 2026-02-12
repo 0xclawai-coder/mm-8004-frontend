@@ -180,6 +180,19 @@ export interface ActivitiesResponse {
   limit: number
 }
 
+/** Activity with joined agent name/image (global feed) */
+export interface GlobalActivity extends Activity {
+  agent_name: string | null
+  agent_image: string | null
+}
+
+export interface GlobalActivitiesResponse {
+  activities: GlobalActivity[]
+  total: number
+  page: number
+  limit: number
+}
+
 export interface LeaderboardResponse {
   leaderboard: LeaderboardEntry[]
 }

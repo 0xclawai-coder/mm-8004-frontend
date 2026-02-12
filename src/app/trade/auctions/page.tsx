@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Gavel, ChevronLeft, ChevronRight } from 'lucide-react'
+import { EmptyState } from '@/components/ui/empty-state'
 import { useAuctions } from '@/hooks/useAuctions'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { ChainFilter } from '@/components/agents/ChainFilter'
@@ -55,10 +57,12 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
       {/* Image area */}
       <div className="relative aspect-square bg-gradient-to-br from-primary/20 via-card to-cyan-accent/10">
         {auction.agent_image ? (
-          <img
+          <Image
             src={auction.agent_image}
             alt={auction.agent_name ?? `Agent #${auction.token_id}`}
-            className="size-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
           <div className="flex size-full items-center justify-center">
@@ -255,9 +259,11 @@ export default function AuctionsPage() {
           ))}
         </div>
       ) : auctions.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16">
-          <p className="text-sm text-muted-foreground">No auctions found</p>
-        </div>
+        <EmptyState
+          icon={Gavel}
+          title="No Auctions Found"
+          description="There are no auctions matching your filters right now. Check back soon!"
+        />
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {auctions.map((auction) => (

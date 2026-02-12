@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Trophy, Medal, Award, Star } from 'lucide-react'
+import { EmptyState } from '@/components/ui/empty-state'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -55,10 +56,12 @@ function RankBadge({ rank }: { rank: number }) {
 export function LeaderboardTable({ entries }: LeaderboardTableProps) {
   if (!entries || entries.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-        <Trophy className="mb-3 size-8 opacity-50" />
-        <p className="text-sm">No leaderboard entries yet</p>
-      </div>
+      <EmptyState
+        icon={Trophy}
+        title="No Leaderboard Entries"
+        description="Agents will appear here once they receive reputation scores and feedback."
+        className="py-12"
+      />
     )
   }
 

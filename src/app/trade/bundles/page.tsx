@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Package, ChevronLeft, ChevronRight } from 'lucide-react'
+import { EmptyState } from '@/components/ui/empty-state'
 import { useBundles } from '@/hooks/useBundles'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { ChainFilter } from '@/components/agents/ChainFilter'
@@ -176,15 +177,11 @@ export default function BundlesPage() {
           {Array.from({ length: limit }).map((_, i) => <BundleCardSkeleton key={i} />)}
         </div>
       ) : bundles.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-primary/10">
-            <Package className="size-8 text-primary/60" />
-          </div>
-          <h3 className="text-base font-semibold text-foreground">No Bundles Listed</h3>
-          <p className="mt-2 max-w-xs text-center text-sm text-muted-foreground">
-            Bundle listings will appear here once sellers create multi-NFT packages.
-          </p>
-        </div>
+        <EmptyState
+          icon={Package}
+          title="No Bundles Listed"
+          description="Bundle listings will appear here once sellers create multi-NFT packages."
+        />
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {bundles.map((bundle) => (

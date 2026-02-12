@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   ArrowRight,
   Cpu,
@@ -160,11 +161,15 @@ function RecentListings() {
               >
                 <Card className="overflow-hidden border-border/50 bg-card/80 py-0 transition-all duration-300 group-hover:scale-[1.03] group-hover:border-primary/30 group-hover:glow-violet">
                   {listing.agent_image ? (
-                    <img
-                      src={listing.agent_image}
-                      alt={listing.agent_name ?? ''}
-                      className="aspect-square w-full object-cover"
-                    />
+                    <div className="relative aspect-square w-full">
+                      <Image
+                        src={listing.agent_image}
+                        alt={listing.agent_name ?? ''}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                      />
+                    </div>
                   ) : (
                     <div className="flex aspect-square w-full items-center justify-center bg-gradient-to-br from-primary/20 via-violet-500/10 to-cyan-500/10">
                       <Cpu className="size-10 text-primary/30" />

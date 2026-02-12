@@ -9,6 +9,7 @@ import {
   type ColumnDef,
 } from '@tanstack/react-table'
 import { Star, Shield, Trophy, Medal, Award } from 'lucide-react'
+import { EmptyState } from '@/components/ui/empty-state'
 import { useLeaderboard } from '@/hooks/useLeaderboard'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { ChainFilter } from '@/components/agents/ChainFilter'
@@ -246,8 +247,12 @@ export default function RankingsPage() {
               <RankingSkeleton rows={20} />
             ) : entries.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-32 text-center text-muted-foreground">
-                  No agents found
+                <TableCell colSpan={columns.length}>
+                  <EmptyState
+                    icon={Trophy}
+                    title="No Agents Found"
+                    description="No agents match your current filter criteria."
+                  />
                 </TableCell>
               </TableRow>
             ) : (

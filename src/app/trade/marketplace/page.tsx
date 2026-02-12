@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   flexRender,
   getCoreRowModel,
@@ -10,7 +11,7 @@ import {
   type ColumnDef,
   type SortingState,
 } from '@tanstack/react-table'
-import { ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowUpDown, ChevronLeft, ChevronRight, Cpu, ShoppingBag } from 'lucide-react'
 import { useListings } from '@/hooks/useListings'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { ChainFilter } from '@/components/agents/ChainFilter'
@@ -33,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { EmptyState } from '@/components/ui/empty-state'
 import { cn, formatAddress, formatPrice, getTokenLabel } from '@/lib/utils'
 import TimeCounter from '@/components/ui/time-counter'
 import type { MarketplaceListing, ListingSortOrder } from '@/types'
@@ -191,6 +193,89 @@ function ListingSkeleton({ rows }: { rows: number }) {
 }
 
 // ============================================================
+// Mobile Card Skeleton
+// ============================================================
+
+function MobileCardSkeleton({ count }: { count: number }) {
+  return (
+    <div className="space-y-3">
+      {Array.from({ length: count }).map((_, i) => (
+        <div
+          key={i}
+          className="flex items-center gap-3 rounded-xl border border-border/50 bg-card/60 p-3"
+        >
+          <Skeleton className="size-14 shrink-0 rounded-lg" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+          <div className="shrink-0 space-y-2 text-right">
+            <Skeleton className="ml-auto h-4 w-16" />
+            <Skeleton className="ml-auto h-5 w-14 rounded-full" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ============================================================
+// Mobile Card View
+// ============================================================
+
+function MobileListingCard({ listing, index }: { listing: MarketplaceListing; index: number }) {
+  return (
+    <Link
+      href={`/trade/marketplace/${listing.chain_id}-${listing.listing_id}`}
+      className="flex items-center gap-3 rounded-xl border border-border/50 bg-card/60 p-3 transition-colors active:bg-muted/30"
+    >
+      {/* Agent image */}
+      <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-primary/20 to-cyan-500/10 ring-1 ring-border">
+        {listing.agent_image ? (
+          <Image
+            src={listing.agent_image}
+            alt={listing.agent_name ?? `Agent #${listing.token_id}`}
+            fill
+            className="object-cover"
+            sizes="56px"
+          />
+        ) : (
+          <div className="flex size-full items-center justify-center">
+            <Cpu className="size-6 text-primary/30" />
+          </div>
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold text-foreground">
+          {listing.agent_name || `Agent #${listing.token_id}`}
+        </p>
+        <p className="mt-0.5 truncate font-mono text-[11px] text-muted-foreground">
+          {formatAddress(listing.seller)}
+        </p>
+      </div>
+
+      {/* Price + status */}
+      <div className="shrink-0 text-right">
+        <p className="text-sm font-semibold text-foreground">
+          {formatPrice(listing.price)}
+        </p>
+        <p className="text-[10px] text-muted-foreground">
+          {getTokenLabel(listing.payment_token)}
+        </p>
+        <Badge
+          variant="outline"
+          className={cn('mt-1 text-[10px]', getStatusColor(listing.status))}
+        >
+          {listing.status}
+        </Badge>
+      </div>
+    </Link>
+  )
+}
+
+// ============================================================
 // Page
 // ============================================================
 
@@ -269,8 +354,29 @@ export default function MarketplacePage() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-hidden rounded-xl border border-border/50 bg-card/40">
+      {/* Mobile Card View */}
+      <div className="sm:hidden">
+        {isLoading ? (
+          <MobileCardSkeleton count={8} />
+        ) : listings.length === 0 ? (
+          <div className="rounded-xl border border-border/50 bg-card/40 py-12 text-center text-muted-foreground">
+            No listings found
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {listings.map((listing, i) => (
+              <MobileListingCard
+                key={`${listing.chain_id}-${listing.listing_id}`}
+                listing={listing}
+                index={i}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Table (sm and above) */}
+      <div className="hidden sm:block overflow-hidden rounded-xl border border-border/50 bg-card/40">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -317,11 +423,12 @@ export default function MarketplacePage() {
               <ListingSkeleton rows={limit} />
             ) : listings.length === 0 ? (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-32 text-center text-muted-foreground"
-                >
-                  No listings found
+                <TableCell colSpan={columns.length}>
+                  <EmptyState
+                    icon={ShoppingBag}
+                    title="No Listings Found"
+                    description="There are no marketplace listings matching your filters yet."
+                  />
                 </TableCell>
               </TableRow>
             ) : (

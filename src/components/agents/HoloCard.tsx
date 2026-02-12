@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
+import Image from "next/image";
 import { Star, Shield, Zap, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -205,10 +206,12 @@ export function HoloCard({ agent }: HoloCardProps) {
           {/* Agent Image Section */}
           <div className="relative h-40 w-full shrink-0 overflow-hidden bg-gradient-to-b from-primary/20 to-transparent">
             {agent.image ? (
-              <img
-                src={agent.image ?? undefined}
-                alt={agent.name ?? undefined}
-                className="h-full w-full object-cover"
+              <Image
+                src={agent.image}
+                alt={agent.name ?? `Agent #${agent.agent_id}`}
+                fill
+                className="object-cover"
+                sizes="300px"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/30 via-violet-dim/30 to-cyan-accent/20">
