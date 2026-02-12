@@ -7,6 +7,7 @@ import {
   BarChart3,
   Trophy,
   TrendingUp,
+  PlusCircle,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -60,6 +61,12 @@ export const navGroups: NavGroup[] = [
         label: 'Activity',
         subtitle: 'Recent Transactions',
         icon: Activity,
+      },
+      {
+        href: '/create',
+        label: 'Create Molt',
+        subtitle: 'Register New Agent',
+        icon: PlusCircle,
       },
     ],
   },

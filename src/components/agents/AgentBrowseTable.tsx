@@ -123,22 +123,15 @@ export function AgentBrowseTable() {
       </p>
 
       {/* Search + Sort */}
-      <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <SearchBar
-          value={search}
-          onChange={(v) => {
-            setSearch(v);
-            setPage(1);
-          }}
-          className="w-full sm:max-w-xs"
-        />
-        <div className="flex items-center gap-3">
-          <ChainFilter
-            selected={chainId}
-            onSelect={(v) => {
-              setChainId(v);
+      <div className="mb-3 flex flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <SearchBar
+            value={search}
+            onChange={(v) => {
+              setSearch(v);
               setPage(1);
             }}
+            className="w-full sm:max-w-xs"
           />
           <Select value={sort} onValueChange={(v) => { setSort(v as SortOrder); setPage(1); }}>
             <SelectTrigger size="sm" className="w-auto gap-1.5 border-border/50 bg-card/80">
@@ -150,6 +143,16 @@ export function AgentBrowseTable() {
               <SelectItem value="name">Name</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        <div className="-mx-1 overflow-x-auto px-1 pb-1">
+          <ChainFilter
+            selected={chainId}
+            onSelect={(v) => {
+              setChainId(v);
+              setPage(1);
+            }}
+            className="w-max"
+          />
         </div>
       </div>
 
