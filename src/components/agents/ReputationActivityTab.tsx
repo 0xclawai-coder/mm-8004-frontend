@@ -83,7 +83,9 @@ function ScoreStars({ value }: { value: number }) {
 function FeedbackCard({ event }: { event: Activity }) {
   const data = event.event_data || {}
   const clientAddress = (data.client ?? data.client_address) as string | undefined
-  const value = data.value as number | undefined
+  const rawValue = data.value as number | undefined
+  const valueDecimals = (data.valueDecimals ?? data.value_decimals ?? 0) as number
+  const value = rawValue !== undefined ? rawValue / Math.pow(10, valueDecimals) : undefined
   const tag1 = data.tag1 as string | undefined
   const tag2 = data.tag2 as string | undefined
   const endpoint = data.endpoint as string | undefined

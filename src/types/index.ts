@@ -29,12 +29,25 @@ export interface Agent {
   block_timestamp: string
 }
 
+/** Score grouped by tag */
+export interface ScoreByTag {
+  score_type: string
+  label: string | null
+  value: number
+  count: number
+  min_value: number | null
+  max_value: number | null
+  /** Scale classification: "percentage" | "elo" | "boolean" | "raw" */
+  scale: string
+}
+
 /** Agent detail (single agent view) */
 export interface AgentDetail extends Agent {
   uri: string | null
   metadata: AgentMetadata | null
   positive_feedback_count: number | null
   negative_feedback_count: number | null
+  scores: ScoreByTag[]
 }
 
 // ============================================================

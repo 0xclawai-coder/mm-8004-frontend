@@ -1,6 +1,7 @@
 'use client'
 
-import { Star, MessageSquare, ThumbsUp, ThumbsDown, Globe, ExternalLink } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { Star, MessageSquare, ThumbsUp, ThumbsDown, Globe, ExternalLink, Tag } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import TimeCounter from '@/components/ui/time-counter'
@@ -27,6 +28,7 @@ function getScoreBg(score: number): string {
   if (score >= 40) return 'border-yellow-500/30 bg-yellow-500/10'
   return 'border-red-500/30 bg-red-500/10'
 }
+
 
 function getExplorerUrl(chainId: number, txHash: string): string {
   if (chainId === 143) return `https://monadexplorer.com/tx/${txHash}`
@@ -67,7 +69,13 @@ function FeedbackPreview({ event, chainId }: { event: Activity; chainId: number 
   const data = event.event_data || {}
   const clientAddress = (data.client ?? data.client_address) as string | undefined
   const value = data.value as number | undefined
+  const valueDecimals = (data.valueDecimals ?? data.value_decimals ?? 0) as number
   const tag1 = data.tag1 as string | undefined
+
+  // Apply decimal correction
+  const displayValue = value !== undefined
+    ? value / Math.pow(10, valueDecimals)
+    : undefined
 
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border border-border/30 bg-card/40 px-4 py-3">
@@ -97,22 +105,34 @@ function FeedbackPreview({ event, chainId }: { event: Activity; chainId: number 
           )}
         </div>
       </div>
-      {value !== undefined && (
+      {displayValue !== undefined && (
         <div className={cn(
           'shrink-0 rounded-lg border px-3 py-1.5 text-center',
-          getScoreBg(value),
+          getScoreBg(displayValue),
         )}>
-          <span className={cn('text-lg font-bold tabular-nums', getScoreColor(value))}>
-            {typeof value === 'number' ? Math.round(value) : value}
+          <span className={cn('text-lg font-bold tabular-nums', getScoreColor(displayValue))}>
+            {Number.isInteger(displayValue) ? displayValue : displayValue.toFixed(1)}
           </span>
-          <span className="text-[10px] text-muted-foreground">/100</span>
+          {tag1 && (
+            <span className="ml-1 text-[10px] text-muted-foreground">{tag1}</span>
+          )}
         </div>
       )}
     </div>
   )
 }
 
+const SCALE_LABELS: Record<string, string> = {
+  all: 'All',
+  percentage: '0~100',
+  elo: 'ELO',
+  boolean: 'Boolean',
+  raw: 'Raw',
+}
+
 export function OverviewTab({ agent, agentId, chainId, agentNumericId, onSwitchToFeedback }: OverviewTabProps) {
+  const [scaleFilter, setScaleFilter] = useState('all')
+
   const { data: reputationData } = useAgentActivity(agentId, {
     event_type: 'reputation',
     limit: 3,
@@ -120,6 +140,20 @@ export function OverviewTab({ agent, agentId, chainId, agentNumericId, onSwitchT
 
   const recentFeedbacks = reputationData?.activities || []
   const endpoints = agent.metadata?.endpoints || []
+
+  // Available scale types from scores
+  const availableScales = useMemo(() => {
+    if (!agent.scores) return []
+    const scales = [...new Set(agent.scores.map((s) => s.scale))]
+    return scales
+  }, [agent.scores])
+
+  // Filtered scores
+  const filteredScores = useMemo(() => {
+    if (!agent.scores) return []
+    if (scaleFilter === 'all') return agent.scores
+    return agent.scores.filter((s) => s.scale === scaleFilter)
+  }, [agent.scores, scaleFilter])
 
   return (
     <div className="space-y-6 py-4">
@@ -157,6 +191,68 @@ export function OverviewTab({ agent, agentId, chainId, agentNumericId, onSwitchT
           />
         </div>
       </div>
+
+      {/* Scores by Tag */}
+      {agent.scores && agent.scores.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Tag className="size-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">Scores by Tag</h3>
+            </div>
+            {availableScales.length > 1 && (
+              <div className="flex items-center gap-1">
+                {['all', ...availableScales].map((scale) => (
+                  <button
+                    key={scale}
+                    onClick={() => setScaleFilter(scale)}
+                    className={cn(
+                      'rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors',
+                      scaleFilter === scale
+                        ? 'bg-primary/20 text-primary'
+                        : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                    )}
+                  >
+                    {SCALE_LABELS[scale] ?? scale}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+            {filteredScores.map((s) => (
+              <div
+                key={s.score_type}
+                className={cn(
+                  'rounded-lg border p-3',
+                  s.scale === 'percentage' ? getScoreBg(s.value) : 'border-border/50 bg-card/60',
+                )}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className={cn(
+                    'text-lg font-bold tabular-nums',
+                    s.scale === 'percentage' ? getScoreColor(s.value) : 'text-foreground',
+                  )}>
+                    {Number.isInteger(s.value) ? s.value : s.value.toFixed(1)}
+                  </span>
+                  <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+                    {SCALE_LABELS[s.scale] ?? s.scale}
+                  </Badge>
+                </div>
+                <p className="mt-1 text-xs font-medium text-foreground">{s.score_type}</p>
+                <div className="flex items-center justify-between mt-0.5">
+                  {s.label && (
+                    <p className="text-[10px] text-muted-foreground truncate">{s.label}</p>
+                  )}
+                  <span className="text-[10px] text-muted-foreground shrink-0">
+                    {s.count}x
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Reputation Chart */}
       <RatingChart agentId={agentNumericId} chainId={chainId} />

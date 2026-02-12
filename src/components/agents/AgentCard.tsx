@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
+import TimeCounter from '@/components/ui/time-counter'
 import type { Agent } from '@/types'
 
 interface AgentCardProps {
@@ -31,7 +32,7 @@ export function AgentCard({ agent }: AgentCardProps) {
     <Link href={agentPath} className="group block">
       <Card className="relative overflow-hidden border-border/50 bg-card/80 py-0 transition-all duration-300 group-hover:scale-[1.02] group-hover:border-primary/30 group-hover:glow-violet">
         <CardContent className="flex flex-col gap-4 p-5">
-          {/* Top row: Avatar + Name + Description */}
+          {/* Top row: Avatar + Name + Description + Created */}
           <div className="flex items-start gap-3">
             <Avatar className="size-12 shrink-0 ring-2 ring-border">
               <AvatarImage src={agent.image ?? undefined} alt={agent.name ?? undefined} />
@@ -40,9 +41,14 @@ export function AgentCard({ agent }: AgentCardProps) {
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-sm font-bold text-foreground">
-                {agent.name || `Agent #${agent.agent_id}`}
-              </h3>
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="truncate text-sm font-bold text-foreground">
+                  {agent.name || `Agent #${agent.agent_id}`}
+                </h3>
+                <span className="shrink-0 text-[10px] text-muted-foreground">
+                  <TimeCounter targetTime={new Date(agent.block_timestamp)} />
+                </span>
+              </div>
               <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                 {agent.description || 'No description available'}
               </p>
