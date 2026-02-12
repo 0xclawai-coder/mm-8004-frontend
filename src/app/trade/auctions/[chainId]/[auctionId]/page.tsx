@@ -433,49 +433,10 @@ function ProvenanceSection({ agent, chainId }: { agent: AgentDetail; chainId: nu
 
 function LoadingSkeleton() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-8">
       <Skeleton className="mb-6 h-9 w-36 rounded-lg" />
-
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_1fr]">
-        <div className="flex justify-center lg:justify-start">
-          <div className="w-full max-w-[300px] rounded-2xl border border-border/50 bg-card/95 overflow-hidden">
-            <Skeleton className="h-40 w-full rounded-none" />
-            <div className="p-5 space-y-3">
-              <Skeleton className="h-6 w-40" />
-              <Skeleton className="h-3.5 w-full" />
-              <div className="flex items-center gap-3">
-                <Skeleton className="h-7 w-16" />
-                <Skeleton className="h-3 w-20" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-5 w-32" />
-          </div>
-          <div className="rounded-xl border border-border/50 bg-card/60 p-6 space-y-4">
-            <Skeleton className="h-8 w-48" />
-            <div className="flex gap-4">
-              <Skeleton className="h-16 w-32" />
-              <Skeleton className="h-16 w-40" />
-            </div>
-            <Skeleton className="h-12 w-full rounded-lg" />
-            <div className="grid grid-cols-4 gap-3">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-16 rounded-lg" />
-              ))}
-            </div>
-          </div>
-          <div className="rounded-xl border border-border/50 bg-card/60 p-6 space-y-3">
-            <Skeleton className="h-5 w-28" />
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full" />
-            ))}
-          </div>
-        </div>
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="size-8 animate-spin text-primary" />
       </div>
     </div>
   )

@@ -2,7 +2,7 @@
 
 import { use, useState, useRef } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Shield, Sparkles, MessageSquare, Zap } from 'lucide-react'
+import { ArrowLeft, Shield, Sparkles, MessageSquare, Zap, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -32,118 +32,10 @@ function isNewbie(createdAt: string): boolean {
 
 function LoadingSkeleton() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Back button */}
+    <div className="mx-auto max-w-7xl px-4 py-8">
       <Skeleton className="mb-6 h-9 w-36 rounded-lg" />
-
-      {/* Agent Header — mirrors actual header structure */}
-      <div className="mb-6 space-y-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-5 w-24 rounded-full" />
-          <Skeleton className="h-5 w-16 rounded-full" />
-          <Skeleton className="h-5 w-12 rounded-full" />
-        </div>
-        <Skeleton className="h-4 w-96 max-w-full" />
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-3 w-24" />
-          <div className="h-3 w-px bg-border/50" />
-          <Skeleton className="h-3 w-20" />
-        </div>
-      </div>
-
-      {/* Two-column: HoloCard + BasicInfoPanel */}
-      <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-[300px_1fr]">
-        {/* HoloCard skeleton — matches 300px x 420px card */}
-        <div className="flex justify-center lg:justify-start">
-          <div className="w-full max-w-[300px] rounded-2xl border border-border/50 bg-card/95 overflow-hidden">
-            <Skeleton className="h-40 w-full rounded-none" />
-            <div className="p-5 space-y-3">
-              <Skeleton className="h-6 w-40" />
-              <Skeleton className="h-3.5 w-full" />
-              <div className="flex items-center gap-3">
-                <Skeleton className="h-7 w-16" />
-                <Skeleton className="h-3 w-20" />
-              </div>
-              <div className="flex gap-1.5">
-                <Skeleton className="h-5 w-16 rounded-full" />
-                <Skeleton className="h-5 w-20 rounded-full" />
-              </div>
-              <div className="flex items-center justify-between border-t border-border/30 pt-3 mt-auto">
-                <Skeleton className="h-5 w-16 rounded-full" />
-                <Skeleton className="h-3 w-24" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* BasicInfoPanel skeleton — matches info rows */}
-        <div className="rounded-xl border border-border/50 bg-card/60 p-5 space-y-1">
-          <Skeleton className="h-5 w-36 mb-3" />
-          {/* Contract State section */}
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-2 mb-2">
-              <Skeleton className="size-3.5 rounded" />
-              <Skeleton className="h-3 w-24" />
-            </div>
-            <div className="divide-y divide-border/30">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center justify-between gap-2 py-2">
-                  <Skeleton className="h-3 w-16" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* Off-chain section */}
-          <div className="space-y-0.5 pt-3">
-            <div className="flex items-center gap-2 mb-2">
-              <Skeleton className="size-3.5 rounded" />
-              <Skeleton className="h-3 w-28" />
-            </div>
-            <div className="divide-y divide-border/30">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="flex items-center justify-between gap-2 py-2">
-                  <Skeleton className="h-3 w-16" />
-                  <Skeleton className="h-4 w-20" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs skeleton */}
-      <div className="flex gap-2 border-b border-border/50 pb-2">
-        <Skeleton className="h-8 w-20 rounded-md" />
-        <Skeleton className="h-8 w-24 rounded-md" />
-        <Skeleton className="h-8 w-18 rounded-md" />
-        <Skeleton className="h-8 w-22 rounded-md" />
-      </div>
-
-      {/* Overview tab content skeleton — Stats + Chart */}
-      <div className="space-y-6 py-4">
-        {/* Statistics Overview */}
-        <div className="space-y-3">
-          <Skeleton className="h-4 w-32" />
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="rounded-lg border border-border/30 p-4 text-center space-y-2">
-                <Skeleton className="mx-auto size-8 rounded-lg" />
-                <Skeleton className="mx-auto h-6 w-12" />
-                <Skeleton className="mx-auto h-3 w-16" />
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* Chart */}
-        <div className="rounded-xl border border-border/50 bg-card/60 p-6">
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-5 w-40" />
-            <Skeleton className="h-8 w-48 rounded-lg" />
-          </div>
-          <Skeleton className="mt-4 h-56 w-full rounded-lg" />
-        </div>
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="size-8 animate-spin text-primary" />
       </div>
     </div>
   )
