@@ -62,11 +62,11 @@ export function BasicInfoPanel({ agent }: BasicInfoPanelProps) {
     <div className="rounded-xl border border-border/50 bg-card/60 p-5 space-y-1">
       <h3 className="text-base font-semibold text-foreground pb-2">Basic Information</h3>
 
-      {/* Contract State */}
+      {/* On-chain Identity */}
       <div className="space-y-0.5">
         <div className="flex items-center gap-2 pb-2">
           <Link2 className="size-3.5 text-primary" />
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Contract State</span>
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">On-chain Identity</span>
         </div>
         <div className="divide-y divide-border/30">
           <InfoRow label="Agent ID">

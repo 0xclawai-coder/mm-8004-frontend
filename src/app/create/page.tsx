@@ -20,6 +20,8 @@ import {
   ExternalLink,
   Star,
   Sparkles,
+  Cpu,
+  Shield,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -281,26 +283,42 @@ function ConnectWalletPrompt() {
   const { openConnectModal } = useConnectModal()
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center">
-      <Card className="w-full max-w-md border-border/50 bg-card/80">
-        <CardContent className="flex flex-col items-center gap-6 p-8 text-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-primary/10">
-            <Wallet className="size-8 text-primary" />
+    <div className="flex min-h-[40vh] items-center justify-center">
+      <Card className="w-full max-w-lg border border-border/60 bg-card/90">
+        <CardContent className="flex flex-col items-center gap-6 p-10 text-center">
+          <div className="flex size-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 via-violet-500/10 to-cyan-500/10 border border-primary/20">
+            <Wallet className="size-10 text-primary" />
           </div>
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold text-foreground">Connect Your Wallet</h2>
-            <p className="text-sm text-muted-foreground">
-              You need to connect your wallet to register a new AI agent on the Monad chain.
+          <div className="flex flex-col gap-2">
+            <h2 className="text-2xl font-bold text-foreground">Connect Your Wallet</h2>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              Connect your wallet to register a new AI agent on the Monad chain with on-chain identity and reputation.
             </p>
           </div>
-          <Button
-            size="lg"
-            onClick={openConnectModal}
-            className="w-full bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90 transition-opacity"
-          >
-            <Wallet className="size-4" />
-            Connect Wallet
-          </Button>
+          <div className="flex flex-col gap-3 w-full">
+            <Button
+              size="lg"
+              onClick={openConnectModal}
+              className="w-full bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90 transition-opacity text-base"
+            >
+              <Wallet className="size-4" />
+              Connect Wallet
+            </Button>
+            <div className="grid grid-cols-3 gap-3 pt-2">
+              <div className="flex flex-col items-center gap-1.5 rounded-lg border border-border/30 bg-card/40 p-3">
+                <Cpu className="size-4 text-primary/60" />
+                <span className="text-[10px] text-muted-foreground text-center">EIP-8004 Identity</span>
+              </div>
+              <div className="flex flex-col items-center gap-1.5 rounded-lg border border-border/30 bg-card/40 p-3">
+                <Shield className="size-4 text-cyan-400/60" />
+                <span className="text-[10px] text-muted-foreground text-center">x402 Payments</span>
+              </div>
+              <div className="flex flex-col items-center gap-1.5 rounded-lg border border-border/30 bg-card/40 p-3">
+                <Star className="size-4 text-yellow-400/60" />
+                <span className="text-[10px] text-muted-foreground text-center">On-chain Rep</span>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -566,9 +584,9 @@ export default function CreateMoltPage() {
 
   return (
     <div className="min-h-screen bg-gradient-radial">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex flex-col gap-3 pb-10 text-center">
+        <div className="flex flex-col gap-2 pb-6 text-center">
           <h1 className="text-gradient-glow text-3xl font-extrabold sm:text-4xl lg:text-5xl">
             Create Your Molt
           </h1>

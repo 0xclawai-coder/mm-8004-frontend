@@ -59,6 +59,12 @@ function getStatusColor(status: string) {
 // Columns
 // ============================================================
 
+function getChainLabel(chainId: number): string {
+  if (chainId === 143) return 'Monad'
+  if (chainId === 10143) return 'Testnet'
+  return `Chain ${chainId}`
+}
+
 const columns: ColumnDef<MarketplaceListing, unknown>[] = [
   {
     id: 'rank',
@@ -67,13 +73,13 @@ const columns: ColumnDef<MarketplaceListing, unknown>[] = [
       <span className="text-sm text-muted-foreground">{row.index + 1}</span>
     ),
     enableSorting: false,
-    size: 48,
+    size: 50,
   },
   {
     accessorKey: 'token_id',
     header: 'Identity',
-    size: 220,
-    maxSize: 280,
+    size: 240,
+    maxSize: 300,
     cell: ({ row }) => {
       const l = row.original
       return (
@@ -83,7 +89,7 @@ const columns: ColumnDef<MarketplaceListing, unknown>[] = [
               src={l.agent_image ?? undefined}
               alt={l.agent_name ?? `Agent #${l.token_id}`}
             />
-            <AvatarFallback className="rounded-lg bg-primary/10 text-xs font-bold text-primary">
+            <AvatarFallback className="rounded-lg bg-gradient-to-br from-primary/20 to-cyan-500/10 text-xs font-bold text-primary">
               #{l.token_id}
             </AvatarFallback>
           </Avatar>
@@ -103,6 +109,7 @@ const columns: ColumnDef<MarketplaceListing, unknown>[] = [
   {
     accessorKey: 'seller',
     header: 'Seller',
+    size: 130,
     cell: ({ getValue }) => (
       <span className="font-mono text-xs text-muted-foreground">
         {formatAddress(getValue<string>())}
@@ -112,8 +119,32 @@ const columns: ColumnDef<MarketplaceListing, unknown>[] = [
     meta: { className: 'hidden md:table-cell' },
   },
   {
+    id: 'chain',
+    header: 'Chain',
+    size: 90,
+    cell: ({ row }) => {
+      const l = row.original
+      return (
+        <Badge
+          variant="outline"
+          className={cn(
+            'text-[10px]',
+            l.chain_id === 143
+              ? 'border-green-500/30 bg-green-500/10 text-green-400'
+              : 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400'
+          )}
+        >
+          {getChainLabel(l.chain_id)}
+        </Badge>
+      )
+    },
+    enableSorting: false,
+    meta: { className: 'hidden lg:table-cell' },
+  },
+  {
     accessorKey: 'price',
     header: 'Price',
+    size: 140,
     cell: ({ row }) => {
       const l = row.original
       return (
@@ -133,6 +164,7 @@ const columns: ColumnDef<MarketplaceListing, unknown>[] = [
   {
     accessorKey: 'status',
     header: 'Status',
+    size: 90,
     cell: ({ getValue }) => {
       const status = getValue<string>()
       return (
@@ -150,6 +182,7 @@ const columns: ColumnDef<MarketplaceListing, unknown>[] = [
   {
     accessorKey: 'block_timestamp',
     header: 'Listed',
+    size: 100,
     cell: ({ getValue }) => (
       <span className="text-xs text-muted-foreground">
         <TimeCounter targetTime={new Date(getValue<string>())} />
@@ -181,6 +214,9 @@ function ListingSkeleton({ rows }: { rows: number }) {
           </TableCell>
           <TableCell className="hidden md:table-cell">
             <Skeleton className="h-3 w-24" />
+          </TableCell>
+          <TableCell className="hidden lg:table-cell">
+            <Skeleton className="h-5 w-14 rounded-full" />
           </TableCell>
           <TableCell><Skeleton className="ml-auto h-4 w-20" /></TableCell>
           <TableCell className="hidden sm:table-cell">

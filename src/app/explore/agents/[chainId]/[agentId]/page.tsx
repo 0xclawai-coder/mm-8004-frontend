@@ -115,27 +115,12 @@ export default function AgentDetailPage({
         </Button>
       </Link>
 
-      {/* Agent Header */}
-      <div className="space-y-3">
+      {/* Agent Header — lightweight since HoloCard carries the visual weight */}
+      <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
             {agent ? (agent.name || `Agent #${agent.agent_id}`) : <Skeleton className="inline-block h-8 w-48" />}
           </h1>
-          {agent ? (
-            <Badge
-              variant="outline"
-              className={cn(
-                'text-xs',
-                agent.chain_id === 143
-                  ? 'border-green-500/30 bg-green-500/10 text-green-400'
-                  : 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
-              )}
-            >
-              {getChainLabel(agent.chain_id)}
-            </Badge>
-          ) : (
-            <Skeleton className="h-5 w-24 rounded-full" />
-          )}
           {badges.map((b) => (
             <Badge key={b.label} variant="outline" className={cn('text-xs gap-1', b.className)}>
               {b.icon}
@@ -158,7 +143,7 @@ export default function AgentDetailPage({
                 {agent.feedback_count} feedback{agent.feedback_count !== 1 ? 's' : ''}
               </span>
               <span className="h-3 w-px bg-border/50" />
-              <span>Last active <TimeCounter targetTime={new Date(agent.block_timestamp)} /></span>
+              <span>Registered <TimeCounter targetTime={new Date(agent.block_timestamp)} /></span>
             </>
           ) : (
             <>

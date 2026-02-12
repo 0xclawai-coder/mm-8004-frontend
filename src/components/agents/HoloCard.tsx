@@ -264,51 +264,43 @@ export function HoloCard(props: HoloCardProps) {
             <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-card to-transparent" />
           </div>
 
-          {/* Card Content */}
+          {/* Card Content — visual-only: score + star rating + tags */}
           <div className="relative z-20 flex flex-1 flex-col overflow-hidden p-5">
-            {/* Top section: name, description, score, tags */}
             <div className="space-y-3">
-              {/* Name */}
-              <div className="flex flex-col gap-1">
-                <h2 className="truncate text-xl font-bold text-foreground">
-                  {name != null ? name : <Skeleton className="h-6 w-40" />}
-                </h2>
-                {description && (
-                  <p className="line-clamp-2 text-sm text-muted-foreground">
-                    {description}
-                  </p>
-                )}
-              </div>
-
-              {/* Reputation Score */}
-              <div className="flex items-center gap-3">
+              {/* Reputation Score — prominent display */}
+              <div className="flex items-center justify-between">
                 {score != null ? (
-                  <>
-                    <div className="flex items-center gap-1.5">
-                      <Star
-                        className={cn(
-                          "size-5",
-                          getScoreColor(score),
-                        )}
-                      />
-                      <span
-                        className={cn(
-                          "text-2xl font-bold tabular-nums",
-                          getScoreColor(score),
-                        )}
-                      >
-                        {score.toFixed(1)}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {feedbackCount} feedback
-                      {feedbackCount !== 1 ? "s" : ""}
-                    </p>
-                  </>
+                  <div className="flex items-center gap-2">
+                    <Star
+                      className={cn(
+                        "size-5",
+                        getScoreColor(score),
+                      )}
+                    />
+                    <span
+                      className={cn(
+                        "text-2xl font-bold tabular-nums",
+                        getScoreColor(score),
+                      )}
+                    >
+                      {score.toFixed(1)}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      / 100
+                    </span>
+                  </div>
                 ) : (
                   <Skeleton className="h-7 w-24" />
                 )}
+                <span className="text-xs text-muted-foreground">
+                  {feedbackCount} feedback{feedbackCount !== 1 ? "s" : ""}
+                </span>
               </div>
+
+              {/* Star Rating visual */}
+              {score != null && (
+                <StarRating score={score / 20} />
+              )}
 
               {/* Tags Row */}
               {tags && tags.length > 0 ? (
@@ -332,8 +324,8 @@ export function HoloCard(props: HoloCardProps) {
               ) : null}
             </div>
 
-            {/* Bottom: Chain + Owner (pinned to bottom) */}
-            <div className="mt-auto flex items-center justify-between border-t border-border/30 pt-3">
+            {/* Bottom: Chain badge */}
+            <div className="mt-auto flex items-center justify-center pt-3">
               {chainId != null ? (
                 <Badge
                   variant="outline"
@@ -348,13 +340,6 @@ export function HoloCard(props: HoloCardProps) {
                 </Badge>
               ) : (
                 <Skeleton className="h-5 w-16 rounded-full" />
-              )}
-              {owner ? (
-                <span className="font-mono text-xs text-muted-foreground">
-                  {truncateAddress(owner)}
-                </span>
-              ) : (
-                <Skeleton className="h-4 w-24" />
               )}
             </div>
           </div>

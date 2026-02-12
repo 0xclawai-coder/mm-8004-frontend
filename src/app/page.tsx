@@ -44,7 +44,7 @@ function StatsBar() {
   ]
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 [&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:col-span-1">
       {items.map((item) => {
         const dimmed = 'dimmed' in item && item.dimmed
         return (
@@ -52,7 +52,7 @@ function StatsBar() {
             key={item.label}
             href={item.href}
             className={cn(
-              "flex flex-col gap-1 rounded-xl border border-border/30 bg-card/40 p-4 text-center transition-colors hover:border-primary/30 hover:bg-card/60",
+              "flex flex-col gap-1.5 rounded-xl border border-border/30 bg-card/40 p-4 text-center transition-colors hover:border-primary/30 hover:bg-card/60",
               dimmed && "opacity-60"
             )}
           >
