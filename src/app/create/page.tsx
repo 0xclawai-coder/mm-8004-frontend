@@ -4,11 +4,11 @@ import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import {
   useAccount,
-  useConnect,
   useWriteContract,
   useWaitForTransactionReceipt,
   useChainId,
 } from 'wagmi'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import {
   Wallet,
   Plus,
@@ -224,7 +224,7 @@ function LivePreview({ form, chainId }: { form: FormState; chainId: number }) {
 // ============================================================
 
 function ConnectWalletPrompt() {
-  const { connect, connectors } = useConnect()
+  const { openConnectModal } = useConnectModal()
 
   return (
     <div className="flex min-h-[60vh] items-center justify-center">
@@ -241,12 +241,7 @@ function ConnectWalletPrompt() {
           </div>
           <Button
             size="lg"
-            onClick={() => {
-              const connector = connectors[0]
-              if (connector) {
-                connect({ connector })
-              }
-            }}
+            onClick={openConnectModal}
             className="w-full bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90 transition-opacity"
           >
             <Wallet className="size-4" />

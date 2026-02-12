@@ -2,7 +2,7 @@
 
 import { use, useState, useRef } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Shield, Sparkles, MessageSquare, Zap, Loader2 } from 'lucide-react'
+import { ArrowLeft, Shield, Sparkles, MessageSquare, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -29,17 +29,6 @@ function isNewbie(createdAt: string): boolean {
   return diffDays <= 7
 }
 
-
-function LoadingSkeleton() {
-  return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8">
-      <Skeleton className="h-9 w-36 rounded-lg" />
-      <div className="flex items-center justify-center py-24">
-        <Loader2 className="size-8 animate-spin text-primary" />
-      </div>
-    </div>
-  )
-}
 
 function ErrorState({ agentId }: { agentId: string }) {
   return (
@@ -83,31 +72,27 @@ export default function AgentDetailPage({
 
   const { data: agent, isLoading, error } = useAgent(agentId)
 
-  if (isLoading) {
-    return <LoadingSkeleton />
-  }
-
-  if (error || !agent) {
+  if (error && !isLoading) {
     return <ErrorState agentId={agentId} />
   }
 
   // Build status badges
   const badges: { label: string; icon: React.ReactNode; className: string }[] = []
-  if (agent.active) {
+  if (agent?.active) {
     badges.push({
       label: 'Active',
       icon: <Zap className="size-3" />,
       className: 'border-green-500/30 bg-green-500/10 text-green-400',
     })
   }
-  if (agent.x402_support) {
+  if (agent?.x402_support) {
     badges.push({
       label: 'x402',
       icon: <Shield className="size-3" />,
       className: 'border-cyan-500/30 bg-cyan-500/10 text-cyan-400',
     })
   }
-  if (isNewbie(agent.block_timestamp)) {
+  if (agent && isNewbie(agent.block_timestamp)) {
     badges.push({
       label: 'Newbie',
       icon: <Sparkles className="size-3" />,
@@ -134,19 +119,23 @@ export default function AgentDetailPage({
       <div className="space-y-3">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-            {agent.name || `Agent #${agent.agent_id}`}
+            {agent ? (agent.name || `Agent #${agent.agent_id}`) : <Skeleton className="inline-block h-8 w-48" />}
           </h1>
-          <Badge
-            variant="outline"
-            className={cn(
-              'text-xs',
-              agent.chain_id === 143
-                ? 'border-green-500/30 bg-green-500/10 text-green-400'
-                : 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
-            )}
-          >
-            {getChainLabel(agent.chain_id)}
-          </Badge>
+          {agent ? (
+            <Badge
+              variant="outline"
+              className={cn(
+                'text-xs',
+                agent.chain_id === 143
+                  ? 'border-green-500/30 bg-green-500/10 text-green-400'
+                  : 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
+              )}
+            >
+              {getChainLabel(agent.chain_id)}
+            </Badge>
+          ) : (
+            <Skeleton className="h-5 w-24 rounded-full" />
+          )}
           {badges.map((b) => (
             <Badge key={b.label} variant="outline" className={cn('text-xs gap-1', b.className)}>
               {b.icon}
@@ -154,18 +143,30 @@ export default function AgentDetailPage({
             </Badge>
           ))}
         </div>
-        {agent.description && (
+        {agent?.description ? (
           <p className="text-sm text-muted-foreground max-w-3xl">
             {agent.description}
           </p>
-        )}
+        ) : !agent ? (
+          <Skeleton className="h-4 w-96" />
+        ) : null}
         <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <MessageSquare className="size-3" />
-            {agent.feedback_count} feedback{agent.feedback_count !== 1 ? 's' : ''}
-          </span>
-          <span className="h-3 w-px bg-border/50" />
-          <span>Last active <TimeCounter targetTime={new Date(agent.block_timestamp)} /></span>
+          {agent ? (
+            <>
+              <span className="flex items-center gap-1">
+                <MessageSquare className="size-3" />
+                {agent.feedback_count} feedback{agent.feedback_count !== 1 ? 's' : ''}
+              </span>
+              <span className="h-3 w-px bg-border/50" />
+              <span>Last active <TimeCounter targetTime={new Date(agent.block_timestamp)} /></span>
+            </>
+          ) : (
+            <>
+              <Skeleton className="h-3 w-24" />
+              <span className="h-3 w-px bg-border/50" />
+              <Skeleton className="h-3 w-32" />
+            </>
+          )}
         </div>
       </div>
 
@@ -173,11 +174,35 @@ export default function AgentDetailPage({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[300px_1fr]">
         {/* Left: HoloCard */}
         <div className="flex justify-center lg:justify-start">
-          <HoloCard agent={agent} />
+          {agent ? (
+            <HoloCard agent={agent} />
+          ) : (
+            <div className="w-full max-w-[300px] h-[420px] rounded-2xl border border-border/50 bg-card/95 overflow-hidden">
+              <Skeleton className="h-40 w-full" />
+              <div className="p-5 flex flex-col gap-3">
+                <Skeleton className="h-6 w-40" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-7 w-16" />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right: Basic Information Panel */}
-        <BasicInfoPanel agent={agent} />
+        {agent ? (
+          <BasicInfoPanel agent={agent} />
+        ) : (
+          <div className="rounded-xl border border-border/50 bg-card/60 p-5 flex flex-col gap-3">
+            <Skeleton className="h-5 w-36" />
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex items-center justify-between py-2">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Tabs */}
@@ -189,7 +214,7 @@ export default function AgentDetailPage({
             </TabsTrigger>
             <TabsTrigger value="feedback" className="gap-1">
               Feedback
-              {agent.feedback_count > 0 && (
+              {agent && agent.feedback_count > 0 && (
                 <span className="rounded-full bg-primary/20 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
                   {agent.feedback_count}
                 </span>
@@ -204,13 +229,22 @@ export default function AgentDetailPage({
           </TabsList>
 
           <TabsContent value="overview">
-            <OverviewTab
-              agent={agent}
-              agentId={agentId}
-              chainId={chainId}
-              agentNumericId={agentNumericId}
-              onSwitchToFeedback={handleSwitchToFeedback}
-            />
+            {agent ? (
+              <OverviewTab
+                agent={agent}
+                agentId={agentId}
+                chainId={chainId}
+                agentNumericId={agentNumericId}
+                onSwitchToFeedback={handleSwitchToFeedback}
+              />
+            ) : (
+              <div className="py-6 flex flex-col gap-4">
+                <Skeleton className="h-5 w-48" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-32 w-full rounded-xl" />
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="feedback">
@@ -223,16 +257,23 @@ export default function AgentDetailPage({
 
           <TabsContent value="metadata">
             <div className="py-4">
-              {agent.metadata ? (
-                <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
-                  <h3 className="text-sm font-semibold text-foreground">Raw Metadata</h3>
-                  <pre className="overflow-x-auto rounded-lg bg-muted/50 p-4 text-xs text-foreground/80 font-mono leading-relaxed">
-                    {JSON.stringify(agent.metadata, null, 2)}
-                  </pre>
-                </div>
+              {agent ? (
+                agent.metadata ? (
+                  <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
+                    <h3 className="text-sm font-semibold text-foreground">Raw Metadata</h3>
+                    <pre className="overflow-x-auto rounded-lg bg-muted/50 p-4 text-xs text-foreground/80 font-mono leading-relaxed">
+                      {JSON.stringify(agent.metadata, null, 2)}
+                    </pre>
+                  </div>
+                ) : (
+                  <div className="py-12 text-center">
+                    <p className="text-sm text-muted-foreground">No metadata available.</p>
+                  </div>
+                )
               ) : (
-                <div className="py-12 text-center">
-                  <p className="text-sm text-muted-foreground">No metadata available.</p>
+                <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
+                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-40 w-full rounded-lg" />
                 </div>
               )}
             </div>

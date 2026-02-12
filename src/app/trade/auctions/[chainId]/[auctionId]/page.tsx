@@ -28,6 +28,7 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
 } from 'wagmi'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -430,21 +431,6 @@ function ProvenanceSection({ agent, chainId }: { agent: AgentDetail; chainId: nu
 }
 
 // ============================================================
-// Loading Skeleton
-// ============================================================
-
-function LoadingSkeleton() {
-  return (
-    <div className="mx-auto max-w-7xl space-y-6 px-4 py-8">
-      <Skeleton className="h-9 w-36 rounded-lg" />
-      <div className="flex items-center justify-center py-24">
-        <Loader2 className="size-8 animate-spin text-primary" />
-      </div>
-    </div>
-  )
-}
-
-// ============================================================
 // Error State
 // ============================================================
 
@@ -492,6 +478,7 @@ export default function AuctionDetailPage({
 
   // Wallet
   const { address, isConnected } = useAccount()
+  const { openConnectModal } = useConnectModal()
 
   const { data, isLoading, error } = useAuctionDetail(id)
   const auction = data?.auction
@@ -613,14 +600,13 @@ export default function AuctionDetailPage({
     }
   }, [buyNowError])
 
-  if (isLoading) return <LoadingSkeleton />
-  if (error || !auction) return <ErrorState id={id} />
+  if (error && !isLoading) return <ErrorState id={id} />
 
-  const status = getAuctionStatus(auction)
-  const token = getTokenLabel(auction.payment_token)
-  const hasBids = auction.highest_bid !== null && parseFloat(auction.highest_bid) > 0
-  const hasReserve = parseFloat(auction.reserve_price) > 0
-  const hasBuyNow = parseFloat(auction.buy_now_price) > 0
+  const status = auction ? getAuctionStatus(auction) : 'upcoming'
+  const token = auction ? getTokenLabel(auction.payment_token) : ''
+  const hasBids = auction ? auction.highest_bid !== null && parseFloat(auction.highest_bid) > 0 : false
+  const hasReserve = auction ? parseFloat(auction.reserve_price) > 0 : false
+  const hasBuyNow = auction ? parseFloat(auction.buy_now_price) > 0 : false
   const isBidding = isBidPending || isBidConfirming
   const isBuyingNow = isBuyNowPending || isBuyNowConfirming
 
@@ -638,16 +624,28 @@ export default function AuctionDetailPage({
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_1fr]">
         {/* ============ LEFT COLUMN — HoloCard only (sticky) ============ */}
         <div className="flex justify-center lg:sticky lg:top-8 lg:self-start lg:justify-start">
-          <HoloCard
-            image={agent?.image ?? auction.agent_image}
-            name={auction.agent_name || agent?.name || `Agent #${auction.token_id}`}
-            description={agent?.description ?? null}
-            score={agent?.reputation_score ?? null}
-            feedbackCount={agent?.feedback_count ?? 0}
-            chainId={auction.chain_id}
-            owner={auction.seller}
-            agent={agent ?? undefined}
-          />
+          {auction ? (
+            <HoloCard
+              image={agent?.image ?? auction.agent_image}
+              name={auction.agent_name || agent?.name || `Agent #${auction.token_id}`}
+              description={agent?.description ?? null}
+              score={agent?.reputation_score ?? null}
+              feedbackCount={agent?.feedback_count ?? 0}
+              chainId={auction.chain_id}
+              owner={auction.seller}
+              agent={agent ?? undefined}
+            />
+          ) : (
+            <div className="w-full max-w-[300px] h-[420px] rounded-2xl border border-border/50 bg-card/95 overflow-hidden">
+              <Skeleton className="h-40 w-full" />
+              <div className="p-5 flex flex-col gap-3">
+                <Skeleton className="h-6 w-40" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-7 w-16" />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ============ RIGHT COLUMN — everything ============ */}
@@ -659,196 +657,243 @@ export default function AuctionDetailPage({
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-                {auction.agent_name || `Agent #${auction.token_id}`}
+                {auction ? (auction.agent_name || `Agent #${auction.token_id}`) : <Skeleton className="inline-block h-8 w-48" />}
               </h1>
-              <StatusBadge status={status} />
-              <Badge variant="outline" className={cn(
-                'text-xs',
-                chainId === 143
-                  ? 'border-green-500/30 bg-green-500/10 text-green-400'
-                  : 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400'
-              )}>
-                {getChainLabel(chainId)}
-              </Badge>
+              {auction ? (
+                <>
+                  <StatusBadge status={status} />
+                  <Badge variant="outline" className={cn(
+                    'text-xs',
+                    chainId === 143
+                      ? 'border-green-500/30 bg-green-500/10 text-green-400'
+                      : 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400'
+                  )}>
+                    {getChainLabel(chainId)}
+                  </Badge>
+                </>
+              ) : (
+                <>
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-5 w-24 rounded-full" />
+                </>
+              )}
             </div>
-            <p className="text-sm text-muted-foreground">
-              Sold by{' '}
-              <a
-                href={getExplorerUrl(chainId, auction.seller)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 font-mono text-primary/80 hover:text-primary transition-colors"
-              >
-                {formatAddress(auction.seller)}
-                <ExternalLink className="size-2.5" />
-              </a>
-            </p>
+            {auction ? (
+              <p className="text-sm text-muted-foreground">
+                Sold by{' '}
+                <a
+                  href={getExplorerUrl(chainId, auction.seller)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 font-mono text-primary/80 hover:text-primary transition-colors"
+                >
+                  {formatAddress(auction.seller)}
+                  <ExternalLink className="size-2.5" />
+                </a>
+              </p>
+            ) : (
+              <Skeleton className="h-4 w-48" />
+            )}
           </div>
 
           {/* Main auction info card with CTA */}
           <div className="rounded-xl border border-border/50 bg-card/60 p-6 space-y-5">
-            {/* Bid + Countdown row */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div className="flex flex-col gap-1">
-                <p className="text-xs text-muted-foreground">
-                  {hasBids ? 'Current Bid' : 'Starting Bid'}
-                </p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-foreground">
-                    {formatPrice(hasBids ? auction.highest_bid! : auction.start_price)}
-                  </span>
-                  <span className="text-lg text-muted-foreground">{token}</span>
-                </div>
-                {hasBids && auction.highest_bidder && (
-                  <p className="text-xs text-muted-foreground">
-                    by{' '}
-                    <a
-                      href={getExplorerUrl(chainId, auction.highest_bidder)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-mono text-primary/80 hover:text-primary"
-                    >
-                      {formatAddress(auction.highest_bidder)}
-                    </a>
-                  </p>
-                )}
-              </div>
-
-              <CountdownDisplay endTime={auction.end_time} startTime={auction.start_time} />
-            </div>
-
-            {hasReserve && <ReservePriceIndicator auction={auction} token={token} />}
-
-            {/* Place Bid CTA */}
-            {status === 'live' && (
-              <div className="space-y-3">
-                {!isConnected ? (
-                  <div className="flex items-center gap-2 rounded-lg bg-muted/30 border border-border/50 p-3">
-                    <Wallet className="size-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Connect your wallet to place a bid</span>
-                  </div>
-                ) : isSeller ? (
-                  <div className="flex items-center gap-2 rounded-lg bg-muted/30 border border-border/50 p-3">
-                    <Gavel className="size-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">You are the seller — cannot bid</span>
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <Input
-                          type="number"
-                          placeholder={`Min bid: ${formatPrice(hasBids ? auction.highest_bid! : auction.start_price)} ${token}`}
-                          value={bidAmount}
-                          onChange={(e) => setBidAmount(e.target.value)}
-                          className="pr-14 bg-muted/30 border-border/50"
-                          disabled={isBidding}
-                        />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{token}</span>
-                      </div>
-                      <Button
-                        className="gap-2 px-6"
-                        onClick={handlePlaceBid}
-                        disabled={isBidding || !bidAmount || parseFloat(bidAmount) <= 0}
-                      >
-                        {isBidding ? (
-                          <>
-                            <Loader2 className="size-4 animate-spin" />
-                            {isBidPending ? 'Confirm…' : 'Pending…'}
-                          </>
-                        ) : (
-                          <>
-                            <Gavel className="size-4" />
-                            Place Bid
-                          </>
-                        )}
-                      </Button>
+            {auction ? (
+              <>
+                {/* Bid + Countdown row */}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xs text-muted-foreground">
+                      {hasBids ? 'Current Bid' : 'Starting Bid'}
+                    </p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-foreground">
+                        {formatPrice(hasBids ? auction.highest_bid! : auction.start_price)}
+                      </span>
+                      <span className="text-lg text-muted-foreground">{token}</span>
                     </div>
-                    {hasBuyNow && (
-                      <Button
-                        variant="outline"
-                        className="w-full gap-2 border-primary/30 text-primary hover:bg-primary/10"
-                        onClick={handleBuyNow}
-                        disabled={isBuyingNow}
-                      >
-                        {isBuyingNow ? (
-                          <>
-                            <Loader2 className="size-4 animate-spin" />
-                            {isBuyNowPending ? 'Confirm in Wallet…' : 'Confirming…'}
-                          </>
-                        ) : (
-                          <>
-                            <ShoppingCart className="size-4" />
-                            Buy Now for {formatPrice(auction.buy_now_price)} {token}
-                          </>
-                        )}
-                      </Button>
+                    {hasBids && auction.highest_bidder && (
+                      <p className="text-xs text-muted-foreground">
+                        by{' '}
+                        <a
+                          href={getExplorerUrl(chainId, auction.highest_bidder)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-mono text-primary/80 hover:text-primary"
+                        >
+                          {formatAddress(auction.highest_bidder)}
+                        </a>
+                      </p>
                     )}
-                  </>
-                )}
-              </div>
-            )}
+                  </div>
 
-            {status === 'ended' && auction.winner && (
-              <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-4 flex items-center gap-3">
-                <Trophy className="size-5 text-yellow-400" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">Auction Won</p>
-                  <p className="text-xs text-muted-foreground">
-                    Winner:{' '}
-                    <a
-                      href={getExplorerUrl(chainId, auction.winner)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-mono text-primary/80 hover:text-primary"
-                    >
-                      {formatAddress(auction.winner)}
-                    </a>
-                    {auction.settled_price && (
-                      <> — Settled at {formatPrice(auction.settled_price)} {token}</>
-                    )}
-                  </p>
+                  <CountdownDisplay endTime={auction.end_time} startTime={auction.start_time} />
                 </div>
-              </div>
-            )}
 
-            {status === 'upcoming' && (
-              <div className="flex flex-col items-center gap-1 rounded-lg bg-yellow-500/10 border border-yellow-500/20 p-4 text-center">
-                <Clock className="size-5 text-yellow-400" />
-                <p className="text-sm font-medium text-foreground">Auction Not Started</p>
-                <p className="text-xs text-muted-foreground">
-                  Starts {new Date(auction.start_time * 1000).toLocaleString()}
-                </p>
-              </div>
-            )}
+                {hasReserve && <ReservePriceIndicator auction={auction} token={token} />}
 
-            {/* Stats grid */}
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Start Bid</p>
-                <p className="text-sm font-semibold text-foreground">{formatPrice(auction.start_price)}</p>
-                <p className="text-[10px] text-muted-foreground">{token}</p>
-              </div>
-              <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Reserve</p>
-                <p className="text-sm font-semibold text-foreground">
-                  {hasReserve ? formatPrice(auction.reserve_price) : '—'}
-                </p>
-                {hasReserve && <p className="text-[10px] text-muted-foreground">{token}</p>}
-              </div>
-              <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Buy Now</p>
-                <p className="text-sm font-semibold text-foreground">
-                  {hasBuyNow ? formatPrice(auction.buy_now_price) : '—'}
-                </p>
-                {hasBuyNow && <p className="text-[10px] text-muted-foreground">{token}</p>}
-              </div>
-              <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Bids</p>
-                <p className="text-sm font-semibold text-foreground">{auction.bid_count ?? 0}</p>
-                <p className="text-[10px] text-muted-foreground">total</p>
-              </div>
-            </div>
+                {/* Place Bid CTA */}
+                {status === 'live' && (
+                  <div className="space-y-3">
+                    {!isConnected ? (
+                      <Button
+                        size="lg"
+                        className="w-full gap-2 text-base font-semibold"
+                        onClick={openConnectModal}
+                      >
+                        <Wallet className="size-5" />
+                        Connect Wallet to Bid
+                      </Button>
+                    ) : isSeller ? (
+                      <div className="flex items-center gap-2 rounded-lg bg-muted/30 border border-border/50 p-3">
+                        <Gavel className="size-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">You are the seller — cannot bid</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex gap-2">
+                          <div className="relative flex-1">
+                            <Input
+                              type="number"
+                              placeholder={`Min bid: ${formatPrice(hasBids ? auction.highest_bid! : auction.start_price)} ${token}`}
+                              value={bidAmount}
+                              onChange={(e) => setBidAmount(e.target.value)}
+                              className="pr-14 bg-muted/30 border-border/50"
+                              disabled={isBidding}
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{token}</span>
+                          </div>
+                          <Button
+                            className="gap-2 px-6"
+                            onClick={handlePlaceBid}
+                            disabled={isBidding || !bidAmount || parseFloat(bidAmount) <= 0}
+                          >
+                            {isBidding ? (
+                              <>
+                                <Loader2 className="size-4 animate-spin" />
+                                {isBidPending ? 'Confirm…' : 'Pending…'}
+                              </>
+                            ) : (
+                              <>
+                                <Gavel className="size-4" />
+                                Place Bid
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                        {hasBuyNow && (
+                          <Button
+                            variant="outline"
+                            className="w-full gap-2 border-primary/30 text-primary hover:bg-primary/10"
+                            onClick={handleBuyNow}
+                            disabled={isBuyingNow}
+                          >
+                            {isBuyingNow ? (
+                              <>
+                                <Loader2 className="size-4 animate-spin" />
+                                {isBuyNowPending ? 'Confirm in Wallet…' : 'Confirming…'}
+                              </>
+                            ) : (
+                              <>
+                                <ShoppingCart className="size-4" />
+                                Buy Now for {formatPrice(auction.buy_now_price)} {token}
+                              </>
+                            )}
+                          </Button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {status === 'ended' && auction.winner && (
+                  <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-4 flex items-center gap-3">
+                    <Trophy className="size-5 text-yellow-400" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Auction Won</p>
+                      <p className="text-xs text-muted-foreground">
+                        Winner:{' '}
+                        <a
+                          href={getExplorerUrl(chainId, auction.winner)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-mono text-primary/80 hover:text-primary"
+                        >
+                          {formatAddress(auction.winner)}
+                        </a>
+                        {auction.settled_price && (
+                          <> — Settled at {formatPrice(auction.settled_price)} {token}</>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {status === 'upcoming' && (
+                  <div className="flex flex-col items-center gap-1 rounded-lg bg-yellow-500/10 border border-yellow-500/20 p-4 text-center">
+                    <Clock className="size-5 text-yellow-400" />
+                    <p className="text-sm font-medium text-foreground">Auction Not Started</p>
+                    <p className="text-xs text-muted-foreground">
+                      Starts {new Date(auction.start_time * 1000).toLocaleString()}
+                    </p>
+                  </div>
+                )}
+
+                {/* Stats grid */}
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Start Bid</p>
+                    <p className="text-sm font-semibold text-foreground">{formatPrice(auction.start_price)}</p>
+                    <p className="text-[10px] text-muted-foreground">{token}</p>
+                  </div>
+                  <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Reserve</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {hasReserve ? formatPrice(auction.reserve_price) : '—'}
+                    </p>
+                    {hasReserve && <p className="text-[10px] text-muted-foreground">{token}</p>}
+                  </div>
+                  <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Buy Now</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {hasBuyNow ? formatPrice(auction.buy_now_price) : '—'}
+                    </p>
+                    {hasBuyNow && <p className="text-[10px] text-muted-foreground">{token}</p>}
+                  </div>
+                  <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Bids</p>
+                    <p className="text-sm font-semibold text-foreground">{auction.bid_count ?? 0}</p>
+                    <p className="text-[10px] text-muted-foreground">total</p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Skeleton for bid + countdown */}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                  <div className="flex flex-col gap-2">
+                    <Skeleton className="h-3 w-20" />
+                    <Skeleton className="h-9 w-48" />
+                  </div>
+                  <div className="flex flex-col gap-2 items-end">
+                    <Skeleton className="h-3 w-16" />
+                    <Skeleton className="h-8 w-40" />
+                  </div>
+                </div>
+                {/* Skeleton for CTA */}
+                <Skeleton className="h-10 w-full rounded-lg" />
+                {/* Skeleton for stats */}
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
+                      <Skeleton className="mx-auto h-3 w-12" />
+                      <Skeleton className="mx-auto h-5 w-16" />
+                      <Skeleton className="mx-auto h-3 w-8" />
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           {/* Bid History */}
@@ -861,7 +906,21 @@ export default function AuctionDetailPage({
                 </span>
               )}
             </h3>
-            <BidHistoryTable bids={bids} chainId={chainId} token={token} />
+            {auction ? (
+              <BidHistoryTable bids={bids} chainId={chainId} token={token} />
+            ) : (
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between py-2">
+                    <Skeleton className="h-4 w-8" />
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-3 w-3" />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Agent Properties */}
@@ -878,103 +937,116 @@ export default function AuctionDetailPage({
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               ⚡ Item Activity
             </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border/30">
-                    <th className="pb-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Event</th>
-                    <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Price</th>
-                    <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">From</th>
-                    <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/20">
-                  {/* Auction creation event */}
-                  <tr className="hover:bg-muted/20 transition-colors">
-                    <td className="py-2.5">
-                      <Badge variant="outline" className="text-[10px] border-blue-500/30 bg-blue-500/10 text-blue-400">
-                        Created
-                      </Badge>
-                    </td>
-                    <td className="py-2.5 text-right text-xs text-foreground">
-                      {formatPrice(auction.start_price)} {token}
-                    </td>
-                    <td className="py-2.5 text-right">
-                      <a
-                        href={getExplorerUrl(chainId, auction.seller)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-mono text-xs text-primary/80 hover:text-primary"
-                      >
-                        {formatAddress(auction.seller)}
-                      </a>
-                    </td>
-                    <td className="py-2.5 text-right text-xs text-muted-foreground">
-                      {formatDistanceToNowSmart(new Date(auction.block_timestamp), { addSuffix: true })}
-                    </td>
-                  </tr>
-
-                  {/* Bid events */}
-                  {[...bids].sort((a, b) => new Date(b.block_timestamp).getTime() - new Date(a.block_timestamp).getTime()).map((bid) => (
-                    <tr key={`activity-${bid.id}`} className="hover:bg-muted/20 transition-colors">
-                      <td className="py-2.5">
-                        <Badge variant="outline" className="text-[10px] border-green-500/30 bg-green-500/10 text-green-400">
-                          Bid
-                        </Badge>
-                      </td>
-                      <td className="py-2.5 text-right text-xs text-foreground">
-                        {formatPrice(bid.amount)} {token}
-                      </td>
-                      <td className="py-2.5 text-right">
-                        <a
-                          href={getExplorerUrl(chainId, bid.bidder)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-mono text-xs text-primary/80 hover:text-primary"
-                        >
-                          {formatAddress(bid.bidder)}
-                        </a>
-                      </td>
-                      <td className="py-2.5 text-right text-xs text-muted-foreground">
-                        {formatDistanceToNowSmart(new Date(bid.block_timestamp), { addSuffix: true })}
-                      </td>
+            {auction ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border/30">
+                      <th className="pb-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Event</th>
+                      <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Price</th>
+                      <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">From</th>
+                      <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
                     </tr>
-                  ))}
-
-                  {/* Settled event */}
-                  {status === 'ended' && auction.winner && (
+                  </thead>
+                  <tbody className="divide-y divide-border/20">
+                    {/* Auction creation event */}
                     <tr className="hover:bg-muted/20 transition-colors">
                       <td className="py-2.5">
-                        <Badge variant="outline" className="text-[10px] border-yellow-500/30 bg-yellow-500/10 text-yellow-400">
-                          Settled
+                        <Badge variant="outline" className="text-[10px] border-blue-500/30 bg-blue-500/10 text-blue-400">
+                          Created
                         </Badge>
                       </td>
                       <td className="py-2.5 text-right text-xs text-foreground">
-                        {auction.settled_price ? `${formatPrice(auction.settled_price)} ${token}` : '—'}
+                        {formatPrice(auction.start_price)} {token}
                       </td>
                       <td className="py-2.5 text-right">
                         <a
-                          href={getExplorerUrl(chainId, auction.winner)}
+                          href={getExplorerUrl(chainId, auction.seller)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="font-mono text-xs text-primary/80 hover:text-primary"
                         >
-                          {formatAddress(auction.winner)}
+                          {formatAddress(auction.seller)}
                         </a>
                       </td>
                       <td className="py-2.5 text-right text-xs text-muted-foreground">
-                        {formatDistanceToNowSmart(new Date(auction.updated_at), { addSuffix: true })}
+                        {formatDistanceToNowSmart(new Date(auction.block_timestamp), { addSuffix: true })}
                       </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-              {bids.length === 0 && status !== 'ended' && (
-                <div className="py-6 text-center text-sm text-muted-foreground">
-                  No activity yet
-                </div>
-              )}
-            </div>
+
+                    {/* Bid events */}
+                    {[...bids].sort((a, b) => new Date(b.block_timestamp).getTime() - new Date(a.block_timestamp).getTime()).map((bid) => (
+                      <tr key={`activity-${bid.id}`} className="hover:bg-muted/20 transition-colors">
+                        <td className="py-2.5">
+                          <Badge variant="outline" className="text-[10px] border-green-500/30 bg-green-500/10 text-green-400">
+                            Bid
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 text-right text-xs text-foreground">
+                          {formatPrice(bid.amount)} {token}
+                        </td>
+                        <td className="py-2.5 text-right">
+                          <a
+                            href={getExplorerUrl(chainId, bid.bidder)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-mono text-xs text-primary/80 hover:text-primary"
+                          >
+                            {formatAddress(bid.bidder)}
+                          </a>
+                        </td>
+                        <td className="py-2.5 text-right text-xs text-muted-foreground">
+                          {formatDistanceToNowSmart(new Date(bid.block_timestamp), { addSuffix: true })}
+                        </td>
+                      </tr>
+                    ))}
+
+                    {/* Settled event */}
+                    {status === 'ended' && auction.winner && (
+                      <tr className="hover:bg-muted/20 transition-colors">
+                        <td className="py-2.5">
+                          <Badge variant="outline" className="text-[10px] border-yellow-500/30 bg-yellow-500/10 text-yellow-400">
+                            Settled
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 text-right text-xs text-foreground">
+                          {auction.settled_price ? `${formatPrice(auction.settled_price)} ${token}` : '—'}
+                        </td>
+                        <td className="py-2.5 text-right">
+                          <a
+                            href={getExplorerUrl(chainId, auction.winner)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-mono text-xs text-primary/80 hover:text-primary"
+                          >
+                            {formatAddress(auction.winner)}
+                          </a>
+                        </td>
+                        <td className="py-2.5 text-right text-xs text-muted-foreground">
+                          {formatDistanceToNowSmart(new Date(auction.updated_at), { addSuffix: true })}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                {bids.length === 0 && status !== 'ended' && (
+                  <div className="py-6 text-center text-sm text-muted-foreground">
+                    No activity yet
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between py-2">
+                    <Skeleton className="h-5 w-16 rounded-full" />
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

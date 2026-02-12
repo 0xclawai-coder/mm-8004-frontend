@@ -30,6 +30,7 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
 } from 'wagmi'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -143,21 +144,6 @@ function CopyButton({ value, className }: { value: string; className?: string })
     >
       {copied ? <Check className="size-3 text-green-400" /> : <Copy className="size-3" />}
     </button>
-  )
-}
-
-// ============================================================
-// Loading Skeleton
-// ============================================================
-
-function LoadingSkeleton() {
-  return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8">
-      <Skeleton className="h-9 w-36 rounded-lg" />
-      <div className="flex items-center justify-center py-24">
-        <Loader2 className="size-8 animate-spin text-primary" />
-      </div>
-    </div>
   )
 }
 
@@ -1031,6 +1017,7 @@ export default function ListingDetailPage({
 
   // Wallet
   const { address, isConnected } = useAccount()
+  const { openConnectModal } = useConnectModal()
 
   // Fetch listing
   const { data: listing, isLoading: listingLoading, error: listingError } = useListing(id)
@@ -1123,16 +1110,12 @@ export default function ListingDetailPage({
     }
   }, [buyError])
 
-  if (listingLoading) {
-    return <LoadingSkeleton />
-  }
-
-  if (listingError || !listing) {
+  if (listingError && !listingLoading) {
     return <ErrorState id={id} />
   }
 
-  const isActive = listing.status === 'Active'
-  const isExpired = listing.expiry > 0 && listing.expiry * 1000 < Date.now()
+  const isActive = listing?.status === 'Active'
+  const isExpired = listing ? listing.expiry > 0 && listing.expiry * 1000 < Date.now() : false
   const isBuying = isBuyPending || isBuyConfirming
 
   return (
@@ -1149,16 +1132,28 @@ export default function ListingDetailPage({
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_1fr]">
         {/* ====================== LEFT COLUMN — HoloCard only ====================== */}
         <div className="flex justify-center lg:sticky lg:top-8 lg:self-start lg:justify-start">
-          <HoloCard
-            image={agent?.image ?? listing.agent_image}
-            name={listing.agent_name || agent?.name || `Agent #${listing.token_id}`}
-            description={agent?.description ?? null}
-            score={agent?.reputation_score ?? null}
-            feedbackCount={agent?.feedback_count ?? 0}
-            chainId={listing.chain_id}
-            owner={listing.seller}
-            agent={agent ?? undefined}
-          />
+          {listing ? (
+            <HoloCard
+              image={agent?.image ?? listing.agent_image}
+              name={listing.agent_name || agent?.name || `Agent #${listing.token_id}`}
+              description={agent?.description ?? null}
+              score={agent?.reputation_score ?? null}
+              feedbackCount={agent?.feedback_count ?? 0}
+              chainId={listing.chain_id}
+              owner={listing.seller}
+              agent={agent ?? undefined}
+            />
+          ) : (
+            <div className="w-full max-w-[300px] h-[420px] rounded-2xl border border-border/50 bg-card/95 overflow-hidden">
+              <Skeleton className="h-40 w-full" />
+              <div className="p-5 flex flex-col gap-3">
+                <Skeleton className="h-6 w-40" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-7 w-16" />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ====================== RIGHT COLUMN — everything ====================== */}
@@ -1169,183 +1164,261 @@ export default function ListingDetailPage({
               <span className="text-xs font-semibold uppercase tracking-widest text-primary">
                 MOLT MARKETPLACE
               </span>
-              <Badge
-                variant="outline"
-                className={cn(
-                  'text-[10px]',
-                  listing.chain_id === 143
-                    ? 'border-green-500/30 bg-green-500/10 text-green-400'
-                    : 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
-                )}
-              >
-                {getChainShortLabel(listing.chain_id)}
-              </Badge>
-              <Badge variant="outline" className={cn('text-[10px]', getStatusColor(listing.status))}>
-                {listing.status}
-              </Badge>
+              {listing ? (
+                <>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      'text-[10px]',
+                      listing.chain_id === 143
+                        ? 'border-green-500/30 bg-green-500/10 text-green-400'
+                        : 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
+                    )}
+                  >
+                    {getChainShortLabel(listing.chain_id)}
+                  </Badge>
+                  <Badge variant="outline" className={cn('text-[10px]', getStatusColor(listing.status))}>
+                    {listing.status}
+                  </Badge>
+                </>
+              ) : (
+                <>
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-5 w-14 rounded-full" />
+                </>
+              )}
             </div>
 
             <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-              {listing.agent_name || agent?.name || `Agent #${listing.token_id}`}
-              <span className="text-lg text-muted-foreground font-normal"> #{listing.token_id}</span>
+              {listing ? (
+                <>
+                  {listing.agent_name || agent?.name || `Agent #${listing.token_id}`}
+                  <span className="text-lg text-muted-foreground font-normal"> #{listing.token_id}</span>
+                </>
+              ) : (
+                <Skeleton className="inline-block h-8 w-64" />
+              )}
             </h1>
 
-            {agent?.description && (
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
-                {agent.description}
-              </p>
+            {listing ? (
+              agent?.description && (
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
+                  {agent.description}
+                </p>
+              )
+            ) : (
+              <Skeleton className="h-4 w-96" />
             )}
 
             {/* Badges row */}
             <div className="flex flex-wrap items-center gap-2">
-              {agent?.x402_support && (
-                <Badge variant="outline" className="gap-1 text-xs border-cyan-500/30 bg-cyan-500/10 text-cyan-400">
-                  <Shield className="size-3" />
-                  x402 Enabled
-                </Badge>
+              {listing ? (
+                <>
+                  {agent?.x402_support && (
+                    <Badge variant="outline" className="gap-1 text-xs border-cyan-500/30 bg-cyan-500/10 text-cyan-400">
+                      <Shield className="size-3" />
+                      x402 Enabled
+                    </Badge>
+                  )}
+                  {agent?.active && (
+                    <Badge variant="outline" className="gap-1 text-xs border-green-500/30 bg-green-500/10 text-green-400">
+                      <Zap className="size-3" />
+                      Active
+                    </Badge>
+                  )}
+                  {agent?.categories?.map((cat) => (
+                    <Badge key={cat} variant="outline" className="gap-1 text-xs border-primary/30 bg-primary/10 text-primary">
+                      <Tag className="size-3" />
+                      {cat}
+                    </Badge>
+                  ))}
+                </>
+              ) : (
+                <>
+                  <Skeleton className="h-5 w-20 rounded-full" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </>
               )}
-              {agent?.active && (
-                <Badge variant="outline" className="gap-1 text-xs border-green-500/30 bg-green-500/10 text-green-400">
-                  <Zap className="size-3" />
-                  Active
-                </Badge>
-              )}
-              {agent?.categories?.map((cat) => (
-                <Badge key={cat} variant="outline" className="gap-1 text-xs border-primary/30 bg-primary/10 text-primary">
-                  <Tag className="size-3" />
-                  {cat}
-                </Badge>
-              ))}
             </div>
 
             {/* Seller */}
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span>Listed by</span>
-              <a
-                href={getExplorerUrl(listing.chain_id, listing.seller)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-0.5 font-mono text-primary/80 hover:text-primary transition-colors"
-              >
-                {formatAddress(listing.seller)}
-                <ExternalLink className="size-2.5" />
-              </a>
-              <span className="text-muted-foreground/50">·</span>
-              <TimeCounter targetTime={new Date(listing.block_timestamp)} />
+              {listing ? (
+                <>
+                  <span>Listed by</span>
+                  <a
+                    href={getExplorerUrl(listing.chain_id, listing.seller)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-0.5 font-mono text-primary/80 hover:text-primary transition-colors"
+                  >
+                    {formatAddress(listing.seller)}
+                    <ExternalLink className="size-2.5" />
+                  </a>
+                  <span className="text-muted-foreground/50">·</span>
+                  <TimeCounter targetTime={new Date(listing.block_timestamp)} />
+                </>
+              ) : (
+                <>
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-3 w-24" />
+                </>
+              )}
             </div>
           </div>
 
           {/* Price Box + CTA */}
           <Card className="border-border/50 bg-card/80 p-6 space-y-4">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Clock className="size-3" />
-              {listing.expiry > 0 ? (
-                isExpired ? (
-                  <span className="text-red-400">Listing expired</span>
-                ) : (
-                  <span>
-                    Expires <TimeCounter targetTime={new Date(listing.expiry * 1000)} />
-                  </span>
-                )
-              ) : (
-                <span>No expiration</span>
-              )}
-            </div>
-            <div className="flex flex-col gap-1">
-              <p className="text-sm text-muted-foreground">Current Price</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-foreground">
-                  {formatPrice(listing.price)}
-                </span>
-                <span className="text-lg text-muted-foreground">{getTokenLabel(listing.payment_token)}</span>
-              </div>
-            </div>
-            {isActive && !isExpired && (
-              <div className="flex gap-3 pt-2">
-                {!isConnected ? (
-                  <Button size="lg" className="flex-1 gap-2 text-base font-semibold" disabled>
-                    <Wallet className="size-5" />
-                    Connect Wallet to Buy
-                  </Button>
-                ) : isSeller ? (
-                  <Button size="lg" className="flex-1 gap-2 text-base font-semibold" disabled>
-                    <ShoppingCart className="size-5" />
-                    Your Listing
-                  </Button>
-                ) : (
-                  <>
-                    <Button
-                      size="lg"
-                      className="flex-1 gap-2 text-base font-semibold"
-                      onClick={handleBuy}
-                      disabled={isBuying}
-                    >
-                      {isBuying ? (
-                        <>
-                          <Loader2 className="size-5 animate-spin" />
-                          {isBuyPending ? 'Confirm in Wallet…' : 'Confirming…'}
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingCart className="size-5" />
-                          Buy Now
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="flex-1 gap-2 text-base font-semibold border-border/50"
-                      onClick={handleMakeOffer}
-                    >
-                      <HandCoins className="size-5" />
-                      Make Offer
-                    </Button>
-                  </>
+            {listing ? (
+              <>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Clock className="size-3" />
+                  {listing.expiry > 0 ? (
+                    isExpired ? (
+                      <span className="text-red-400">Listing expired</span>
+                    ) : (
+                      <span>
+                        Expires <TimeCounter targetTime={new Date(listing.expiry * 1000)} />
+                      </span>
+                    )
+                  ) : (
+                    <span>No expiration</span>
+                  )}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm text-muted-foreground">Current Price</p>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-foreground">
+                      {formatPrice(listing.price)}
+                    </span>
+                    <span className="text-lg text-muted-foreground">{getTokenLabel(listing.payment_token)}</span>
+                  </div>
+                </div>
+                {isActive && !isExpired && (
+                  <div className="flex gap-3 pt-2">
+                    {!isConnected ? (
+                      <Button size="lg" className="flex-1 gap-2 text-base font-semibold" onClick={openConnectModal}>
+                        <Wallet className="size-5" />
+                        Connect Wallet to Buy
+                      </Button>
+                    ) : isSeller ? (
+                      <Button size="lg" className="flex-1 gap-2 text-base font-semibold" disabled>
+                        <ShoppingCart className="size-5" />
+                        Your Listing
+                      </Button>
+                    ) : (
+                      <>
+                        <Button
+                          size="lg"
+                          className="flex-1 gap-2 text-base font-semibold"
+                          onClick={handleBuy}
+                          disabled={isBuying}
+                        >
+                          {isBuying ? (
+                            <>
+                              <Loader2 className="size-5 animate-spin" />
+                              {isBuyPending ? 'Confirm in Wallet…' : 'Confirming…'}
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingCart className="size-5" />
+                              Buy Now
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="flex-1 gap-2 text-base font-semibold border-border/50"
+                          onClick={handleMakeOffer}
+                        >
+                          <HandCoins className="size-5" />
+                          Make Offer
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 )}
-              </div>
-            )}
-            {listing.status === 'Sold' && listing.sold_price && (
-              <div className="flex flex-col gap-1 rounded-lg bg-blue-500/10 border border-blue-500/20 p-3 text-center">
-                <p className="text-xs text-blue-400">Sold for</p>
-                <p className="text-lg font-bold text-blue-400">
-                  {formatPrice(listing.sold_price)} {getTokenLabel(listing.payment_token)}
-                </p>
-                {listing.buyer && (
-                  <p className="text-xs text-muted-foreground">
-                    to <span className="font-mono">{formatAddress(listing.buyer)}</span>
-                  </p>
+                {listing.status === 'Sold' && listing.sold_price && (
+                  <div className="flex flex-col gap-1 rounded-lg bg-blue-500/10 border border-blue-500/20 p-3 text-center">
+                    <p className="text-xs text-blue-400">Sold for</p>
+                    <p className="text-lg font-bold text-blue-400">
+                      {formatPrice(listing.sold_price)} {getTokenLabel(listing.payment_token)}
+                    </p>
+                    {listing.buyer && (
+                      <p className="text-xs text-muted-foreground">
+                        to <span className="font-mono">{formatAddress(listing.buyer)}</span>
+                      </p>
+                    )}
+                  </div>
                 )}
-              </div>
+              </>
+            ) : (
+              <>
+                <Skeleton className="h-4 w-32" />
+                <div className="flex flex-col gap-1">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-9 w-48" />
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <Skeleton className="h-11 flex-1 rounded-lg" />
+                  <Skeleton className="h-11 flex-1 rounded-lg" />
+                </div>
+              </>
             )}
           </Card>
 
           {/* Price Info Bar */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <PriceInfoCard
-              label="Price"
-              value={`${formatPrice(listing.price)} ${getTokenLabel(listing.payment_token)}`}
-              icon={<DollarSign className="size-3" />}
-            />
-            <PriceInfoCard
-              label="Last Sale"
-              value={listing.sold_price ? `${formatPrice(listing.sold_price)} ${getTokenLabel(listing.payment_token)}` : '—'}
-              icon={<TrendingUp className="size-3" />}
-            />
-            <PriceInfoCard
-              label="Owner"
-              value={formatAddress(listing.seller)}
-              icon={<User className="size-3" />}
-            />
-            <PriceInfoCard
-              label="Top Offer"
-              value={topOffer ? `${formatPrice(topOffer.amount)} ${getTokenLabel(topOffer.payment_token)}` : '—'}
-              icon={<HandCoins className="size-3" />}
-            />
+            {listing ? (
+              <>
+                <PriceInfoCard
+                  label="Price"
+                  value={`${formatPrice(listing.price)} ${getTokenLabel(listing.payment_token)}`}
+                  icon={<DollarSign className="size-3" />}
+                />
+                <PriceInfoCard
+                  label="Last Sale"
+                  value={listing.sold_price ? `${formatPrice(listing.sold_price)} ${getTokenLabel(listing.payment_token)}` : '—'}
+                  icon={<TrendingUp className="size-3" />}
+                />
+                <PriceInfoCard
+                  label="Owner"
+                  value={formatAddress(listing.seller)}
+                  icon={<User className="size-3" />}
+                />
+                <PriceInfoCard
+                  label="Top Offer"
+                  value={topOffer ? `${formatPrice(topOffer.amount)} ${getTokenLabel(topOffer.payment_token)}` : '—'}
+                  icon={<HandCoins className="size-3" />}
+                />
+              </>
+            ) : (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="rounded-xl border border-border/30 bg-card/40 p-3 text-center space-y-1">
+                  <Skeleton className="mx-auto h-3 w-12" />
+                  <Skeleton className="mx-auto h-5 w-20" />
+                </div>
+              ))
+            )}
           </div>
 
           {/* Listing Details */}
-          <ListingDetailsSection listing={listing} />
+          {listing ? (
+            <ListingDetailsSection listing={listing} />
+          ) : (
+            <div className="space-y-3">
+              <Skeleton className="h-5 w-32" />
+              <div className="rounded-xl border border-border/30 bg-card/40 divide-y divide-border/20">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between px-4 py-3">
+                    <Skeleton className="h-3 w-16" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Agent Properties (right column = wider, no truncate) */}
           {agentLoading ? (
@@ -1370,22 +1443,40 @@ export default function ListingDetailPage({
           )}
 
           {/* Top Offers */}
-          <TopOffersTable
-            offers={offers}
-            listingPrice={listing.price}
-            isLoading={offersLoading}
-          />
+          {listing ? (
+            <TopOffersTable
+              offers={offers}
+              listingPrice={listing.price}
+              isLoading={offersLoading}
+            />
+          ) : (
+            <div className="space-y-3">
+              <Skeleton className="h-5 w-24" />
+              <div className="rounded-xl border border-border/30 bg-card/40 p-4 space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-12" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Item Activity */}
-          <ItemActivitySection agentId={agentId} />
+          {agentId && <ItemActivitySection agentId={agentId} />}
 
           {/* Provenance */}
-          <ProvenanceSection
-            chainId={listing.chain_id}
-            nftContract={listing.nft_contract}
-            tokenId={listing.token_id}
-            txHash={listing.tx_hash}
-          />
+          {listing && (
+            <ProvenanceSection
+              chainId={listing.chain_id}
+              nftContract={listing.nft_contract}
+              tokenId={listing.token_id}
+              txHash={listing.tx_hash}
+            />
+          )}
         </div>
       </div>
 

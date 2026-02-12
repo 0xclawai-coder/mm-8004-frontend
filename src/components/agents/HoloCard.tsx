@@ -4,6 +4,7 @@ import { useRef, useState, useCallback } from "react";
 import Image from "next/image";
 import { Star, Shield, Zap, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import type { AgentDetail } from "@/types";
 
@@ -94,13 +95,14 @@ export function HoloCard(props: HoloCardProps) {
   const { agent } = props;
 
   // Resolve fields: explicit props win over agent-derived values
+  // Keep undefined when no data at all (for skeleton rendering)
   const image = props.image !== undefined ? props.image : agent?.image ?? null;
-  const name = props.name ?? agent?.name ?? (agent ? `Agent #${agent.agent_id}` : "Unknown");
+  const name = props.name ?? agent?.name ?? (agent ? `Agent #${agent.agent_id}` : undefined);
   const description = props.description !== undefined ? props.description : agent?.description ?? null;
   const score = props.score !== undefined ? props.score : agent?.reputation_score ?? null;
   const feedbackCount = props.feedbackCount ?? agent?.feedback_count ?? 0;
-  const chainId = props.chainId ?? agent?.chain_id ?? 0;
-  const owner = props.owner ?? agent?.owner ?? "";
+  const chainId = props.chainId ?? agent?.chain_id;
+  const owner = props.owner ?? agent?.owner;
 
   // Tags: explicit tags take priority, otherwise auto-derive from agent
   let tags = props.tags;
@@ -195,7 +197,7 @@ export function HoloCard(props: HoloCardProps) {
         />
 
         {/* Card body */}
-        <div className="relative flex h-[420px] flex-col overflow-hidden rounded-2xl border border-border/50 bg-card/95 backdrop-blur-sm">
+        <div className="relative flex flex-col overflow-hidden rounded-2xl border border-border/50 bg-card/95 backdrop-blur-sm">
           {/* Holographic shimmer overlay */}
           <div
             className={cn(
@@ -246,17 +248,19 @@ export function HoloCard(props: HoloCardProps) {
             {image ? (
               <Image
                 src={image}
-                alt={name}
+                alt={name ?? "Agent"}
                 fill
                 className="object-cover"
                 sizes="300px"
               />
-            ) : (
+            ) : name != null ? (
               <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/30 via-violet-dim/30 to-cyan-accent/20">
                 <span className="text-6xl font-bold text-primary/40">
                   {name?.charAt(0)?.toUpperCase() || "?"}
                 </span>
               </div>
+            ) : (
+              <Skeleton className="h-full w-full rounded-none" />
             )}
             {/* Image gradient overlay for text readability */}
             <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-card to-transparent" />
@@ -330,10 +334,10 @@ export function HoloCard(props: HoloCardProps) {
                     : "border-yellow-500/30 bg-yellow-500/10 text-yellow-400",
                 )}
               >
-                {getChainLabel(chainId)}
+                {getChainLabel(chainId ?? 0)}
               </Badge>
               <span className="font-mono text-xs text-muted-foreground">
-                {truncateAddress(owner)}
+                {truncateAddress(owner ?? "")}
               </span>
             </div>
           </div>
