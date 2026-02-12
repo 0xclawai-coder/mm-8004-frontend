@@ -1,5 +1,14 @@
 # Frontend Changelog
 
+## Code Rules
+
+### ⚠️ Gap over Margin — 필수!
+- `margin` (m-, mt-, mb-, ml-, mr-, mx-, my-) 사용 금지
+- 대신 **flex/grid + gap** 시스템 사용
+- `space-y-*`, `space-x-*`도 OK (내부적으로 margin이지만 부모-자식 관계 명확)
+- margin 허용 케이스: 음수 마진(`-m-*`), 예외적 상황만
+- 이유: gap은 부모가 제어 → 레이아웃 일관성, margin은 자식이 제어 → 충돌 위험
+
 ## 2026-02-13
 
 ### Hydration & HTML Fixes

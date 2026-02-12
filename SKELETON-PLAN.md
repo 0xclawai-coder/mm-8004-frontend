@@ -1,5 +1,7 @@
 # Skeleton Pattern Refactoring Plan
 
+> **Rule**: Gap over Margin! See CHANGELOG.md for details.
+
 ## Current State (molt-marketplace)
 - 9 `loading.tsx` files (one per route)
 - Each is a large hand-crafted Skeleton layout mimicking the page structure
