@@ -5,14 +5,103 @@ export const CONTRACT_ADDRESSES = {
     identityRegistry: '0x8004A169FB4a3325136EB29fA0ceB6D2e539a432' as const,
     reputationRegistry: '0x8004BAa17C55a88189AE136b182e5fdA19dE9b63' as const,
     marketplace: '0x3cc802d9885924fD1e8e358B1441Fe8300282cBe' as const,
+    moltMarketplace: '0x48C803679fe35B2b85922B094E963A74680AAd9E' as const,
   },
   // Monad Testnet (chain ID 10143)
   10143: {
     identityRegistry: '0x8004A818BFB912233c491871b3d84c89A494BD9e' as const,
     reputationRegistry: '0x8004B663056A597Dffe9eCcC1965A193B7388713' as const,
     marketplace: '0x3cc802d9885924fD1e8e358B1441Fe8300282cBe' as const,
+    moltMarketplace: '0x0fd6B881b208d2b0b7Be11F1eB005A2873dD5D2e' as const,
   },
 } as const
+
+// ============================================================
+// MoltMarketplace ABI (buy, makeOffer, bid, buyNow)
+// ============================================================
+
+export const NATIVE_TOKEN = '0x0000000000000000000000000000000000000000' as const
+
+export const moltMarketplaceAbi = [
+  // buy(uint256 listingId) payable
+  {
+    name: 'buy',
+    type: 'function',
+    stateMutability: 'payable',
+    inputs: [{ name: 'listingId', type: 'uint256' }],
+    outputs: [],
+  },
+  // makeOffer(address nftContract, uint256 tokenId, address paymentToken, uint256 amount, uint256 expiry) returns (uint256 offerId)
+  {
+    name: 'makeOffer',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'nftContract', type: 'address' },
+      { name: 'tokenId', type: 'uint256' },
+      { name: 'paymentToken', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+      { name: 'expiry', type: 'uint256' },
+    ],
+    outputs: [{ name: 'offerId', type: 'uint256' }],
+  },
+  // bid(uint256 auctionId, uint256 amount) payable
+  {
+    name: 'bid',
+    type: 'function',
+    stateMutability: 'payable',
+    inputs: [
+      { name: 'auctionId', type: 'uint256' },
+      { name: 'amount', type: 'uint256' },
+    ],
+    outputs: [],
+  },
+  // buyNow — settles auction immediately at buyNowPrice (called via bid internally, but exposed here for direct buy-now)
+  // The contract uses bid() with amount >= buyNowPrice to trigger _settleBuyNow,
+  // so we use bid() for buy-now as well.
+] as const
+
+// ERC-20 approve ABI (for offer flow)
+export const erc20Abi = [
+  {
+    name: 'approve',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'spender', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+    outputs: [{ name: '', type: 'bool' }],
+  },
+  {
+    name: 'allowance',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
+    ],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+] as const
+
+/** Parse price strings like "200e+16", "2000000000000000000", etc. to BigInt */
+export function parsePriceToBigInt(priceStr: string): bigint {
+  // Handle scientific notation like "200e+16"
+  const num = Number(priceStr)
+  if (Number.isFinite(num)) {
+    // Convert to integer string to avoid floating point issues
+    return BigInt(num.toLocaleString('fullwide', { useGrouping: false }).split('.')[0])
+  }
+  // Fallback: try direct BigInt parse
+  return BigInt(priceStr)
+}
+
+/** Get MoltMarketplace contract address for a chain */
+export function getMoltMarketplaceAddress(chainId: number): `0x${string}` | undefined {
+  const addrs = CONTRACT_ADDRESSES[chainId as SupportedChainId]
+  return addrs?.moltMarketplace
+}
 
 export type SupportedChainId = keyof typeof CONTRACT_ADDRESSES
 

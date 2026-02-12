@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Web3Provider } from "@/providers/Web3Provider";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -48,6 +49,7 @@ export default function RootLayout({
           <MainLayout>
             {children}
           </MainLayout>
+          <Toaster theme="dark" richColors position="bottom-right" />
         </Web3Provider>
       </body>
     </html>

@@ -1,12 +1,11 @@
 'use client'
 
-import { use, useState } from 'react'
+import { use, useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
   Shield,
   Zap,
-  Star,
   ExternalLink,
   Copy,
   Check,
@@ -22,12 +21,29 @@ import {
   User,
   ShoppingCart,
   HandCoins,
+  Loader2,
+  Wallet,
+  Star,
 } from 'lucide-react'
+import {
+  useAccount,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from 'wagmi'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Input } from '@/components/ui/input'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { EmptyState } from '@/components/ui/empty-state'
 import { cn, formatAddress, formatDistanceToNowSmart, formatPrice, getTokenLabel } from '@/lib/utils'
 import TimeCounter from '@/components/ui/time-counter'
@@ -36,6 +52,15 @@ import { useAgent } from '@/hooks/useAgent'
 import { useAgentActivity } from '@/hooks/useAgentActivity'
 import { useOffers } from '@/hooks/useOffers'
 import { HoloCard } from '@/components/agents/HoloCard'
+import {
+  CONTRACT_ADDRESSES,
+  NATIVE_TOKEN,
+  moltMarketplaceAbi,
+  erc20Abi,
+  parsePriceToBigInt,
+  getMoltMarketplaceAddress,
+  type SupportedChainId,
+} from '@/lib/contracts'
 import type { Activity as ActivityType, AgentDetail, EventCategory, MarketplaceOffer } from '@/types'
 
 // ============================================================
@@ -91,6 +116,10 @@ function getScoreBgColor(score: number): string {
   if (score >= 70) return 'bg-green-500/10 border-green-500/20'
   if (score >= 40) return 'bg-yellow-500/10 border-yellow-500/20'
   return 'bg-red-500/10 border-red-500/20'
+}
+
+function isNativeToken(token: string): boolean {
+  return token.toLowerCase() === NATIVE_TOKEN.toLowerCase()
 }
 
 // ============================================================
@@ -232,14 +261,14 @@ function PriceInfoCard({
 }
 
 // ============================================================
-// Agent Properties Grid
+// Agent Properties Grid (right column — no truncate)
 // ============================================================
 
 function PropertyCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="rounded-xl border border-border/30 bg-card/40 p-3 space-y-1">
       <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{label}</p>
-      <p className="text-sm font-semibold text-foreground truncate">{value}</p>
+      <p className="text-sm font-semibold text-foreground break-words">{value}</p>
       {sub && <p className="text-[10px] text-primary/70">{sub}</p>}
     </div>
   )
@@ -248,34 +277,29 @@ function PropertyCard({ label, value, sub }: { label: string; value: string; sub
 function AgentPropertiesGrid({ agent }: { agent: AgentDetail }) {
   const properties: { label: string; value: string; sub?: string }[] = []
 
-  // Categories
   if (agent.categories && agent.categories.length > 0) {
     agent.categories.forEach((cat) => {
       properties.push({ label: 'Category', value: cat })
     })
   }
 
-  // x402 support
   properties.push({
     label: 'x402 Payment',
     value: agent.x402_support ? 'Supported' : 'Not Supported',
     sub: agent.x402_support ? 'Pay-per-use enabled' : undefined,
   })
 
-  // Reputation
   properties.push({
     label: 'Reputation',
     value: agent.reputation_score !== null ? `${agent.reputation_score.toFixed(1)} / 100` : 'Unrated',
     sub: `${agent.feedback_count} feedback${agent.feedback_count !== 1 ? 's' : ''}`,
   })
 
-  // Status
   properties.push({
     label: 'Status',
     value: agent.active ? 'Active' : 'Inactive',
   })
 
-  // Capabilities
   if (agent.metadata?.capabilities && agent.metadata.capabilities.length > 0) {
     agent.metadata.capabilities.forEach((cap) => {
       properties.push({ label: 'Capability', value: cap })
@@ -288,7 +312,7 @@ function AgentPropertiesGrid({ agent }: { agent: AgentDetail }) {
         <Layers className="size-4 text-primary" />
         Agent Properties
       </h3>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
         {properties.map((p, i) => (
           <PropertyCard key={`${p.label}-${i}`} label={p.label} value={p.value} sub={p.sub} />
         ))}
@@ -329,7 +353,7 @@ function EndpointsSection({ agent }: { agent: AgentDetail }) {
             >
               {ep.protocol.toUpperCase()}
             </Badge>
-            <span className="font-mono text-xs text-muted-foreground truncate flex-1">
+            <span className="font-mono text-xs text-muted-foreground break-all flex-1">
               {ep.url}
             </span>
             <CopyButton value={ep.url} />
@@ -436,12 +460,10 @@ function ProvenanceSection({
 function TopOffersTable({
   offers,
   listingPrice,
-  paymentToken,
   isLoading,
 }: {
   offers: MarketplaceOffer[]
   listingPrice: string
-  paymentToken: string
   isLoading: boolean
 }) {
   const listingPriceNum = parseFloat(listingPrice) / 1e18
@@ -509,6 +531,68 @@ function TopOffersTable({
 }
 
 // ============================================================
+// Listing Details Section
+// ============================================================
+
+function ListingDetailsSection({
+  listing,
+}: {
+  listing: {
+    listing_id: number
+    seller: string
+    chain_id: number
+    nft_contract: string
+    token_id: string
+    payment_token: string
+    price: string
+    expiry: number
+    status: string
+    block_timestamp: string
+  }
+}) {
+  return (
+    <div className="space-y-3">
+      <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+        <CircleDot className="size-4 text-primary" />
+        Listing Details
+      </h3>
+      <div className="rounded-xl border border-border/30 bg-card/40 divide-y divide-border/20">
+        <div className="flex items-center justify-between gap-2 px-4 py-3">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">Listing ID</span>
+          <span className="font-mono text-xs text-foreground">#{listing.listing_id}</span>
+        </div>
+        <div className="flex items-center justify-between gap-2 px-4 py-3">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">Status</span>
+          <Badge variant="outline" className={cn('text-[10px]', getStatusColor(listing.status))}>
+            {listing.status}
+          </Badge>
+        </div>
+        <div className="flex items-center justify-between gap-2 px-4 py-3">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">Payment</span>
+          <span className="text-xs text-foreground">{getTokenLabel(listing.payment_token)}</span>
+        </div>
+        <div className="flex items-center justify-between gap-2 px-4 py-3">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">Listed</span>
+          <span className="text-xs text-muted-foreground">
+            <TimeCounter targetTime={new Date(listing.block_timestamp)} />
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-2 px-4 py-3">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">Expiry</span>
+          <span className="text-xs text-muted-foreground">
+            {listing.expiry > 0
+              ? listing.expiry * 1000 < Date.now()
+                ? 'Expired'
+                : new Date(listing.expiry * 1000).toLocaleDateString()
+              : 'No expiration'}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================================
 // Reputation Score Display
 // ============================================================
 
@@ -547,7 +631,7 @@ function ReputationBadge({ score, feedbackCount }: { score: number | null; feedb
 }
 
 // ============================================================
-// Item Activity (uses agent activity endpoint)
+// Item Activity
 // ============================================================
 
 const ACTIVITY_EVENT_CONFIG: Record<
@@ -794,6 +878,183 @@ function ItemActivitySection({ agentId }: { agentId: string }) {
 }
 
 // ============================================================
+// Make Offer Dialog
+// ============================================================
+
+function MakeOfferDialog({
+  open,
+  onOpenChange,
+  listing,
+  chainId,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  listing: { nft_contract: string; token_id: string; payment_token: string; chain_id: number }
+  chainId: number
+}) {
+  const [offerAmount, setOfferAmount] = useState('')
+  const { address } = useAccount()
+
+  const marketplaceAddress = getMoltMarketplaceAddress(chainId)
+
+  // Step 1: Approve ERC-20 (if needed)
+  const {
+    data: approveTxHash,
+    writeContract: writeApprove,
+    isPending: isApprovePending,
+    reset: resetApprove,
+  } = useWriteContract()
+
+  const { isLoading: isApproveConfirming, isSuccess: isApproveConfirmed } =
+    useWaitForTransactionReceipt({ hash: approveTxHash })
+
+  // Step 2: Make offer
+  const {
+    data: offerTxHash,
+    writeContract: writeOffer,
+    isPending: isOfferPending,
+    error: offerError,
+    reset: resetOffer,
+  } = useWriteContract()
+
+  const { isLoading: isOfferConfirming, isSuccess: isOfferConfirmed } =
+    useWaitForTransactionReceipt({ hash: offerTxHash })
+
+  // Auto-submit offer after approve confirms
+  useEffect(() => {
+    if (isApproveConfirmed && marketplaceAddress && offerAmount) {
+      const amountWei = parsePriceToBigInt((parseFloat(offerAmount) * 1e18).toString())
+      const expiry = BigInt(Math.floor(Date.now() / 1000) + 86400) // 1 day
+
+      writeOffer({
+        address: marketplaceAddress,
+        abi: moltMarketplaceAbi,
+        functionName: 'makeOffer',
+        args: [
+          listing.nft_contract as `0x${string}`,
+          BigInt(listing.token_id),
+          listing.payment_token as `0x${string}`,
+          amountWei,
+          expiry,
+        ],
+      })
+    }
+  }, [isApproveConfirmed, marketplaceAddress, offerAmount, listing, writeOffer])
+
+  // Toast on success/error
+  useEffect(() => {
+    if (isOfferConfirmed) {
+      toast.success('Offer submitted!', {
+        description: `Your offer of ${offerAmount} has been placed.`,
+      })
+      onOpenChange(false)
+    }
+  }, [isOfferConfirmed, offerAmount, onOpenChange])
+
+  useEffect(() => {
+    if (offerError) {
+      toast.error('Offer failed', {
+        description: offerError.message.slice(0, 100),
+      })
+    }
+  }, [offerError])
+
+  const handleSubmit = () => {
+    if (!marketplaceAddress || !offerAmount || !address) return
+
+    const amountWei = parsePriceToBigInt((parseFloat(offerAmount) * 1e18).toString())
+
+    if (isNativeToken(listing.payment_token)) {
+      // Native token offers not supported by contract
+      toast.error('Offers must use ERC-20 tokens')
+      return
+    }
+
+    // Approve first
+    writeApprove({
+      address: listing.payment_token as `0x${string}`,
+      abi: erc20Abi,
+      functionName: 'approve',
+      args: [marketplaceAddress, amountWei],
+    })
+  }
+
+  const isPending = isApprovePending || isApproveConfirming || isOfferPending || isOfferConfirming
+
+  const handleClose = (open: boolean) => {
+    if (!open) {
+      resetApprove()
+      resetOffer()
+      setOfferAmount('')
+    }
+    onOpenChange(open)
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Make an Offer</DialogTitle>
+          <DialogDescription>
+            Enter the amount you want to offer. Offers require ERC-20 token approval.
+            Default expiry: 24 hours.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div>
+            <label className="text-sm font-medium text-foreground">Offer Amount</label>
+            <div className="relative mt-1.5">
+              <Input
+                type="number"
+                placeholder="0.00"
+                value={offerAmount}
+                onChange={(e) => setOfferAmount(e.target.value)}
+                className="pr-16"
+                disabled={isPending}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                {getTokenLabel(listing.payment_token)}
+              </span>
+            </div>
+          </div>
+          {isNativeToken(listing.payment_token) && (
+            <p className="text-xs text-yellow-400">
+              ⚠️ Offers must use ERC-20 tokens. Native token offers are not supported.
+            </p>
+          )}
+          {isPending && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="size-4 animate-spin" />
+              {isApprovePending || isApproveConfirming
+                ? 'Approving token...'
+                : 'Submitting offer...'}
+            </div>
+          )}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => handleClose(false)} disabled={isPending}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={isPending || !offerAmount || parseFloat(offerAmount) <= 0 || isNativeToken(listing.payment_token)}
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Processing…
+              </>
+            ) : (
+              'Submit Offer'
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// ============================================================
 // Main Page
 // ============================================================
 
@@ -803,14 +1064,18 @@ export default function ListingDetailPage({
   params: Promise<{ chainId: string; listingId: string }>
 }) {
   const { chainId: chainIdParam, listingId } = use(params)
+  const [offerDialogOpen, setOfferDialogOpen] = useState(false)
 
   const chainId = parseInt(chainIdParam, 10)
   const id = `${chainIdParam}-${listingId}`
 
+  // Wallet
+  const { address, isConnected } = useAccount()
+
   // Fetch listing
   const { data: listing, isLoading: listingLoading, error: listingError } = useListing(id)
 
-  // Fetch agent data (using chainId-tokenId)
+  // Fetch agent data
   const agentId = listing ? `${listing.chain_id}-${listing.token_id}` : ''
   const { data: agent, isLoading: agentLoading } = useAgent(agentId)
 
@@ -831,6 +1096,73 @@ export default function ListingDetailPage({
     ? offers.reduce((max, o) => (parseFloat(o.amount) > parseFloat(max.amount) ? o : max), offers[0])
     : null
 
+  // Contract: Buy Now
+  const marketplaceAddress = getMoltMarketplaceAddress(chainId)
+  const {
+    data: buyTxHash,
+    writeContract: writeBuy,
+    isPending: isBuyPending,
+    error: buyError,
+    reset: resetBuy,
+  } = useWriteContract()
+
+  const { isLoading: isBuyConfirming, isSuccess: isBuyConfirmed } =
+    useWaitForTransactionReceipt({ hash: buyTxHash })
+
+  // Is current user the seller?
+  const isSeller = isConnected && address && listing
+    ? address.toLowerCase() === listing.seller.toLowerCase()
+    : false
+
+  // Buy handler
+  const handleBuy = () => {
+    if (!isConnected) {
+      toast.error('Please connect your wallet first')
+      return
+    }
+    if (!listing || !marketplaceAddress) return
+    if (isSeller) {
+      toast.error('You cannot buy your own listing')
+      return
+    }
+
+    const priceBigInt = parsePriceToBigInt(listing.price)
+
+    writeBuy({
+      address: marketplaceAddress,
+      abi: moltMarketplaceAbi,
+      functionName: 'buy',
+      args: [BigInt(listing.listing_id)],
+      value: isNativeToken(listing.payment_token) ? priceBigInt : undefined,
+    })
+  }
+
+  // Handle offer button
+  const handleMakeOffer = () => {
+    if (!isConnected) {
+      toast.error('Please connect your wallet first')
+      return
+    }
+    setOfferDialogOpen(true)
+  }
+
+  // Toast on buy result
+  useEffect(() => {
+    if (isBuyConfirmed) {
+      toast.success('Purchase successful! 🎉', {
+        description: 'The agent NFT has been transferred to your wallet.',
+      })
+    }
+  }, [isBuyConfirmed])
+
+  useEffect(() => {
+    if (buyError) {
+      toast.error('Purchase failed', {
+        description: buyError.message.slice(0, 100),
+      })
+    }
+  }, [buyError])
+
   if (listingLoading) {
     return <LoadingSkeleton />
   }
@@ -841,6 +1173,7 @@ export default function ListingDetailPage({
 
   const isActive = listing.status === 'Active'
   const isExpired = listing.expiry > 0 && listing.expiry * 1000 < Date.now()
+  const isBuying = isBuyPending || isBuyConfirming
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -852,51 +1185,23 @@ export default function ListingDetailPage({
         </Button>
       </Link>
 
-      {/* Main two-column layout */}
+      {/* Main two-column layout: Left = HoloCard only, Right = everything else */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_1fr]">
-        {/* ====================== LEFT COLUMN ====================== */}
-        <div className="space-y-6">
-          {/* HoloCard */}
-          <div className="flex justify-center lg:justify-start">
-            <HoloCard
-              image={agent?.image ?? listing.agent_image}
-              name={listing.agent_name || agent?.name || `Agent #${listing.token_id}`}
-              description={agent?.description ?? null}
-              score={agent?.reputation_score ?? null}
-              feedbackCount={agent?.feedback_count ?? 0}
-              chainId={listing.chain_id}
-              owner={listing.seller}
-              agent={agent ?? undefined}
-            />
-          </div>
-
-          {/* Agent Properties */}
-          {agentLoading ? (
-            <div className="space-y-3">
-              <Skeleton className="h-5 w-32" />
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <Skeleton key={i} className="h-20 rounded-xl" />
-                ))}
-              </div>
-            </div>
-          ) : agent ? (
-            <AgentPropertiesGrid agent={agent} />
-          ) : null}
-
-          {/* Endpoints */}
-          {agent && <EndpointsSection agent={agent} />}
-
-          {/* Provenance */}
-          <ProvenanceSection
+        {/* ====================== LEFT COLUMN — HoloCard only ====================== */}
+        <div className="flex justify-center lg:sticky lg:top-8 lg:self-start lg:justify-start">
+          <HoloCard
+            image={agent?.image ?? listing.agent_image}
+            name={listing.agent_name || agent?.name || `Agent #${listing.token_id}`}
+            description={agent?.description ?? null}
+            score={agent?.reputation_score ?? null}
+            feedbackCount={agent?.feedback_count ?? 0}
             chainId={listing.chain_id}
-            nftContract={listing.nft_contract}
-            tokenId={listing.token_id}
-            txHash={listing.tx_hash}
+            owner={listing.seller}
+            agent={agent ?? undefined}
           />
         </div>
 
-        {/* ====================== RIGHT COLUMN ====================== */}
+        {/* ====================== RIGHT COLUMN — everything ====================== */}
         <div className="space-y-6">
           {/* Header: Collection label + Agent Name */}
           <div className="space-y-3">
@@ -925,7 +1230,6 @@ export default function ListingDetailPage({
               <span className="ml-2 text-lg text-muted-foreground font-normal">#{listing.token_id}</span>
             </h1>
 
-            {/* Description */}
             {agent?.description && (
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
                 {agent.description}
@@ -971,7 +1275,7 @@ export default function ListingDetailPage({
             </div>
           </div>
 
-          {/* Price Box */}
+          {/* Price Box + CTA */}
           <Card className="border-border/50 bg-card/80 p-6 space-y-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Clock className="size-3" />
@@ -998,14 +1302,47 @@ export default function ListingDetailPage({
             </div>
             {isActive && !isExpired && (
               <div className="flex gap-3 pt-2">
-                <Button size="lg" className="flex-1 gap-2 text-base font-semibold">
-                  <ShoppingCart className="size-5" />
-                  Buy Now
-                </Button>
-                <Button size="lg" variant="outline" className="flex-1 gap-2 text-base font-semibold border-border/50">
-                  <HandCoins className="size-5" />
-                  Make Offer
-                </Button>
+                {!isConnected ? (
+                  <Button size="lg" className="flex-1 gap-2 text-base font-semibold" disabled>
+                    <Wallet className="size-5" />
+                    Connect Wallet to Buy
+                  </Button>
+                ) : isSeller ? (
+                  <Button size="lg" className="flex-1 gap-2 text-base font-semibold" disabled>
+                    <ShoppingCart className="size-5" />
+                    Your Listing
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      size="lg"
+                      className="flex-1 gap-2 text-base font-semibold"
+                      onClick={handleBuy}
+                      disabled={isBuying}
+                    >
+                      {isBuying ? (
+                        <>
+                          <Loader2 className="size-5 animate-spin" />
+                          {isBuyPending ? 'Confirm in Wallet…' : 'Confirming…'}
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="size-5" />
+                          Buy Now
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="flex-1 gap-2 text-base font-semibold border-border/50"
+                      onClick={handleMakeOffer}
+                    >
+                      <HandCoins className="size-5" />
+                      Make Offer
+                    </Button>
+                  </>
+                )}
               </div>
             )}
             {listing.status === 'Sold' && listing.sold_price && (
@@ -1047,6 +1384,26 @@ export default function ListingDetailPage({
             />
           </div>
 
+          {/* Listing Details */}
+          <ListingDetailsSection listing={listing} />
+
+          {/* Agent Properties (right column = wider, no truncate) */}
+          {agentLoading ? (
+            <div className="space-y-3">
+              <Skeleton className="h-5 w-32" />
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Skeleton key={i} className="h-20 rounded-xl" />
+                ))}
+              </div>
+            </div>
+          ) : agent ? (
+            <AgentPropertiesGrid agent={agent} />
+          ) : null}
+
+          {/* Endpoints */}
+          {agent && <EndpointsSection agent={agent} />}
+
           {/* Reputation */}
           {agent && (
             <ReputationBadge score={agent.reputation_score} feedbackCount={agent.feedback_count} />
@@ -1056,14 +1413,31 @@ export default function ListingDetailPage({
           <TopOffersTable
             offers={offers}
             listingPrice={listing.price}
-            paymentToken={listing.payment_token}
             isLoading={offersLoading}
           />
 
           {/* Item Activity */}
           <ItemActivitySection agentId={agentId} />
+
+          {/* Provenance */}
+          <ProvenanceSection
+            chainId={listing.chain_id}
+            nftContract={listing.nft_contract}
+            tokenId={listing.token_id}
+            txHash={listing.tx_hash}
+          />
         </div>
       </div>
+
+      {/* Make Offer Dialog */}
+      {listing && (
+        <MakeOfferDialog
+          open={offerDialogOpen}
+          onOpenChange={setOfferDialogOpen}
+          listing={listing}
+          chainId={chainId}
+        />
+      )}
     </div>
   )
 }
