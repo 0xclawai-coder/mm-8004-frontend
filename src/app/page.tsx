@@ -38,31 +38,26 @@ function StatsBar() {
   const items = [
     { label: 'Total Agents', value: stats?.total_agents ?? 0, icon: <Users className="size-4" />, href: '/explore/agents' },
     { label: 'Active Listings', value: mStats?.active_listings ?? 0, icon: <ShoppingBag className="size-4" />, href: '/trade/marketplace' },
-    { label: 'Total Sales', value: totalSales === 0 ? 'Coming Soon' : totalSales, icon: <TrendingUp className="size-4" />, href: '/analytics/overview', dimmed: totalSales === 0 },
+    { label: 'Total Sales', value: totalSales, icon: <TrendingUp className="size-4" />, href: '/analytics/overview' },
     { label: 'Active Auctions', value: mStats?.active_auctions ?? 0, icon: <Gavel className="size-4" />, href: '/trade/auctions' },
     { label: 'Total Feedbacks', value: stats?.total_feedbacks ?? 0, icon: <MessageSquare className="size-4" />, href: '/analytics/overview' },
   ]
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 [&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:col-span-1">
-      {items.map((item) => {
-        const dimmed = 'dimmed' in item && item.dimmed
-        return (
+      {items.map((item) => (
           <Link
             key={item.label}
             href={item.href}
-            className={cn(
-              "flex flex-col gap-1.5 rounded-xl border border-border/30 bg-card/40 p-4 text-center transition-colors hover:border-primary/30 hover:bg-card/60",
-              dimmed && "opacity-60"
-            )}
+            className="flex flex-col gap-1.5 rounded-xl border border-border/30 bg-card/40 p-4 text-center transition-colors hover:border-primary/30 hover:bg-card/60"
           >
-            <div className={cn("flex items-center justify-center", dimmed ? "text-muted-foreground" : "text-primary")}>
+            <div className="flex items-center justify-center text-primary">
               {item.icon}
             </div>
             {isLoading ? (
               <Skeleton className="mx-auto h-7 w-16" />
             ) : (
-              <p className={cn("text-xl font-bold", dimmed ? "text-muted-foreground text-sm" : "text-foreground")}>
+              <p className="text-xl font-bold text-foreground">
                 {typeof item.value === 'number'
                   ? item.value.toLocaleString()
                   : item.value}
@@ -72,8 +67,7 @@ function StatsBar() {
               {item.label}
             </p>
           </Link>
-        )
-      })}
+        ))}
     </div>
   )
 }

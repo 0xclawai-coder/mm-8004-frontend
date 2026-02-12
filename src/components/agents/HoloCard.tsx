@@ -195,7 +195,7 @@ export function HoloCard(props: HoloCardProps) {
         />
 
         {/* Card body */}
-        <div className="relative flex flex-col overflow-hidden rounded-2xl border border-border/50 bg-card/95 backdrop-blur-sm">
+        <div className="relative flex min-h-[320px] flex-col overflow-hidden rounded-2xl border border-border/50 bg-card/95 backdrop-blur-sm">
           {/* Holographic shimmer overlay */}
           <div
             className={cn(

@@ -28,6 +28,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { HoloCard } from '@/components/agents/HoloCard'
 import {
   Dialog,
   DialogContent,
@@ -140,95 +141,27 @@ function getExplorerTxUrl(chainId: number, txHash: string): string {
 // ============================================================
 
 function LivePreview({ form, chainId }: { form: FormState; chainId: number }) {
-  const hasContent = form.name || form.description || form.imageUrl || form.categories.length > 0
-
   return (
-    <div className="sticky top-24 space-y-3">
+    <div className="sticky top-24 flex flex-col gap-3">
       <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
         Live Preview
       </h3>
-      <Card className="relative overflow-hidden border-border/50 bg-card/80 py-0 transition-all duration-300">
-        <CardContent className="flex flex-col gap-4 p-5">
-          {/* Top row: Avatar + Name + Description */}
-          <div className="flex items-start gap-3">
-            <Avatar className="size-12 shrink-0 ring-2 ring-border">
-              {form.imageUrl ? (
-                <AvatarImage src={form.imageUrl} alt={form.name || 'Agent'} />
-              ) : null}
-              <AvatarFallback className="bg-primary/20 text-primary text-sm font-semibold">
-                {form.name?.charAt(0)?.toUpperCase() || '?'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1 space-y-1">
-              <h3 className="truncate text-sm font-bold text-foreground">
-                {form.name || 'Agent Name'}
-              </h3>
-              <p className="line-clamp-2 text-xs text-muted-foreground">
-                {form.description || 'No description yet'}
-              </p>
-            </div>
-          </div>
-
-          {/* Category tags */}
-          {form.categories.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {form.categories.slice(0, 3).map((category) => (
-                <Badge
-                  key={category}
-                  variant="secondary"
-                  className="bg-primary/10 text-primary border-primary/20 text-[10px]"
-                >
-                  {category}
-                </Badge>
-              ))}
-              {form.categories.length > 3 && (
-                <Badge variant="secondary" className="text-[10px]">
-                  +{form.categories.length - 3}
-                </Badge>
-              )}
-            </div>
-          )}
-
-          {/* Bottom row: Score + Badges */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1">
-                <Star className="size-3.5 text-muted-foreground" />
-                <span className="text-sm font-semibold text-muted-foreground">0.0</span>
-              </div>
-              <span className="text-xs text-muted-foreground">New agent</span>
-            </div>
-
-            <div className="flex items-center gap-1.5">
-              {form.x402Support && (
-                <Badge
-                  variant="outline"
-                  className="border-cyan-accent/30 bg-cyan-accent/10 text-cyan-accent text-[10px] px-1.5"
-                >
-                  x402
-                </Badge>
-              )}
-              <Badge
-                variant="outline"
-                className={cn(
-                  'text-[10px] px-1.5',
-                  chainId === 143
-                    ? 'border-green-500/30 bg-green-500/10 text-green-400'
-                    : 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400'
-                )}
-              >
-                {getChainLabel(chainId)}
-              </Badge>
-            </div>
-          </div>
-
-          {/* Endpoints preview */}
-          {form.endpoints.length > 0 && (
-            <div className="flex flex-col gap-2 border-t border-border/50 pt-3">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                Endpoints
-              </p>
-              <div className="space-y-1">
+      <HoloCard
+        name={form.name || undefined}
+        image={form.imageUrl || undefined}
+        score={0}
+        tags={form.categories.slice(0, 3).map((c) => ({ label: c, icon: <Sparkles className="size-2.5" /> as React.ReactNode, className: 'bg-primary/10 text-primary border-primary/20' }))}
+        chainId={chainId}
+      />
+      {/* Endpoints & Metadata summary below card */}
+      {(form.endpoints.length > 0 || buildMetadataEntries(form).length > 0) && (
+        <Card className="border-border/50 bg-card/80 py-0">
+          <CardContent className="flex flex-col gap-3 p-4">
+            {form.endpoints.length > 0 && (
+              <div className="flex flex-col gap-1.5">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                  Endpoints
+                </p>
                 {form.endpoints.map((ep, i) => (
                   <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Badge variant="outline" className="text-[9px] px-1 py-0">
@@ -240,37 +173,25 @@ function LivePreview({ form, chainId }: { form: FormState; chainId: number }) {
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-
-          {/* Metadata preview */}
-          <div className="flex flex-col gap-2 border-t border-border/50 pt-3">
-            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-              On-chain Metadata
-            </p>
-            <div className="space-y-1">
-              {buildMetadataEntries(form).map((entry) => (
-                <div key={entry.metadataKey} className="flex items-center gap-2 text-xs">
-                  <Badge variant="outline" className="text-[9px] px-1 py-0 font-mono">
-                    {entry.metadataKey}
-                  </Badge>
-                  <span className="truncate text-muted-foreground text-[11px]">✓</span>
-                </div>
-              ))}
-              {buildMetadataEntries(form).length === 0 && (
-                <span className="text-[11px] text-muted-foreground/50">No metadata yet</span>
-              )}
-            </div>
-          </div>
-
-          {/* Empty state hint */}
-          {!hasContent && (
-            <p className="text-center text-xs text-muted-foreground/50 py-2">
-              Fill in the form to see a live preview
-            </p>
-          )}
-        </CardContent>
-      </Card>
+            )}
+            {buildMetadataEntries(form).length > 0 && (
+              <div className="flex flex-col gap-1.5">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                  On-chain Metadata
+                </p>
+                {buildMetadataEntries(form).map((entry) => (
+                  <div key={entry.metadataKey} className="flex items-center gap-2 text-xs">
+                    <Badge variant="outline" className="text-[9px] px-1 py-0 font-mono">
+                      {entry.metadataKey}
+                    </Badge>
+                    <span className="truncate text-muted-foreground text-[11px]">✓</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
