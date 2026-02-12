@@ -163,8 +163,6 @@ export function HoloCard(props: HoloCardProps) {
   const glowX = mousePos.x * 100;
   const glowY = mousePos.y * 100;
 
-  const displayScore = score ?? 0;
-
   return (
     <div className="holo-perspective w-full" style={{ perspective: "1000px" }}>
       <div
@@ -273,7 +271,7 @@ export function HoloCard(props: HoloCardProps) {
               {/* Name */}
               <div className="flex flex-col gap-1">
                 <h2 className="truncate text-xl font-bold text-foreground">
-                  {name}
+                  {name != null ? name : <Skeleton className="h-6 w-40" />}
                 </h2>
                 {description && (
                   <p className="line-clamp-2 text-sm text-muted-foreground">
@@ -284,30 +282,36 @@ export function HoloCard(props: HoloCardProps) {
 
               {/* Reputation Score */}
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5">
-                  <Star
-                    className={cn(
-                      "size-5",
-                      getScoreColor(displayScore),
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      "text-2xl font-bold tabular-nums",
-                      getScoreColor(displayScore),
-                    )}
-                  >
-                    {displayScore.toFixed(1)}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {feedbackCount} feedback
-                  {feedbackCount !== 1 ? "s" : ""}
-                </p>
+                {score != null ? (
+                  <>
+                    <div className="flex items-center gap-1.5">
+                      <Star
+                        className={cn(
+                          "size-5",
+                          getScoreColor(score),
+                        )}
+                      />
+                      <span
+                        className={cn(
+                          "text-2xl font-bold tabular-nums",
+                          getScoreColor(score),
+                        )}
+                      >
+                        {score.toFixed(1)}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {feedbackCount} feedback
+                      {feedbackCount !== 1 ? "s" : ""}
+                    </p>
+                  </>
+                ) : (
+                  <Skeleton className="h-7 w-24" />
+                )}
               </div>
 
               {/* Tags Row */}
-              {tags && tags.length > 0 && (
+              {tags && tags.length > 0 ? (
                 <div className="flex flex-wrap gap-1.5">
                   {tags.map((tag) => (
                     <Badge
@@ -320,25 +324,38 @@ export function HoloCard(props: HoloCardProps) {
                     </Badge>
                   ))}
                 </div>
-              )}
+              ) : !agent && !props.tags ? (
+                <div className="flex gap-1.5">
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-5 w-20 rounded-full" />
+                </div>
+              ) : null}
             </div>
 
             {/* Bottom: Chain + Owner (pinned to bottom) */}
             <div className="mt-auto flex items-center justify-between border-t border-border/30 pt-3">
-              <Badge
-                variant="outline"
-                className={cn(
-                  "text-xs px-2",
-                  chainId === 143
-                    ? "border-green-500/30 bg-green-500/10 text-green-400"
-                    : "border-yellow-500/30 bg-yellow-500/10 text-yellow-400",
-                )}
-              >
-                {getChainLabel(chainId ?? 0)}
-              </Badge>
-              <span className="font-mono text-xs text-muted-foreground">
-                {truncateAddress(owner ?? "")}
-              </span>
+              {chainId != null ? (
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    "text-xs px-2",
+                    chainId === 143
+                      ? "border-green-500/30 bg-green-500/10 text-green-400"
+                      : "border-yellow-500/30 bg-yellow-500/10 text-yellow-400",
+                  )}
+                >
+                  {getChainLabel(chainId)}
+                </Badge>
+              ) : (
+                <Skeleton className="h-5 w-16 rounded-full" />
+              )}
+              {owner ? (
+                <span className="font-mono text-xs text-muted-foreground">
+                  {truncateAddress(owner)}
+                </span>
+              ) : (
+                <Skeleton className="h-4 w-24" />
+              )}
             </div>
           </div>
         </div>

@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, ChevronDown } from 'lucide-react'
+import { useAccount } from 'wagmi'
+import { Menu, ChevronDown, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import {
@@ -21,6 +22,7 @@ import { cn } from '@/lib/utils'
 
 export function Header() {
   const pathname = usePathname()
+  const { isConnected } = useAccount()
   const [sheetOpen, setSheetOpen] = useState(false)
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({})
 
@@ -106,8 +108,25 @@ export function Header() {
           </NavigationMenu>
         </div>
 
-        {/* Right: ChainSwitcher + Wallet + Mobile menu */}
+        {/* Right: Profile + ChainSwitcher + Wallet + Mobile menu */}
         <div className="flex items-center gap-2">
+          {isConnected && (
+            <Link href="/profile">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  'hidden gap-1.5 text-xs sm:flex',
+                  pathname.startsWith('/profile')
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                <User className="size-3.5" />
+                Profile
+              </Button>
+            </Link>
+          )}
           <ChainSwitcher />
           <ConnectButton />
 
@@ -192,8 +211,16 @@ export function Header() {
                 })}
               </nav>
 
-              {/* Mobile Create + ChainSwitcher at bottom */}
+              {/* Mobile Create + Profile + ChainSwitcher at bottom */}
               <div className="mt-auto space-y-3 border-t border-border px-4 pt-4">
+                {isConnected && (
+                  <Link href="/profile" onClick={() => setSheetOpen(false)}>
+                    <Button variant="outline" className="w-full gap-2">
+                      <User className="size-4" />
+                      Profile
+                    </Button>
+                  </Link>
+                )}
                 <Link href="/create" onClick={() => setSheetOpen(false)}>
                   <Button className="w-full gap-2 bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90">
                     Create Molt

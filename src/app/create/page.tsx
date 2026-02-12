@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
   useAccount,
   useWriteContract,
@@ -9,11 +10,11 @@ import {
   useChainId,
 } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { decodeEventLog, toHex, type Log } from 'viem'
 import {
   Wallet,
   Plus,
   Trash2,
-  Loader2,
   CheckCircle2,
   XCircle,
   ExternalLink,
@@ -33,6 +34,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import {
   CONTRACT_ADDRESSES,
@@ -84,7 +86,39 @@ const INITIAL_FORM: FormState = {
 }
 
 // ============================================================
-// Helper: get chain label
+// Helper: encode metadata entries
+// ============================================================
+
+function buildMetadataEntries(form: FormState): Array<{ metadataKey: string; metadataValue: `0x${string}` }> {
+  const entries: Array<{ metadataKey: string; metadataValue: `0x${string}` }> = []
+
+  if (form.name.trim()) {
+    entries.push({ metadataKey: 'name', metadataValue: toHex(form.name.trim()) })
+  }
+  if (form.description.trim()) {
+    entries.push({ metadataKey: 'description', metadataValue: toHex(form.description.trim()) })
+  }
+  if (form.imageUrl.trim()) {
+    entries.push({ metadataKey: 'image', metadataValue: toHex(form.imageUrl.trim()) })
+  }
+  if (form.categories.length > 0) {
+    entries.push({ metadataKey: 'categories', metadataValue: toHex(JSON.stringify(form.categories)) })
+  }
+  if (form.x402Support) {
+    entries.push({ metadataKey: 'x402_support', metadataValue: toHex('true') })
+  }
+  if (form.endpoints.length > 0) {
+    const validEndpoints = form.endpoints.filter((ep) => ep.url.trim())
+    if (validEndpoints.length > 0) {
+      entries.push({ metadataKey: 'endpoints', metadataValue: toHex(JSON.stringify(validEndpoints)) })
+    }
+  }
+
+  return entries
+}
+
+// ============================================================
+// Helpers
 // ============================================================
 
 function getChainLabel(chainId: number): string {
@@ -207,6 +241,26 @@ function LivePreview({ form, chainId }: { form: FormState; chainId: number }) {
             </div>
           )}
 
+          {/* Metadata preview */}
+          <div className="flex flex-col gap-2 border-t border-border/50 pt-3">
+            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+              On-chain Metadata
+            </p>
+            <div className="space-y-1">
+              {buildMetadataEntries(form).map((entry) => (
+                <div key={entry.metadataKey} className="flex items-center gap-2 text-xs">
+                  <Badge variant="outline" className="text-[9px] px-1 py-0 font-mono">
+                    {entry.metadataKey}
+                  </Badge>
+                  <span className="truncate text-muted-foreground text-[11px]">✓</span>
+                </div>
+              ))}
+              {buildMetadataEntries(form).length === 0 && (
+                <span className="text-[11px] text-muted-foreground/50">No metadata yet</span>
+              )}
+            </div>
+          </div>
+
           {/* Empty state hint */}
           {!hasContent && (
             <p className="text-center text-xs text-muted-foreground/50 py-2">
@@ -258,6 +312,7 @@ function ConnectWalletPrompt() {
 // ============================================================
 
 export default function CreateMoltPage() {
+  const router = useRouter()
   const { address, isConnected } = useAccount()
   const chainId = useChainId()
 
@@ -278,11 +333,42 @@ export default function CreateMoltPage() {
 
   // Wait for receipt
   const {
+    data: receipt,
     isLoading: isConfirming,
     isSuccess: isConfirmed,
   } = useWaitForTransactionReceipt({
     hash: txHash,
   })
+
+  // Parse agentId from Registered event
+  const registeredAgentId = useMemo(() => {
+    if (!receipt?.logs) return null
+    for (const log of receipt.logs) {
+      try {
+        const decoded = decodeEventLog({
+          abi: identityRegistryAbi,
+          data: log.data,
+          topics: (log as Log).topics,
+        })
+        if (decoded.eventName === 'Registered' && 'agentId' in decoded.args) {
+          return (decoded.args as { agentId: bigint }).agentId
+        }
+      } catch {
+        // Not this event, skip
+      }
+    }
+    return null
+  }, [receipt])
+
+  // Redirect to agent detail on success
+  useEffect(() => {
+    if (isConfirmed && registeredAgentId != null) {
+      const timer = setTimeout(() => {
+        router.push(`/explore/agents/${chainId}/${registeredAgentId.toString()}`)
+      }, 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [isConfirmed, registeredAgentId, chainId, router])
 
   // Derive tx status
   const txStatus: TxStatus = useMemo(() => {
@@ -300,7 +386,6 @@ export default function CreateMoltPage() {
   const updateField = useCallback(
     <K extends keyof FormState>(field: K, value: FormState[K]) => {
       setForm((prev) => ({ ...prev, [field]: value }))
-      // Clear error for the field when user types
       if (field in errors) {
         setErrors((prev) => ({ ...prev, [field]: undefined }))
       }
@@ -380,7 +465,6 @@ export default function CreateMoltPage() {
       }
     }
 
-    // Validate endpoints: if any endpoint is added, url must be non-empty
     const hasInvalidEndpoints = form.endpoints.some((ep) => !ep.url.trim())
     if (hasInvalidEndpoints) {
       newErrors.endpoints = 'All endpoint URLs must be filled in'
@@ -400,7 +484,6 @@ export default function CreateMoltPage() {
     setTxError(null)
     setTxDialogOpen(true)
 
-    // Determine contract address from chain
     const addresses = CONTRACT_ADDRESSES[chainId as SupportedChainId]
     if (!addresses) {
       setTxError(`Unsupported chain (${chainId}). Please switch to Monad Mainnet or Testnet.`)
@@ -408,17 +491,30 @@ export default function CreateMoltPage() {
     }
 
     try {
-      writeContract({
-        address: addresses.identityRegistry,
-        abi: identityRegistryAbi,
-        functionName: 'register',
-        args: [form.agentUri],
-      })
+      const metadata = buildMetadataEntries(form)
+
+      if (metadata.length > 0) {
+        // Use register(string agentURI, MetadataEntry[] metadata)
+        writeContract({
+          address: addresses.identityRegistry,
+          abi: identityRegistryAbi,
+          functionName: 'register',
+          args: [form.agentUri, metadata],
+        })
+      } else {
+        // Use register(string agentURI) — no metadata
+        writeContract({
+          address: addresses.identityRegistry,
+          abi: identityRegistryAbi,
+          functionName: 'register',
+          args: [form.agentUri],
+        })
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error occurred'
       setTxError(message)
     }
-  }, [validate, chainId, writeContract, form.agentUri])
+  }, [validate, chainId, writeContract, form])
 
   // --------------------------------------------------------
   // Reset after success
@@ -440,7 +536,6 @@ export default function CreateMoltPage() {
     return (
       <div className="min-h-screen bg-gradient-radial">
         <div className="mx-auto max-w-7xl px-4 pt-6 pb-8 sm:px-6 sm:pt-10 lg:px-8">
-          {/* Header */}
           <div className="flex flex-col gap-3 pb-4 text-center">
             <h1 className="text-gradient-glow text-3xl font-extrabold sm:text-4xl lg:text-5xl">
               Create Your Molt
@@ -710,10 +805,10 @@ export default function CreateMoltPage() {
                 className="w-full bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90 transition-opacity text-base font-semibold"
               >
                 {isWritePending || isConfirming ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" />
+                  <span className="flex items-center gap-2">
+                    <Skeleton className="size-4 rounded-full" />
                     {isWritePending ? 'Confirm in Wallet...' : 'Confirming...'}
-                  </>
+                  </span>
                 ) : (
                   <>
                     <Sparkles className="size-4" />
@@ -722,8 +817,11 @@ export default function CreateMoltPage() {
                 )}
               </Button>
               <p className="text-center text-xs text-muted-foreground">
-                This will call <code className="font-mono text-primary/80">IdentityRegistry.register()</code> on{' '}
-                {getChainLabel(chainId)}
+                This will call{' '}
+                <code className="font-mono text-primary/80">
+                  IdentityRegistry.register(uri, metadata[])
+                </code>{' '}
+                on {getChainLabel(chainId)}
               </p>
             </div>
           </div>
@@ -743,7 +841,7 @@ export default function CreateMoltPage() {
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <Loader2 className="size-5 animate-spin text-primary" />
+                  <Skeleton className="size-5 rounded-full" />
                   {txStatus === 'pending'
                     ? 'Waiting for Confirmation'
                     : 'Transaction Submitted'}
@@ -781,11 +879,12 @@ export default function CreateMoltPage() {
                 </DialogTitle>
                 <DialogDescription>
                   Your AI agent has been successfully registered on the Monad chain.
-                  It will appear in the marketplace once the indexer picks it up.
+                  {registeredAgentId != null && (
+                    <> Agent ID: <strong>#{registeredAgentId.toString()}</strong>. Redirecting...</>
+                  )}
                 </DialogDescription>
               </DialogHeader>
 
-              {/* Confetti-style success banner */}
               <div className="flex flex-col gap-1 rounded-lg bg-gradient-to-r from-primary/10 via-violet-glow/10 to-cyan-accent/10 border border-primary/20 p-4 text-center">
                 <p className="text-lg font-bold text-gradient-glow">
                   Welcome to the Molt Network!
@@ -811,12 +910,14 @@ export default function CreateMoltPage() {
               )}
 
               <DialogFooter className="flex-col gap-2 sm:flex-col">
-                <Link href="/explore/agents" className="w-full">
-                  <Button className="w-full" variant="outline">
-                    <ExternalLink className="size-4" />
-                    Browse Agents
-                  </Button>
-                </Link>
+                {registeredAgentId != null && (
+                  <Link href={`/explore/agents/${chainId}/${registeredAgentId.toString()}`} className="w-full">
+                    <Button className="w-full" variant="outline">
+                      <ExternalLink className="size-4" />
+                      View Agent
+                    </Button>
+                  </Link>
+                )}
                 <Button
                   onClick={handleCreateAnother}
                   className="w-full bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90"

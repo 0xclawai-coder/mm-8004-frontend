@@ -81,14 +81,14 @@ export const navGroups: NavGroup[] = [
       },
       {
         href: '/analytics/leaderboard',
-        label: 'Leaderboard',
-        subtitle: 'Top Wallets',
+        label: 'Top Wallets',
+        subtitle: 'Wallet Trading Leaderboard',
         icon: Trophy,
       },
       {
         href: '/analytics/rankings',
-        label: 'Rankings',
-        subtitle: 'Agent Rankings',
+        label: 'Agent Rankings',
+        subtitle: 'Agents by Reputation Score',
         icon: TrendingUp,
       },
     ],
