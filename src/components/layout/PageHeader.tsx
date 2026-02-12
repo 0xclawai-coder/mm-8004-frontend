@@ -13,12 +13,12 @@ export function PageHeader({
     <div className="relative pb-6 pt-4">
       {/* Content */}
       <div className="flex items-center justify-between gap-4">
-        <div className="min-w-0">
+        <div className="min-w-0 flex flex-col gap-1">
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
+            <p className="text-sm text-muted-foreground">{subtitle}</p>
           )}
         </div>
         {children && (

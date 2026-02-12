@@ -60,11 +60,11 @@ function InfoRow({ label, children }: { label: string; children: React.ReactNode
 export function BasicInfoPanel({ agent }: BasicInfoPanelProps) {
   return (
     <div className="rounded-xl border border-border/50 bg-card/60 p-5 space-y-1">
-      <h3 className="text-base font-semibold text-foreground mb-3">Basic Information</h3>
+      <h3 className="text-base font-semibold text-foreground pb-2">Basic Information</h3>
 
       {/* Contract State */}
       <div className="space-y-0.5">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 pb-2">
           <Link2 className="size-3.5 text-primary" />
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Contract State</span>
         </div>
@@ -129,7 +129,7 @@ export function BasicInfoPanel({ agent }: BasicInfoPanelProps) {
 
       {/* Off-chain Metadata */}
       <div className="space-y-0.5 pt-3">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 pb-2">
           <Layers className="size-3.5 text-primary" />
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Off-chain Metadata</span>
         </div>

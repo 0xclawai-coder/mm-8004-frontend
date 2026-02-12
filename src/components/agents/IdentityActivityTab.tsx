@@ -136,13 +136,13 @@ export function IdentityActivityTab({ agentId }: IdentityActivityTabProps) {
             </div>
 
             {/* Event content */}
-            <div className="min-w-0 flex-1 pt-1">
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5 pt-1">
               <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
+                <div className="flex min-w-0 flex-col gap-0.5">
                   <p className="text-sm font-medium text-foreground">
                     {event.event_type}
                   </p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     {getEventDescription(event)}
                   </p>
                 </div>
@@ -157,7 +157,7 @@ export function IdentityActivityTab({ agentId }: IdentityActivityTabProps) {
                   href={getExplorerUrl(event.chain_id, event.tx_hash)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-1.5 inline-flex items-center gap-1 text-xs text-primary/70 hover:text-primary transition-colors"
+                  className="inline-flex items-center gap-1 text-xs text-primary/70 hover:text-primary transition-colors"
                 >
                   <span className="font-mono">{truncateHash(event.tx_hash)}</span>
                   <ExternalLink className="size-3" />

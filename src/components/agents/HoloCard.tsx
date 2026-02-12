@@ -267,12 +267,12 @@ export function HoloCard(props: HoloCardProps) {
             {/* Top section: name, description, score, tags */}
             <div className="space-y-3">
               {/* Name */}
-              <div>
+              <div className="flex flex-col gap-1">
                 <h2 className="truncate text-xl font-bold text-foreground">
                   {name}
                 </h2>
                 {description && (
-                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                  <p className="line-clamp-2 text-sm text-muted-foreground">
                     {description}
                   </p>
                 )}

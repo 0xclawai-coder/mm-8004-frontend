@@ -32,8 +32,8 @@ function isNewbie(createdAt: string): boolean {
 
 function LoadingSkeleton() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      <Skeleton className="mb-6 h-9 w-36 rounded-lg" />
+    <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8">
+      <Skeleton className="h-9 w-36 rounded-lg" />
       <div className="flex items-center justify-center py-24">
         <Loader2 className="size-8 animate-spin text-primary" />
       </div>
@@ -45,19 +45,21 @@ function ErrorState({ agentId }: { agentId: string }) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <Link href="/explore/agents">
-        <Button variant="ghost" size="sm" className="mb-8 gap-2 text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
           Back to Agents
         </Button>
       </Link>
       <div className="flex flex-col items-center justify-center py-24">
-        <div className="rounded-2xl border border-border/50 bg-card/60 p-12 text-center">
-          <h2 className="text-xl font-semibold text-foreground">Agent Not Found</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Could not find agent with ID &quot;{agentId}&quot;.
-          </p>
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-border/50 bg-card/60 p-12 text-center">
+          <div className="flex flex-col items-center gap-2">
+            <h2 className="text-xl font-semibold text-foreground">Agent Not Found</h2>
+            <p className="text-sm text-muted-foreground">
+              Could not find agent with ID &quot;{agentId}&quot;.
+            </p>
+          </div>
           <Link href="/explore/agents">
-            <Button variant="default" size="sm" className="mt-6">
+            <Button variant="default" size="sm">
               Browse All Agents
             </Button>
           </Link>
@@ -119,17 +121,17 @@ export default function AgentDetailPage({
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
       {/* Back button */}
       <Link href="/explore/agents">
-        <Button variant="ghost" size="sm" className="mb-6 gap-2 text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
           Back to Agents
         </Button>
       </Link>
 
       {/* Agent Header */}
-      <div className="mb-6 space-y-3">
+      <div className="space-y-3">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
             {agent.name || `Agent #${agent.agent_id}`}
@@ -168,7 +170,7 @@ export default function AgentDetailPage({
       </div>
 
       {/* Two-column: HoloCard + Basic Info */}
-      <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-[300px_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[300px_1fr]">
         {/* Left: HoloCard */}
         <div className="flex justify-center lg:justify-start">
           <HoloCard agent={agent} />
@@ -188,7 +190,7 @@ export default function AgentDetailPage({
             <TabsTrigger value="feedback" className="gap-1">
               Feedback
               {agent.feedback_count > 0 && (
-                <span className="ml-1 rounded-full bg-primary/20 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                <span className="rounded-full bg-primary/20 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
                   {agent.feedback_count}
                 </span>
               )}
@@ -222,8 +224,8 @@ export default function AgentDetailPage({
           <TabsContent value="metadata">
             <div className="py-4">
               {agent.metadata ? (
-                <div className="rounded-xl border border-border/50 bg-card/60 p-6">
-                  <h3 className="mb-4 text-sm font-semibold text-foreground">Raw Metadata</h3>
+                <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
+                  <h3 className="text-sm font-semibold text-foreground">Raw Metadata</h3>
                   <pre className="overflow-x-auto rounded-lg bg-muted/50 p-4 text-xs text-foreground/80 font-mono leading-relaxed">
                     {JSON.stringify(agent.metadata, null, 2)}
                   </pre>

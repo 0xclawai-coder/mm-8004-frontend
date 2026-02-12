@@ -250,17 +250,17 @@ function MobileListingCard({ listing, index }: { listing: MarketplaceListing; in
       </div>
 
       {/* Info */}
-      <div className="min-w-0 flex-1">
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <p className="truncate text-sm font-semibold text-foreground">
           {listing.agent_name || `Agent #${listing.token_id}`}
         </p>
-        <p className="mt-0.5 truncate font-mono text-[11px] text-muted-foreground">
+        <p className="truncate font-mono text-[11px] text-muted-foreground">
           {formatAddress(listing.seller)}
         </p>
       </div>
 
       {/* Price + status */}
-      <div className="shrink-0 text-right">
+      <div className="flex shrink-0 flex-col gap-1 text-right">
         <p className="text-sm font-semibold text-foreground">
           {formatPrice(listing.price)}
         </p>
@@ -269,7 +269,7 @@ function MobileListingCard({ listing, index }: { listing: MarketplaceListing; in
         </p>
         <Badge
           variant="outline"
-          className={cn('mt-1 text-[10px]', getStatusColor(listing.status))}
+          className={cn('text-[10px]', getStatusColor(listing.status))}
         >
           {listing.status}
         </Badge>

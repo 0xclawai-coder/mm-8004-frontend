@@ -116,16 +116,16 @@ export function AgentBrowseTable() {
   }
 
   return (
-    <section>
-      <h2 className="mb-1 text-lg font-semibold text-foreground">
+    <section className="flex flex-col gap-3">
+      <h2 className="text-lg font-semibold text-foreground">
         Agent Registry
       </h2>
-      <p className="mb-4 text-sm text-muted-foreground">
+      <p className="text-sm text-muted-foreground">
         Browse and search all registered agents
       </p>
 
       {/* Search + Sort */}
-      <div className="mb-3 flex flex-col gap-3">
+      <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <SearchBar
             value={search}
@@ -159,7 +159,7 @@ export function AgentBrowseTable() {
       </div>
 
       {/* Category Filter */}
-      <div className="mb-4">
+      <div>
         <CategoryFilter
           selected={category}
           onSelect={(v) => {
@@ -303,7 +303,7 @@ export function AgentBrowseTable() {
       </div>
 
       {/* Pagination — always rendered to prevent layout shift */}
-      <div className="mt-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
+      <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
           {isLoading ? (
             <Skeleton className="h-4 w-40" />

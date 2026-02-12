@@ -152,8 +152,8 @@ function CopyButton({ value, className }: { value: string; className?: string })
 
 function LoadingSkeleton() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      <Skeleton className="mb-6 h-9 w-36 rounded-lg" />
+    <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8">
+      <Skeleton className="h-9 w-36 rounded-lg" />
       <div className="flex items-center justify-center py-24">
         <Loader2 className="size-8 animate-spin text-primary" />
       </div>
@@ -169,19 +169,21 @@ function ErrorState({ id }: { id: string }) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <Link href="/trade/marketplace">
-        <Button variant="ghost" size="sm" className="mb-8 gap-2 text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
           Back to Marketplace
         </Button>
       </Link>
       <div className="flex flex-col items-center justify-center py-24">
-        <div className="rounded-2xl border border-border/50 bg-card/60 p-12 text-center">
-          <h2 className="text-xl font-semibold text-foreground">Listing Not Found</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Could not find listing &quot;{id}&quot;.
-          </p>
+        <div className="flex flex-col items-center gap-6 rounded-2xl border border-border/50 bg-card/60 p-12 text-center">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-xl font-semibold text-foreground">Listing Not Found</h2>
+            <p className="text-sm text-muted-foreground">
+              Could not find listing &quot;{id}&quot;.
+            </p>
+          </div>
           <Link href="/trade/marketplace">
-            <Button variant="default" size="sm" className="mt-6">
+            <Button variant="default" size="sm">
               Browse Marketplace
             </Button>
           </Link>
@@ -373,10 +375,10 @@ function ProvenanceSection({
               href={getExplorerUrl(chainId, nftContract)}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-mono text-xs text-primary/80 hover:text-primary transition-colors"
+              className="inline-flex items-center gap-1 font-mono text-xs text-primary/80 hover:text-primary transition-colors"
             >
               {formatAddress(nftContract)}
-              <ExternalLink className="ml-1 inline size-2.5" />
+              <ExternalLink className="size-2.5" />
             </a>
             <CopyButton value={nftContract} />
           </div>
@@ -398,10 +400,10 @@ function ProvenanceSection({
               href={getTxUrl(chainId, txHash)}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-mono text-xs text-primary/80 hover:text-primary transition-colors"
+              className="inline-flex items-center gap-1 font-mono text-xs text-primary/80 hover:text-primary transition-colors"
             >
               {formatAddress(txHash)}
-              <ExternalLink className="ml-1 inline size-2.5" />
+              <ExternalLink className="size-2.5" />
             </a>
             <CopyButton value={txHash} />
           </div>
@@ -959,9 +961,9 @@ function MakeOfferDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
-          <div>
+          <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-foreground">Offer Amount</label>
-            <div className="relative mt-1.5">
+            <div className="relative">
               <Input
                 type="number"
                 placeholder="0.00"
@@ -999,7 +1001,7 @@ function MakeOfferDialog({
           >
             {isPending ? (
               <>
-                <Loader2 className="mr-2 size-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin" />
                 Processing…
               </>
             ) : (
@@ -1134,10 +1136,10 @@ export default function ListingDetailPage({
   const isBuying = isBuyPending || isBuyConfirming
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
       {/* Back button */}
       <Link href="/trade/marketplace">
-        <Button variant="ghost" size="sm" className="mb-6 gap-2 text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
           Back to Marketplace
         </Button>
@@ -1185,7 +1187,7 @@ export default function ListingDetailPage({
 
             <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
               {listing.agent_name || agent?.name || `Agent #${listing.token_id}`}
-              <span className="ml-2 text-lg text-muted-foreground font-normal">#{listing.token_id}</span>
+              <span className="text-lg text-muted-foreground font-normal"> #{listing.token_id}</span>
             </h1>
 
             {agent?.description && (
@@ -1209,8 +1211,8 @@ export default function ListingDetailPage({
                 </Badge>
               )}
               {agent?.categories?.map((cat) => (
-                <Badge key={cat} variant="outline" className="text-xs border-primary/30 bg-primary/10 text-primary">
-                  <Tag className="size-3 mr-1" />
+                <Badge key={cat} variant="outline" className="gap-1 text-xs border-primary/30 bg-primary/10 text-primary">
+                  <Tag className="size-3" />
                   {cat}
                 </Badge>
               ))}
@@ -1223,10 +1225,10 @@ export default function ListingDetailPage({
                 href={getExplorerUrl(listing.chain_id, listing.seller)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-primary/80 hover:text-primary transition-colors"
+                className="inline-flex items-center gap-0.5 font-mono text-primary/80 hover:text-primary transition-colors"
               >
                 {formatAddress(listing.seller)}
-                <ExternalLink className="ml-0.5 inline size-2.5" />
+                <ExternalLink className="size-2.5" />
               </a>
               <span className="text-muted-foreground/50">·</span>
               <TimeCounter targetTime={new Date(listing.block_timestamp)} />
@@ -1249,9 +1251,9 @@ export default function ListingDetailPage({
                 <span>No expiration</span>
               )}
             </div>
-            <div>
+            <div className="flex flex-col gap-1">
               <p className="text-sm text-muted-foreground">Current Price</p>
-              <div className="flex items-baseline gap-2 mt-1">
+              <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-bold text-foreground">
                   {formatPrice(listing.price)}
                 </span>
@@ -1304,13 +1306,13 @@ export default function ListingDetailPage({
               </div>
             )}
             {listing.status === 'Sold' && listing.sold_price && (
-              <div className="rounded-lg bg-blue-500/10 border border-blue-500/20 p-3 text-center">
+              <div className="flex flex-col gap-1 rounded-lg bg-blue-500/10 border border-blue-500/20 p-3 text-center">
                 <p className="text-xs text-blue-400">Sold for</p>
                 <p className="text-lg font-bold text-blue-400">
                   {formatPrice(listing.sold_price)} {getTokenLabel(listing.payment_token)}
                 </p>
                 {listing.buyer && (
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     to <span className="font-mono">{formatAddress(listing.buyer)}</span>
                   </p>
                 )}

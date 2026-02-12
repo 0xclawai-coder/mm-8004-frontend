@@ -55,12 +55,14 @@ function StatCard({
   borderClass: string
 }) {
   return (
-    <div className={cn('rounded-lg border p-4 text-center', borderClass)}>
-      <div className={cn('mx-auto mb-2 flex size-8 items-center justify-center rounded-lg', borderClass)}>
+    <div className={cn('flex flex-col items-center gap-2 rounded-lg border p-4 text-center', borderClass)}>
+      <div className={cn('flex size-8 items-center justify-center rounded-lg', borderClass)}>
         {icon}
       </div>
-      <p className={cn('text-xl font-bold tabular-nums', colorClass)}>{value}</p>
-      <p className="mt-0.5 text-xs text-muted-foreground">{label}</p>
+      <div className="flex flex-col gap-0.5">
+        <p className={cn('text-xl font-bold tabular-nums', colorClass)}>{value}</p>
+        <p className="text-xs text-muted-foreground">{label}</p>
+      </div>
     </div>
   )
 }
@@ -83,7 +85,7 @@ function FeedbackPreview({ event, chainId }: { event: Activity; chainId: number 
         <div className="flex size-8 shrink-0 items-center justify-center rounded-full border border-violet-500/30 bg-violet-500/20">
           <MessageSquare className="size-3.5 text-violet-400" />
         </div>
-        <div className="min-w-0">
+        <div className="flex min-w-0 flex-col gap-1">
           <div className="flex items-center gap-2">
             {clientAddress && (
               <a
@@ -99,7 +101,7 @@ function FeedbackPreview({ event, chainId }: { event: Activity; chainId: number 
             <span className="text-xs text-muted-foreground"><TimeCounter targetTime={new Date(event.block_timestamp)} /></span>
           </div>
           {tag1 && (
-            <Badge variant="secondary" className="mt-1 text-[10px] bg-primary/10 text-primary border-primary/20">
+            <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary border-primary/20">
               {tag1}
             </Badge>
           )}
@@ -224,7 +226,7 @@ export function OverviewTab({ agent, agentId, chainId, agentNumericId, onSwitchT
               <div
                 key={s.score_type}
                 className={cn(
-                  'rounded-lg border p-3',
+                  'flex flex-col gap-1 rounded-lg border p-3',
                   s.scale === 'percentage' ? getScoreBg(s.value) : 'border-border/50 bg-card/60',
                 )}
               >
@@ -239,8 +241,8 @@ export function OverviewTab({ agent, agentId, chainId, agentNumericId, onSwitchT
                     {SCALE_LABELS[s.scale] ?? s.scale}
                   </Badge>
                 </div>
-                <p className="mt-1 text-xs font-medium text-foreground">{s.score_type}</p>
-                <div className="flex items-center justify-between mt-0.5">
+                <p className="text-xs font-medium text-foreground">{s.score_type}</p>
+                <div className="flex items-center justify-between">
                   {s.label && (
                     <p className="text-[10px] text-muted-foreground truncate">{s.label}</p>
                   )}

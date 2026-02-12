@@ -52,7 +52,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   const data = payload[0].payload
 
   return (
-    <div className="rounded-lg border border-border/50 bg-card/95 px-3 py-2 shadow-lg backdrop-blur-sm">
+    <div className="flex flex-col gap-1 rounded-lg border border-border/50 bg-card/95 px-3 py-2 shadow-lg backdrop-blur-sm">
       <p className="text-xs text-muted-foreground">
         {new Date(data.date).toLocaleDateString('en-US', {
           month: 'long',
@@ -60,7 +60,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
           year: 'numeric',
         })}
       </p>
-      <div className="mt-1 flex items-baseline gap-2">
+      <div className="flex items-baseline gap-2">
         <span className="text-lg font-bold text-foreground">
           {data.score.toFixed(2)}
         </span>
@@ -79,12 +79,12 @@ export function RatingChart({ agentId, chainId }: RatingChartProps) {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-border/50 bg-card/60 p-6">
+      <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <Skeleton className="size-4 rounded" />
             <Skeleton className="h-4 w-36" />
-            <Skeleton className="ml-2 h-5 w-12 rounded-md" />
+            <Skeleton className="h-5 w-12 rounded-md" />
           </div>
           <div className="flex gap-1 rounded-lg border border-border/50 bg-muted/50 p-0.5">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -92,7 +92,7 @@ export function RatingChart({ agentId, chainId }: RatingChartProps) {
             ))}
           </div>
         </div>
-        <Skeleton className="mt-4 h-56 w-full rounded-lg" />
+        <Skeleton className="h-56 w-full rounded-lg" />
       </div>
     )
   }
@@ -110,7 +110,7 @@ export function RatingChart({ agentId, chainId }: RatingChartProps) {
   const history = data?.history || []
 
   return (
-    <div className="rounded-xl border border-border/50 bg-card/60 p-6">
+    <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
@@ -119,7 +119,7 @@ export function RatingChart({ agentId, chainId }: RatingChartProps) {
             Reputation Over Time
           </h3>
           {data?.current_score != null && (
-            <span className="ml-2 rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+            <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
               {data.current_score.toFixed(2)}
             </span>
           )}
@@ -152,7 +152,7 @@ export function RatingChart({ agentId, chainId }: RatingChartProps) {
           <p className="text-sm text-muted-foreground">No data available for this range.</p>
         </div>
       ) : (
-        <div className="mt-4 h-56 w-full">
+        <div className="h-56 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={history}

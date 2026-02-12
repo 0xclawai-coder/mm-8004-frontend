@@ -34,14 +34,14 @@ export function ChainFilter({ selected, onSelect, className }: ChainFilterProps)
             )}
           >
             {chain.id === 143 && (
-              <span className="mr-1 inline-block size-2 rounded-full bg-green-400" />
+              <span className="inline-block size-2 rounded-full bg-green-400" />
             )}
             {chain.id === 10143 && (
-              <span className="mr-1 inline-block size-2 rounded-full bg-yellow-400" />
+              <span className="inline-block size-2 rounded-full bg-yellow-400" />
             )}
             {chain.label}
             {chain.id !== undefined && (
-              <span className="ml-1 text-muted-foreground">({chain.id})</span>
+              <span className="text-muted-foreground">({chain.id})</span>
             )}
           </Button>
         )

@@ -52,11 +52,11 @@ function StatsBar() {
             key={item.label}
             href={item.href}
             className={cn(
-              "rounded-xl border border-border/30 bg-card/40 p-4 text-center transition-colors hover:border-primary/30 hover:bg-card/60",
+              "flex flex-col gap-1 rounded-xl border border-border/30 bg-card/40 p-4 text-center transition-colors hover:border-primary/30 hover:bg-card/60",
               dimmed && "opacity-60"
             )}
           >
-            <div className={cn("mb-2 flex items-center justify-center", dimmed ? "text-muted-foreground" : "text-primary")}>
+            <div className={cn("flex items-center justify-center", dimmed ? "text-muted-foreground" : "text-primary")}>
               {item.icon}
             </div>
             {isLoading ? (
@@ -68,7 +68,7 @@ function StatsBar() {
                   : item.value}
               </p>
             )}
-            <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
               {item.label}
             </p>
           </Link>
@@ -183,17 +183,17 @@ function RecentListings() {
                       <Cpu className="size-10 text-primary/30" />
                     </div>
                   )}
-                  <div className="p-3">
+                  <div className="flex flex-col gap-0.5 p-3">
                     <p className="truncate text-sm font-semibold text-foreground">
                       {listing.agent_name || `Agent #${listing.token_id}`}
                     </p>
-                    <p className="mt-1 text-xs font-medium text-primary">
+                    <p className="text-xs font-medium text-primary">
                       {formatPrice(listing.price)}{' '}
                       <span className="text-muted-foreground">
                         {getTokenLabel(listing.payment_token)}
                       </span>
                     </p>
-                    <p className="mt-0.5 text-[10px] text-muted-foreground">
+                    <p className="text-[10px] text-muted-foreground">
                       {formatAddress(listing.seller)}
                     </p>
                   </div>
@@ -251,11 +251,11 @@ const features = [
 function FeaturesSection() {
   return (
     <section className="space-y-6">
-      <div className="text-center">
+      <div className="flex flex-col gap-2 text-center">
         <h2 className="text-xl font-bold text-foreground sm:text-2xl">
           Why Molt?
         </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           The infrastructure for autonomous AI agent economies
         </p>
       </div>
@@ -298,15 +298,15 @@ function FeaturesSection() {
 
 function CTABanner() {
   return (
-    <section className="overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-violet-500/5 to-cyan-500/10 p-8 text-center sm:p-12">
+    <section className="flex flex-col items-center gap-6 overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-violet-500/5 to-cyan-500/10 p-8 text-center sm:p-12">
       <h2 className="text-xl font-bold text-foreground sm:text-2xl">
         Ready to trade AI agents?
       </h2>
-      <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+      <p className="mx-auto max-w-md text-sm text-muted-foreground">
         Register your agent, list it on the marketplace, or discover the next
         breakthrough in autonomous AI.
       </p>
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+      <div className="flex flex-wrap items-center justify-center gap-3">
         <Link href="/explore/agents">
           <Button
             size="lg"
@@ -334,14 +334,14 @@ export default function HomePage() {
   return (
     <div className="space-y-12 pb-8">
       {/* Hero */}
-      <section className="relative overflow-hidden py-12 text-center sm:py-20">
+      <section className="relative flex flex-col items-center gap-4 overflow-hidden py-12 text-center sm:py-20">
         {/* Decorative blobs */}
         <div className="pointer-events-none absolute -left-32 -top-32 size-64 rounded-full bg-primary/10 blur-[100px]" />
         <div className="pointer-events-none absolute -right-32 bottom-0 size-64 rounded-full bg-cyan-accent/10 blur-[100px]" />
 
         <Badge
           variant="outline"
-          className="mb-4 border-primary/30 bg-primary/10 text-primary text-xs"
+          className="border-primary/30 bg-primary/10 text-primary text-xs"
         >
           Built on Monad · EIP-8004 · x402
         </Badge>
@@ -352,12 +352,12 @@ export default function HomePage() {
           Marketplace
         </h1>
 
-        <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground sm:text-base">
+        <p className="mx-auto max-w-xl text-sm text-muted-foreground sm:text-base">
           Discover, trade, and interact with autonomous AI agents.
           On-chain identity, reputation, and micropayments — all on Monad.
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <div className="flex flex-wrap items-center justify-center gap-3">
           <Link href="/explore/agents">
             <Button
               size="lg"

@@ -103,14 +103,14 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
                         {entry.name?.charAt(0)?.toUpperCase() || '?'}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="min-w-0">
+                    <div className="flex min-w-0 flex-col gap-0.5">
                       <p className="truncate text-sm font-medium text-foreground">
                         {entry.name || `Agent #${entry.agent_id}`}
                       </p>
                       {entry.x402_support && (
                         <Badge
                           variant="outline"
-                          className="mt-0.5 border-cyan-accent/30 bg-cyan-accent/10 text-cyan-accent text-[9px] px-1"
+                          className="border-cyan-accent/30 bg-cyan-accent/10 text-cyan-accent text-[9px] px-1"
                         >
                           x402
                         </Badge>

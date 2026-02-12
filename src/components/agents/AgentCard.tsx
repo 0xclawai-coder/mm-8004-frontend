@@ -40,7 +40,7 @@ export function AgentCard({ agent }: AgentCardProps) {
                 {agent.name?.charAt(0)?.toUpperCase() || '?'}
               </AvatarFallback>
             </Avatar>
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 flex flex-col gap-1">
               <div className="flex items-start justify-between gap-2">
                 <h3 className="truncate text-sm font-bold text-foreground">
                   {agent.name || `Agent #${agent.agent_id}`}
@@ -49,7 +49,7 @@ export function AgentCard({ agent }: AgentCardProps) {
                   <TimeCounter targetTime={new Date(agent.block_timestamp)} />
                 </span>
               </div>
-              <p className="mt-1 min-h-8 line-clamp-2 text-xs text-muted-foreground">
+              <p className="min-h-8 line-clamp-2 text-xs text-muted-foreground">
                 {agent.description || 'No description available'}
               </p>
             </div>

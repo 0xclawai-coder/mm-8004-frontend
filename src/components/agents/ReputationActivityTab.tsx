@@ -94,7 +94,7 @@ function FeedbackCard({ event }: { event: Activity }) {
   return (
     <div
       className={cn(
-        'rounded-lg border border-border/50 bg-card/60 p-4 transition-colors hover:bg-card/80',
+        'flex flex-col gap-3 rounded-lg border border-border/50 bg-card/60 p-4 transition-colors hover:bg-card/80',
         revoked && 'opacity-60',
       )}
     >
@@ -127,7 +127,7 @@ function FeedbackCard({ event }: { event: Activity }) {
       </div>
 
       {/* Score + Tags */}
-      <div className="mt-3 flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         {value !== undefined && (
           <div className="flex items-center gap-1.5">
             <ScoreStars value={value} />
@@ -155,7 +155,7 @@ function FeedbackCard({ event }: { event: Activity }) {
 
       {/* Endpoint */}
       {endpoint && (
-        <p className="mt-2 truncate text-xs text-muted-foreground">
+        <p className="truncate text-xs text-muted-foreground">
           Endpoint: <span className="font-mono text-foreground/70">{endpoint}</span>
         </p>
       )}
@@ -166,7 +166,7 @@ function FeedbackCard({ event }: { event: Activity }) {
           href={getExplorerUrl(event.chain_id, event.tx_hash)}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 inline-flex items-center gap-1 text-xs text-primary/70 hover:text-primary transition-colors"
+          className="inline-flex items-center gap-1 text-xs text-primary/70 hover:text-primary transition-colors"
         >
           <span className="font-mono">{truncateHash(event.tx_hash)}</span>
           <ExternalLink className="size-3" />

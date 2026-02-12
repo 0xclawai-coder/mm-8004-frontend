@@ -56,8 +56,8 @@ function AgentColumn({
   isLoading: boolean
 }) {
   return (
-    <div className="min-w-0">
-      <h3 className="mb-2 text-sm font-semibold text-foreground">{title}</h3>
+    <div className="min-w-0 space-y-2">
+      <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       <div className="flex flex-col gap-2">
         {isLoading
           ? Array.from({ length: 3 }).map((_, i) => (

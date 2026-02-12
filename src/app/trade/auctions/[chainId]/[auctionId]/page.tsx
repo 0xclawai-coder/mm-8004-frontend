@@ -117,36 +117,36 @@ function CountdownDisplay({ endTime, startTime }: { endTime: number; startTime: 
 
   if (isEnded && now >= startTime) {
     return (
-      <div>
-        <p className="text-xs text-muted-foreground mb-1">Auction Ended</p>
+      <div className="flex flex-col gap-1">
+        <p className="text-xs text-muted-foreground">Auction Ended</p>
         <p className="text-lg font-bold text-red-400">Finished</p>
       </div>
     )
   }
 
   return (
-    <div>
-      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+    <div className="flex flex-col gap-1">
+      <p className="text-xs text-muted-foreground">{label}</p>
       <div className="flex items-center gap-1">
         {days > 0 && (
-          <div className="rounded-md bg-muted/50 px-2 py-1 text-center">
+          <div className="flex items-baseline gap-0.5 rounded-md bg-muted/50 px-2 py-1 text-center">
             <span className="text-lg font-bold tabular-nums text-foreground">{days}</span>
-            <span className="text-[10px] text-muted-foreground ml-0.5">d</span>
+            <span className="text-[10px] text-muted-foreground">d</span>
           </div>
         )}
-        <div className="rounded-md bg-muted/50 px-2 py-1 text-center">
+        <div className="flex items-baseline gap-0.5 rounded-md bg-muted/50 px-2 py-1 text-center">
           <span className="text-lg font-bold tabular-nums text-foreground">{String(hours).padStart(2, '0')}</span>
-          <span className="text-[10px] text-muted-foreground ml-0.5">h</span>
+          <span className="text-[10px] text-muted-foreground">h</span>
         </div>
         <span className="text-muted-foreground font-bold">:</span>
-        <div className="rounded-md bg-muted/50 px-2 py-1 text-center">
+        <div className="flex items-baseline gap-0.5 rounded-md bg-muted/50 px-2 py-1 text-center">
           <span className="text-lg font-bold tabular-nums text-foreground">{String(minutes).padStart(2, '0')}</span>
-          <span className="text-[10px] text-muted-foreground ml-0.5">m</span>
+          <span className="text-[10px] text-muted-foreground">m</span>
         </div>
         <span className="text-muted-foreground font-bold">:</span>
-        <div className="rounded-md bg-muted/50 px-2 py-1 text-center">
+        <div className="flex items-baseline gap-0.5 rounded-md bg-muted/50 px-2 py-1 text-center">
           <span className="text-lg font-bold tabular-nums text-foreground">{String(seconds).padStart(2, '0')}</span>
-          <span className="text-[10px] text-muted-foreground ml-0.5">s</span>
+          <span className="text-[10px] text-muted-foreground">s</span>
         </div>
       </div>
     </div>
@@ -202,10 +202,10 @@ function BidHistoryTable({ bids, chainId, token }: { bids: AuctionBid[]; chainId
 
   if (sorted.length === 0) {
     return (
-      <div className="py-8 text-center">
-        <Gavel className="mx-auto mb-2 size-8 text-muted-foreground/30" />
+      <div className="flex flex-col items-center gap-2 py-8 text-center">
+        <Gavel className="size-8 text-muted-foreground/30" />
         <p className="text-sm text-muted-foreground">No bids yet</p>
-        <p className="text-xs text-muted-foreground/60 mt-1">Be the first to place a bid!</p>
+        <p className="text-xs text-muted-foreground/60">Be the first to place a bid!</p>
       </div>
     )
   }
@@ -240,8 +240,10 @@ function BidHistoryTable({ bids, chainId, token }: { bids: AuctionBid[]; chainId
                 </a>
               </td>
               <td className="py-2.5 text-right">
-                <span className="font-semibold text-foreground">{formatPrice(bid.amount)}</span>
-                <span className="ml-1 text-xs text-muted-foreground">{token}</span>
+                <span className="inline-flex items-baseline gap-1">
+                  <span className="font-semibold text-foreground">{formatPrice(bid.amount)}</span>
+                  <span className="text-xs text-muted-foreground">{token}</span>
+                </span>
               </td>
               <td className="py-2.5 text-right text-xs text-muted-foreground">
                 {formatDistanceToNowSmart(new Date(bid.block_timestamp), { addSuffix: true })}
@@ -297,10 +299,10 @@ function AgentPropertiesSection({ agent, chainId }: { agent: AgentDetail; chainI
                 href={getExplorerUrl(chainId, agent.owner)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-xs text-primary/80 hover:text-primary transition-colors"
+                className="inline-flex items-center gap-1 font-mono text-xs text-primary/80 hover:text-primary transition-colors"
               >
                 {formatAddress(agent.owner)}
-                <ExternalLink className="ml-1 inline size-2.5" />
+                <ExternalLink className="size-2.5" />
               </a>
               <CopyButton value={agent.owner} />
             </div>
@@ -433,8 +435,8 @@ function ProvenanceSection({ agent, chainId }: { agent: AgentDetail; chainId: nu
 
 function LoadingSkeleton() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      <Skeleton className="mb-6 h-9 w-36 rounded-lg" />
+    <div className="mx-auto max-w-7xl space-y-6 px-4 py-8">
+      <Skeleton className="h-9 w-36 rounded-lg" />
       <div className="flex items-center justify-center py-24">
         <Loader2 className="size-8 animate-spin text-primary" />
       </div>
@@ -448,22 +450,22 @@ function LoadingSkeleton() {
 
 function ErrorState({ id }: { id: string }) {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <Link href="/trade/auctions">
-        <Button variant="ghost" size="sm" className="mb-8 gap-2 text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
           Back to Auctions
         </Button>
       </Link>
       <div className="flex flex-col items-center justify-center py-24">
-        <div className="rounded-2xl border border-border/50 bg-card/60 p-12 text-center">
-          <Gavel className="mx-auto mb-4 size-12 text-muted-foreground/30" />
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-border/50 bg-card/60 p-12 text-center">
+          <Gavel className="size-12 text-muted-foreground/30" />
           <h2 className="text-xl font-semibold text-foreground">Auction Not Found</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Could not find auction &quot;{id}&quot;.
           </p>
           <Link href="/trade/auctions">
-            <Button variant="default" size="sm" className="mt-6">
+            <Button variant="default" size="sm">
               Browse All Auctions
             </Button>
           </Link>
@@ -623,10 +625,10 @@ export default function AuctionDetailPage({
   const isBuyingNow = isBuyNowPending || isBuyNowConfirming
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
       {/* Back button */}
       <Link href="/trade/auctions">
-        <Button variant="ghost" size="sm" className="mb-6 gap-2 text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
           Back to Auctions
         </Button>
@@ -687,8 +689,8 @@ export default function AuctionDetailPage({
           <div className="rounded-xl border border-border/50 bg-card/60 p-6 space-y-5">
             {/* Bid + Countdown row */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">
+              <div className="flex flex-col gap-1">
+                <p className="text-xs text-muted-foreground">
                   {hasBids ? 'Current Bid' : 'Starting Bid'}
                 </p>
                 <div className="flex items-baseline gap-2">
@@ -698,7 +700,7 @@ export default function AuctionDetailPage({
                   <span className="text-lg text-muted-foreground">{token}</span>
                 </div>
                 {hasBids && auction.highest_bidder && (
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     by{' '}
                     <a
                       href={getExplorerUrl(chainId, auction.highest_bidder)}
@@ -811,10 +813,10 @@ export default function AuctionDetailPage({
             )}
 
             {status === 'upcoming' && (
-              <div className="rounded-lg bg-yellow-500/10 border border-yellow-500/20 p-4 text-center">
-                <Clock className="mx-auto mb-2 size-5 text-yellow-400" />
+              <div className="flex flex-col items-center gap-1 rounded-lg bg-yellow-500/10 border border-yellow-500/20 p-4 text-center">
+                <Clock className="size-5 text-yellow-400" />
                 <p className="text-sm font-medium text-foreground">Auction Not Started</p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground">
                   Starts {new Date(auction.start_time * 1000).toLocaleString()}
                 </p>
               </div>
@@ -822,36 +824,36 @@ export default function AuctionDetailPage({
 
             {/* Stats grid */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div className="rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
+              <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Start Bid</p>
-                <p className="mt-1 text-sm font-semibold text-foreground">{formatPrice(auction.start_price)}</p>
+                <p className="text-sm font-semibold text-foreground">{formatPrice(auction.start_price)}</p>
                 <p className="text-[10px] text-muted-foreground">{token}</p>
               </div>
-              <div className="rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
+              <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Reserve</p>
-                <p className="mt-1 text-sm font-semibold text-foreground">
+                <p className="text-sm font-semibold text-foreground">
                   {hasReserve ? formatPrice(auction.reserve_price) : '—'}
                 </p>
                 {hasReserve && <p className="text-[10px] text-muted-foreground">{token}</p>}
               </div>
-              <div className="rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
+              <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Buy Now</p>
-                <p className="mt-1 text-sm font-semibold text-foreground">
+                <p className="text-sm font-semibold text-foreground">
                   {hasBuyNow ? formatPrice(auction.buy_now_price) : '—'}
                 </p>
                 {hasBuyNow && <p className="text-[10px] text-muted-foreground">{token}</p>}
               </div>
-              <div className="rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
+              <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Bids</p>
-                <p className="mt-1 text-sm font-semibold text-foreground">{auction.bid_count ?? 0}</p>
+                <p className="text-sm font-semibold text-foreground">{auction.bid_count ?? 0}</p>
                 <p className="text-[10px] text-muted-foreground">total</p>
               </div>
             </div>
           </div>
 
           {/* Bid History */}
-          <div className="rounded-xl border border-border/50 bg-card/60 p-6">
-            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+          <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               📜 Bid History
               {bids.length > 0 && (
                 <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold text-primary">
@@ -872,8 +874,8 @@ export default function AuctionDetailPage({
           {agent && <ProvenanceSection agent={agent} chainId={chainId} />}
 
           {/* Item Activity */}
-          <div className="rounded-xl border border-border/50 bg-card/60 p-6">
-            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+          <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               ⚡ Item Activity
             </h3>
             <div className="overflow-x-auto">

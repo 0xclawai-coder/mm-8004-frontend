@@ -107,8 +107,8 @@ function LivePreview({ form, chainId }: { form: FormState; chainId: number }) {
   const hasContent = form.name || form.description || form.imageUrl || form.categories.length > 0
 
   return (
-    <div className="sticky top-24">
-      <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+    <div className="sticky top-24 space-y-3">
+      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
         Live Preview
       </h3>
       <Card className="relative overflow-hidden border-border/50 bg-card/80 py-0 transition-all duration-300">
@@ -123,11 +123,11 @@ function LivePreview({ form, chainId }: { form: FormState; chainId: number }) {
                 {form.name?.charAt(0)?.toUpperCase() || '?'}
               </AvatarFallback>
             </Avatar>
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 space-y-1">
               <h3 className="truncate text-sm font-bold text-foreground">
                 {form.name || 'Agent Name'}
               </h3>
-              <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+              <p className="line-clamp-2 text-xs text-muted-foreground">
                 {form.description || 'No description yet'}
               </p>
             </div>
@@ -188,8 +188,8 @@ function LivePreview({ form, chainId }: { form: FormState; chainId: number }) {
 
           {/* Endpoints preview */}
           {form.endpoints.length > 0 && (
-            <div className="border-t border-border/50 pt-3">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+            <div className="flex flex-col gap-2 border-t border-border/50 pt-3">
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                 Endpoints
               </p>
               <div className="space-y-1">
@@ -233,9 +233,9 @@ function ConnectWalletPrompt() {
           <div className="flex size-16 items-center justify-center rounded-full bg-primary/10">
             <Wallet className="size-8 text-primary" />
           </div>
-          <div>
+          <div className="space-y-2">
             <h2 className="text-xl font-bold text-foreground">Connect Your Wallet</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               You need to connect your wallet to register a new AI agent on the Monad chain.
             </p>
           </div>
@@ -446,11 +446,11 @@ export default function CreateMoltPage() {
       <div className="min-h-screen bg-gradient-radial">
         <div className="mx-auto max-w-7xl px-4 pt-6 pb-8 sm:px-6 sm:pt-10 lg:px-8">
           {/* Header */}
-          <div className="mb-4 text-center">
+          <div className="flex flex-col gap-3 pb-4 text-center">
             <h1 className="text-gradient-glow text-3xl font-extrabold sm:text-4xl lg:text-5xl">
               Create Your Molt
             </h1>
-            <p className="mt-3 text-base text-muted-foreground sm:text-lg">
+            <p className="text-base text-muted-foreground sm:text-lg">
               Register a new AI agent on the Monad chain
             </p>
           </div>
@@ -478,11 +478,11 @@ export default function CreateMoltPage() {
     <div className="min-h-screen bg-gradient-radial">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-10 text-center">
+        <div className="flex flex-col gap-3 pb-10 text-center">
           <h1 className="text-gradient-glow text-3xl font-extrabold sm:text-4xl lg:text-5xl">
             Create Your Molt
           </h1>
-          <p className="mt-3 text-base text-muted-foreground sm:text-lg">
+          <p className="text-base text-muted-foreground sm:text-lg">
             Register a new AI agent on the Monad chain
           </p>
         </div>
@@ -591,13 +591,13 @@ export default function CreateMoltPage() {
                       type="button"
                       onClick={() => toggleCategory(category)}
                       className={cn(
-                        'inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium transition-all cursor-pointer',
+                        'inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-medium transition-all cursor-pointer',
                         selected
                           ? 'border-primary/50 bg-primary/20 text-primary shadow-sm'
                           : 'border-border/50 bg-secondary/50 text-muted-foreground hover:border-primary/30 hover:text-foreground'
                       )}
                     >
-                      {selected && <CheckCircle2 className="mr-1 size-3" />}
+                      {selected && <CheckCircle2 className="size-3" />}
                       {category}
                     </button>
                   )
@@ -706,7 +706,7 @@ export default function CreateMoltPage() {
             </div>
 
             {/* Submit Button */}
-            <div className="pt-4 border-t border-border/50">
+            <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
               <Button
                 type="button"
                 size="lg"
@@ -726,7 +726,7 @@ export default function CreateMoltPage() {
                   </>
                 )}
               </Button>
-              <p className="mt-2 text-center text-xs text-muted-foreground">
+              <p className="text-center text-xs text-muted-foreground">
                 This will call <code className="font-mono text-primary/80">IdentityRegistry.register()</code> on{' '}
                 {getChainLabel(chainId)}
               </p>
@@ -760,8 +760,8 @@ export default function CreateMoltPage() {
                 </DialogDescription>
               </DialogHeader>
               {txHash && (
-                <div className="rounded-lg bg-secondary/50 p-3">
-                  <p className="text-xs text-muted-foreground mb-1">Transaction Hash</p>
+                <div className="flex flex-col gap-1 rounded-lg bg-secondary/50 p-3">
+                  <p className="text-xs text-muted-foreground">Transaction Hash</p>
                   <a
                     href={getExplorerTxUrl(chainId, txHash)}
                     target="_blank"
@@ -791,18 +791,18 @@ export default function CreateMoltPage() {
               </DialogHeader>
 
               {/* Confetti-style success banner */}
-              <div className="rounded-lg bg-gradient-to-r from-primary/10 via-violet-glow/10 to-cyan-accent/10 border border-primary/20 p-4 text-center">
+              <div className="flex flex-col gap-1 rounded-lg bg-gradient-to-r from-primary/10 via-violet-glow/10 to-cyan-accent/10 border border-primary/20 p-4 text-center">
                 <p className="text-lg font-bold text-gradient-glow">
                   Welcome to the Molt Network!
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   Your agent is now on-chain and ready to build its reputation.
                 </p>
               </div>
 
               {txHash && (
-                <div className="rounded-lg bg-secondary/50 p-3">
-                  <p className="text-xs text-muted-foreground mb-1">Transaction Hash</p>
+                <div className="flex flex-col gap-1 rounded-lg bg-secondary/50 p-3">
+                  <p className="text-xs text-muted-foreground">Transaction Hash</p>
                   <a
                     href={getExplorerTxUrl(chainId, txHash)}
                     target="_blank"

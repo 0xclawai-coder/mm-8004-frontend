@@ -45,15 +45,15 @@ export function Footer() {
   return (
     <footer className="mt-auto w-full">
       <Separator className="opacity-50" />
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-8">
         {/* Grid */}
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
           {footerLinks.map((group) => (
-            <div key={group.title}>
+            <div key={group.title} className="flex flex-col gap-3">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
                 {group.title}
               </h3>
-              <ul className="mt-3 space-y-2">
+              <ul className="space-y-2">
                 {group.links.map((link) => (
                   <li key={link.label}>
                     {link.external ? (
@@ -81,7 +81,7 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border/50 pt-6 sm:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-border/50 pt-6 sm:flex-row">
           <div className="flex items-center gap-2">
             <MoltLogo size={20} />
             <span className="text-gradient-violet text-sm font-extrabold uppercase tracking-wider">
