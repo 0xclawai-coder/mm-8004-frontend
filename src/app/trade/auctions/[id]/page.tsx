@@ -2,7 +2,6 @@
 
 import { use, useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import {
   ArrowLeft,
   Gavel,
@@ -30,6 +29,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { cn, formatAddress, formatPrice, getTokenLabel, formatDistanceToNowSmart } from '@/lib/utils'
 import { useAuctionDetail } from '@/hooks/useAuctionDetail'
 import { useAgent } from '@/hooks/useAgent'
+import { HoloCard } from '@/components/agents/HoloCard'
 import type { AuctionBid, MarketplaceAuction } from '@/types'
 
 // ============================================================
@@ -420,10 +420,26 @@ function LoadingSkeleton() {
         <Skeleton className="h-5 w-24 rounded-full" />
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[400px_1fr]">
-        {/* Left */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_1fr]">
+        {/* Left: HoloCard skeleton */}
         <div className="space-y-4">
-          <Skeleton className="aspect-square w-full rounded-xl" />
+          <div className="flex justify-center lg:justify-start">
+            <div className="w-full max-w-[300px] rounded-2xl border border-border/50 bg-card/95 overflow-hidden">
+              <Skeleton className="h-40 w-full rounded-none" />
+              <div className="p-5 space-y-3">
+                <Skeleton className="h-6 w-40" />
+                <Skeleton className="h-3.5 w-full" />
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-7 w-16" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+                <div className="flex items-center justify-between border-t border-border/30 pt-3 mt-auto">
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+              </div>
+            </div>
+          </div>
           <div className="rounded-xl border border-border/50 bg-card/60 p-4 space-y-3">
             <Skeleton className="h-5 w-32" />
             {Array.from({ length: 5 }).map((_, i) => (
@@ -517,6 +533,7 @@ export default function AuctionDetailPage({
 
   // Build agent ID for useAgent hook: "{chainId}-{tokenId}"
   const agentId = auction ? `${auction.chain_id}-${auction.token_id}` : ''
+  const { data: agent } = useAgent(agentId)
 
   if (isLoading) return <LoadingSkeleton />
   if (error || !auction) return <ErrorState id={id} />
@@ -571,42 +588,21 @@ export default function AuctionDetailPage({
       </div>
 
       {/* Two-column layout */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[400px_1fr]">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_1fr]">
         {/* ============ LEFT COLUMN ============ */}
         <div className="space-y-4">
-          {/* Agent Image */}
-          <div className="overflow-hidden rounded-xl border border-border/50 bg-card/60">
-            <div className="relative aspect-square bg-gradient-to-br from-primary/20 via-card to-cyan-accent/10">
-              {auction.agent_image ? (
-                <Image
-                  src={auction.agent_image}
-                  alt={auction.agent_name ?? `Agent #${auction.token_id}`}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 400px"
-                />
-              ) : (
-                <div className="flex size-full items-center justify-center">
-                  <span className="text-6xl font-bold text-primary/30">
-                    #{auction.token_id}
-                  </span>
-                </div>
-              )}
-
-              {/* Status overlay */}
-              <div className="absolute top-3 left-3">
-                <StatusBadge status={status} />
-              </div>
-
-              {hasBuyNow && status === 'live' && (
-                <Badge
-                  variant="outline"
-                  className="absolute top-3 right-3 border-primary/30 bg-card/80 text-xs text-primary backdrop-blur-sm"
-                >
-                  Buy Now {formatPrice(auction.buy_now_price)} {token}
-                </Badge>
-              )}
-            </div>
+          {/* HoloCard */}
+          <div className="flex justify-center lg:justify-start">
+            <HoloCard
+              image={agent?.image ?? auction.agent_image}
+              name={auction.agent_name || agent?.name || `Agent #${auction.token_id}`}
+              description={agent?.description ?? null}
+              score={agent?.reputation_score ?? null}
+              feedbackCount={agent?.feedback_count ?? 0}
+              chainId={auction.chain_id}
+              owner={auction.seller}
+              agent={agent ?? undefined}
+            />
           </div>
 
           {/* Agent Properties (EIP-8004 data) */}

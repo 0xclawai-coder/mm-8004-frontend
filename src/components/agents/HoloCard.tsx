@@ -7,9 +7,28 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { AgentDetail } from "@/types";
 
-interface HoloCardProps {
-  agent: AgentDetail;
+// ============================================================
+// Public Props
+// ============================================================
+
+export interface HoloCardProps {
+  /** Pass a full AgentDetail and the card auto-derives everything. */
+  agent?: AgentDetail;
+
+  // --- OR supply individual fields (override agent fields when both given) ---
+  image?: string | null;
+  name?: string;
+  description?: string | null;
+  score?: number | null;
+  feedbackCount?: number;
+  chainId?: number;
+  owner?: string;
+  tags?: { label: string; icon: React.ReactNode; className: string }[];
 }
+
+// ============================================================
+// Internal helpers
+// ============================================================
 
 function getScoreColor(score: number): string {
   if (score >= 70) return "text-green-400";
@@ -67,7 +86,49 @@ function StarRating({ score }: { score: number }) {
   );
 }
 
-export function HoloCard({ agent }: HoloCardProps) {
+// ============================================================
+// Component
+// ============================================================
+
+export function HoloCard(props: HoloCardProps) {
+  const { agent } = props;
+
+  // Resolve fields: explicit props win over agent-derived values
+  const image = props.image !== undefined ? props.image : agent?.image ?? null;
+  const name = props.name ?? agent?.name ?? (agent ? `Agent #${agent.agent_id}` : "Unknown");
+  const description = props.description !== undefined ? props.description : agent?.description ?? null;
+  const score = props.score !== undefined ? props.score : agent?.reputation_score ?? null;
+  const feedbackCount = props.feedbackCount ?? agent?.feedback_count ?? 0;
+  const chainId = props.chainId ?? agent?.chain_id ?? 0;
+  const owner = props.owner ?? agent?.owner ?? "";
+
+  // Tags: explicit tags take priority, otherwise auto-derive from agent
+  let tags = props.tags;
+  if (!tags && agent) {
+    tags = [];
+    if (isNewbie(agent.block_timestamp)) {
+      tags.push({
+        label: "Newbie",
+        icon: <Sparkles className="size-3" />,
+        className: "border-green-400/40 bg-green-400/10 text-green-400",
+      });
+    }
+    if (agent.x402_support) {
+      tags.push({
+        label: "X402-Verified",
+        icon: <Shield className="size-3" />,
+        className: "border-cyan-accent/40 bg-cyan-accent/10 text-cyan-accent",
+      });
+    }
+    if ((agent.reputation_score ?? 0) >= 90) {
+      tags.push({
+        label: "High Score",
+        icon: <Zap className="size-3" />,
+        className: "border-yellow-400/40 bg-yellow-400/10 text-yellow-400",
+      });
+    }
+  }
+
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
@@ -100,29 +161,7 @@ export function HoloCard({ agent }: HoloCardProps) {
   const glowX = mousePos.x * 100;
   const glowY = mousePos.y * 100;
 
-  const tags: { label: string; icon: React.ReactNode; className: string }[] =
-    [];
-  if (isNewbie(agent.block_timestamp)) {
-    tags.push({
-      label: "Newbie",
-      icon: <Sparkles className="size-3" />,
-      className: "border-green-400/40 bg-green-400/10 text-green-400",
-    });
-  }
-  if (agent.x402_support) {
-    tags.push({
-      label: "X402-Verified",
-      icon: <Shield className="size-3" />,
-      className: "border-cyan-accent/40 bg-cyan-accent/10 text-cyan-accent",
-    });
-  }
-  if ((agent.reputation_score ?? 0) >= 90) {
-    tags.push({
-      label: "High Score",
-      icon: <Zap className="size-3" />,
-      className: "border-yellow-400/40 bg-yellow-400/10 text-yellow-400",
-    });
-  }
+  const displayScore = score ?? 0;
 
   return (
     <div className="holo-perspective w-full" style={{ perspective: "1000px" }}>
@@ -132,7 +171,6 @@ export function HoloCard({ agent }: HoloCardProps) {
           "holo-card relative w-full max-w-[300px] rounded-2xl",
           "cursor-pointer select-none",
           "motion-safe:will-change-transform",
-          // 'motion-reduce:!transform-none',
         )}
         style={{
           transformStyle: "preserve-3d",
@@ -203,12 +241,12 @@ export function HoloCard({ agent }: HoloCardProps) {
             }}
           />
 
-          {/* Agent Image Section */}
+          {/* Image Section */}
           <div className="relative h-40 w-full shrink-0 overflow-hidden bg-gradient-to-b from-primary/20 to-transparent">
-            {agent.image ? (
+            {image ? (
               <Image
-                src={agent.image}
-                alt={agent.name ?? `Agent #${agent.agent_id}`}
+                src={image}
+                alt={name}
                 fill
                 className="object-cover"
                 sizes="300px"
@@ -216,7 +254,7 @@ export function HoloCard({ agent }: HoloCardProps) {
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/30 via-violet-dim/30 to-cyan-accent/20">
                 <span className="text-6xl font-bold text-primary/40">
-                  {agent.name?.charAt(0)?.toUpperCase() || "?"}
+                  {name?.charAt(0)?.toUpperCase() || "?"}
                 </span>
               </div>
             )}
@@ -226,16 +264,16 @@ export function HoloCard({ agent }: HoloCardProps) {
 
           {/* Card Content */}
           <div className="relative z-20 flex flex-1 flex-col overflow-hidden p-5">
-            {/* Top section: name, description, categories, score, tags */}
+            {/* Top section: name, description, score, tags */}
             <div className="space-y-3">
-              {/* Agent Name */}
+              {/* Name */}
               <div>
                 <h2 className="truncate text-xl font-bold text-foreground">
-                  {agent.name || `Agent #${agent.agent_id}`}
+                  {name}
                 </h2>
-                {agent.description && (
+                {description && (
                   <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                    {agent.description}
+                    {description}
                   </p>
                 )}
               </div>
@@ -246,26 +284,26 @@ export function HoloCard({ agent }: HoloCardProps) {
                   <Star
                     className={cn(
                       "size-5",
-                      getScoreColor(agent.reputation_score ?? 0),
+                      getScoreColor(displayScore),
                     )}
                   />
                   <span
                     className={cn(
                       "text-2xl font-bold tabular-nums",
-                      getScoreColor(agent.reputation_score ?? 0),
+                      getScoreColor(displayScore),
                     )}
                   >
-                    {(agent.reputation_score ?? 0).toFixed(1)}
+                    {displayScore.toFixed(1)}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {agent.feedback_count} feedback
-                  {agent.feedback_count !== 1 ? "s" : ""}
+                  {feedbackCount} feedback
+                  {feedbackCount !== 1 ? "s" : ""}
                 </p>
               </div>
 
               {/* Tags Row */}
-              {tags.length > 0 && (
+              {tags && tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {tags.map((tag) => (
                     <Badge
@@ -287,15 +325,15 @@ export function HoloCard({ agent }: HoloCardProps) {
                 variant="outline"
                 className={cn(
                   "text-xs px-2",
-                  agent.chain_id === 143
+                  chainId === 143
                     ? "border-green-500/30 bg-green-500/10 text-green-400"
                     : "border-yellow-500/30 bg-yellow-500/10 text-yellow-400",
                 )}
               >
-                {getChainLabel(agent.chain_id)}
+                {getChainLabel(chainId)}
               </Badge>
               <span className="font-mono text-xs text-muted-foreground">
-                {truncateAddress(agent.owner)}
+                {truncateAddress(owner)}
               </span>
             </div>
           </div>

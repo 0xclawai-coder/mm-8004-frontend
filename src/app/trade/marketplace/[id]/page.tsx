@@ -2,7 +2,6 @@
 
 import { use, useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import {
   ArrowLeft,
   Shield,
@@ -23,7 +22,6 @@ import {
   User,
   ShoppingCart,
   HandCoins,
-  Cpu,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -37,6 +35,7 @@ import { useListing } from '@/hooks/useListing'
 import { useAgent } from '@/hooks/useAgent'
 import { useAgentActivity } from '@/hooks/useAgentActivity'
 import { useOffers } from '@/hooks/useOffers'
+import { HoloCard } from '@/components/agents/HoloCard'
 import type { Activity as ActivityType, AgentDetail, EventCategory, MarketplaceOffer } from '@/types'
 
 // ============================================================
@@ -127,16 +126,22 @@ function LoadingSkeleton() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <Skeleton className="mb-6 h-9 w-44 rounded-lg" />
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1.2fr]">
-        {/* Left: Image */}
-        <div>
-          <Skeleton className="aspect-square w-full rounded-2xl" />
-          <div className="mt-6 space-y-3">
-            <Skeleton className="h-5 w-32" />
-            <div className="grid grid-cols-2 gap-3">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-20 rounded-xl" />
-              ))}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_1fr]">
+        {/* Left: HoloCard skeleton */}
+        <div className="flex justify-center lg:justify-start">
+          <div className="w-full max-w-[300px] rounded-2xl border border-border/50 bg-card/95 overflow-hidden">
+            <Skeleton className="h-40 w-full rounded-none" />
+            <div className="p-5 space-y-3">
+              <Skeleton className="h-6 w-40" />
+              <Skeleton className="h-3.5 w-full" />
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-7 w-16" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+              <div className="flex items-center justify-between border-t border-border/30 pt-3 mt-auto">
+                <Skeleton className="h-5 w-16 rounded-full" />
+                <Skeleton className="h-3 w-24" />
+              </div>
             </div>
           </div>
         </div>
@@ -850,26 +855,21 @@ export default function ListingDetailPage({
       </Link>
 
       {/* Main two-column layout */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1.2fr]">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_1fr]">
         {/* ====================== LEFT COLUMN ====================== */}
         <div className="space-y-6">
-          {/* Agent Image */}
-          <div className="overflow-hidden rounded-2xl border border-border/50 bg-card/60">
-            {listing.agent_image || agent?.image ? (
-              <div className="relative aspect-square w-full">
-                <Image
-                  src={(agent?.image ?? listing.agent_image)!}
-                  alt={listing.agent_name ?? `Agent #${listing.token_id}`}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              </div>
-            ) : (
-              <div className="flex aspect-square w-full items-center justify-center bg-gradient-to-br from-primary/30 via-violet-500/20 to-cyan-500/20">
-                <Cpu className="size-24 text-primary/30" />
-              </div>
-            )}
+          {/* HoloCard */}
+          <div className="flex justify-center lg:justify-start">
+            <HoloCard
+              image={agent?.image ?? listing.agent_image}
+              name={listing.agent_name || agent?.name || `Agent #${listing.token_id}`}
+              description={agent?.description ?? null}
+              score={agent?.reputation_score ?? null}
+              feedbackCount={agent?.feedback_count ?? 0}
+              chainId={listing.chain_id}
+              owner={listing.seller}
+              agent={agent ?? undefined}
+            />
           </div>
 
           {/* Agent Properties */}
