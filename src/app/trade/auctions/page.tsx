@@ -5,6 +5,7 @@ import { Gavel, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAuctions } from '@/hooks/useAuctions'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { ChainFilter } from '@/components/agents/ChainFilter'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -52,11 +53,19 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
     <div className="group overflow-hidden rounded-xl border border-border/50 bg-card/60 transition-colors hover:border-primary/30">
       {/* Image area */}
       <div className="relative aspect-square bg-gradient-to-br from-primary/20 via-card to-cyan-accent/10">
-        <div className="flex size-full items-center justify-center">
-          <span className="text-3xl font-bold text-primary/40">
-            #{auction.token_id}
-          </span>
-        </div>
+        {auction.agent_image ? (
+          <img
+            src={auction.agent_image}
+            alt={auction.agent_name ?? `Agent #${auction.token_id}`}
+            className="size-full object-cover"
+          />
+        ) : (
+          <div className="flex size-full items-center justify-center">
+            <span className="text-3xl font-bold text-primary/40">
+              #{auction.token_id}
+            </span>
+          </div>
+        )}
 
         {/* Status badge overlay */}
         {ended ? (
@@ -89,7 +98,7 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
         {/* Name + bid count */}
         <div className="flex items-start justify-between gap-2">
           <p className="truncate text-sm font-medium text-foreground">
-            Agent #{auction.token_id}
+            {auction.agent_name || `Agent #${auction.token_id}`}
           </p>
           {(auction.bid_count ?? 0) > 0 && (
             <div className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">

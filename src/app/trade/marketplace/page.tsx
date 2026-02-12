@@ -13,6 +13,7 @@ import { ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useListings } from '@/hooks/useListings'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { ChainFilter } from '@/components/agents/ChainFilter'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -66,17 +67,23 @@ const columns: ColumnDef<MarketplaceListing, unknown>[] = [
   },
   {
     accessorKey: 'token_id',
-    header: 'NFT',
+    header: 'Identity',
     cell: ({ row }) => {
       const l = row.original
       return (
         <div className="flex items-center gap-3">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-xs font-bold text-primary">
-            #{l.token_id}
-          </div>
+          <Avatar className="size-9 shrink-0 rounded-lg ring-1 ring-border">
+            <AvatarImage
+              src={l.agent_image ?? undefined}
+              alt={l.agent_name ?? `Agent #${l.token_id}`}
+            />
+            <AvatarFallback className="rounded-lg bg-primary/10 text-xs font-bold text-primary">
+              #{l.token_id}
+            </AvatarFallback>
+          </Avatar>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-foreground">
-              Agent #{l.token_id}
+              {l.agent_name || `Agent #${l.token_id}`}
             </p>
             <p className="truncate text-xs text-muted-foreground">
               {formatAddress(l.nft_contract)}
@@ -159,7 +166,7 @@ function ListingSkeleton({ rows }: { rows: number }) {
           <TableCell><Skeleton className="h-4 w-6" /></TableCell>
           <TableCell>
             <div className="flex items-center gap-3">
-              <Skeleton className="size-9 rounded-lg" />
+              <Skeleton className="size-9 shrink-0 rounded-lg" />
               <div className="space-y-1">
                 <Skeleton className="h-4 w-24" />
                 <Skeleton className="h-3 w-20" />
@@ -335,51 +342,60 @@ export default function MarketplacePage() {
         </Table>
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <p className="text-sm text-muted-foreground">
-            Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of{' '}
-            {total}
-          </p>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page <= 1}
-              className="h-8 gap-1 border-border/50 bg-card/80 px-3 text-xs"
-            >
-              <ChevronLeft className="size-3.5" />
-              Prev
-            </Button>
-            {pageNumbers.map((p) => (
+      {/* Pagination — always rendered to prevent layout shift */}
+      <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
+        <p className="text-sm text-muted-foreground">
+          {isLoading ? (
+            <Skeleton className="inline-block h-4 w-40" />
+          ) : total > 0 ? (
+            <>Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}</>
+          ) : (
+            <>&nbsp;</>
+          )}
+        </p>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1 || isLoading}
+            className="h-8 gap-1 border-border/50 bg-card/80 px-3 text-xs"
+          >
+            <ChevronLeft className="size-3.5" />
+            Prev
+          </Button>
+          {isLoading && pageNumbers.length === 0 ? (
+            <Skeleton className="h-8 w-8 rounded-md" />
+          ) : (
+            pageNumbers.map((p) => (
               <Button
                 key={p}
                 variant={p === page ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setPage(p)}
+                disabled={isLoading}
                 className={cn(
                   'size-8 p-0 text-xs',
-                  p !== page && 'border-border/50 bg-card/80'
+                  p !== page && 'border-border/50 bg-card/80',
+                  isLoading && 'opacity-60',
                 )}
               >
                 {p}
               </Button>
-            ))}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page >= totalPages}
-              className="h-8 gap-1 border-border/50 bg-card/80 px-3 text-xs"
-            >
-              Next
-              <ChevronRight className="size-3.5" />
-            </Button>
-          </div>
+            ))
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages || isLoading}
+            className="h-8 gap-1 border-border/50 bg-card/80 px-3 text-xs"
+          >
+            Next
+            <ChevronRight className="size-3.5" />
+          </Button>
         </div>
-      )}
+      </div>
     </div>
   )
 }

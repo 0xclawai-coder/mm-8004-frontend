@@ -212,6 +212,8 @@ export interface MarketplaceListing {
   tx_hash: string
   created_at: string
   updated_at: string
+  agent_name: string | null
+  agent_image: string | null
 }
 
 export interface MarketplaceAuction {
@@ -238,6 +240,8 @@ export interface MarketplaceAuction {
   tx_hash: string
   created_at: string
   updated_at: string
+  agent_name: string | null
+  agent_image: string | null
 }
 
 export interface MarketplaceBundle {
