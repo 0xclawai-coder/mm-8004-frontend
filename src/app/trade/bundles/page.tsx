@@ -192,7 +192,7 @@ export default function BundlesPage() {
 
       {/* Pagination */}
       <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-        <p className="text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground">
           {isLoading ? (
             <Skeleton className="inline-block h-4 w-40" />
           ) : total > 0 ? (
@@ -200,7 +200,7 @@ export default function BundlesPage() {
           ) : (
             <>&nbsp;</>
           )}
-        </p>
+        </div>
         <div className="flex items-center gap-1">
           <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1 || isLoading} className="h-8 gap-1 border-border/50 bg-card/80 px-3 text-xs">
             <ChevronLeft className="size-3.5" /> Prev

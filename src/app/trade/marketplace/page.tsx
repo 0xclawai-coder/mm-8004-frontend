@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import {
   flexRender,
   getCoreRowModel,
@@ -280,6 +281,7 @@ function MobileListingCard({ listing, index }: { listing: MarketplaceListing; in
 // ============================================================
 
 export default function MarketplacePage() {
+  const router = useRouter()
   const [chainId, setChainId] = useState<number | undefined>(undefined)
   const [sort, setSort] = useState<ListingSortOrder>('recent')
   const [page, setPage] = useState(1)
@@ -433,13 +435,14 @@ export default function MarketplacePage() {
             ) : (
               table.getRowModel().rows.map((row) => {
                 const l = row.original
+                const href = `/trade/marketplace/${l.chain_id}-${l.listing_id}`
                 return (
-                  <Link
-                    key={row.id}
-                    href={`/trade/marketplace/${l.chain_id}-${l.listing_id}`}
-                    className="contents"
-                  >
-                    <TableRow className="cursor-pointer hover:bg-muted/30 transition-colors">
+                    <TableRow
+                      key={row.id}
+                      className="cursor-pointer hover:bg-muted/30 transition-colors"
+                      onClick={() => router.push(href)}
+                      onMouseEnter={() => router.prefetch(href)}
+                    >
                       {row.getVisibleCells().map((cell) => {
                         const meta = cell.column.columnDef.meta as
                           | { className?: string }
@@ -454,7 +457,6 @@ export default function MarketplacePage() {
                         )
                       })}
                     </TableRow>
-                  </Link>
                 )
               })
             )}
@@ -464,7 +466,7 @@ export default function MarketplacePage() {
 
       {/* Pagination — always rendered to prevent layout shift */}
       <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-        <p className="text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground">
           {isLoading ? (
             <Skeleton className="inline-block h-4 w-40" />
           ) : total > 0 ? (
@@ -472,7 +474,7 @@ export default function MarketplacePage() {
           ) : (
             <>&nbsp;</>
           )}
-        </p>
+        </div>
         <div className="flex items-center gap-1">
           <Button
             variant="outline"

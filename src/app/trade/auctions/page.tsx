@@ -279,7 +279,7 @@ export default function AuctionsPage() {
 
       {/* Pagination — always rendered to prevent layout shift */}
       <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-        <p className="text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground">
           {isLoading ? (
             <Skeleton className="inline-block h-4 w-40" />
           ) : total > 0 ? (
@@ -287,7 +287,7 @@ export default function AuctionsPage() {
           ) : (
             <>&nbsp;</>
           )}
-        </p>
+        </div>
         <div className="flex items-center gap-1">
           <Button
             variant="outline"

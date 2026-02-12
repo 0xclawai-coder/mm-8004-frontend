@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Trophy, Medal, Award, Star } from 'lucide-react'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
@@ -54,6 +54,7 @@ function RankBadge({ rank }: { rank: number }) {
 }
 
 export function LeaderboardTable({ entries }: LeaderboardTableProps) {
+  const router = useRouter()
   if (!entries || entries.length === 0) {
     return (
       <EmptyState
@@ -82,13 +83,11 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
           {entries.map((entry) => {
             const agentPath = `/explore/agents/${entry.chain_id}-${entry.agent_id}`
             return (
-              <Link
-                key={`${entry.chain_id}-${entry.agent_id}`}
-                href={agentPath}
-                className="contents"
-              >
               <tr
+                key={`${entry.chain_id}-${entry.agent_id}`}
                 className="group cursor-pointer border-b border-border/30 transition-colors hover:bg-accent/50"
+                onClick={() => router.push(agentPath)}
+                onMouseEnter={() => router.prefetch(agentPath)}
               >
                 {/* Rank */}
                 <td className="px-4 py-3">
@@ -165,7 +164,6 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
                   </Badge>
                 </td>
               </tr>
-              </Link>
             )
           })}
         </tbody>
