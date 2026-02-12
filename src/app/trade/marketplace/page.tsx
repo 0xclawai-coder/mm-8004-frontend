@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import {
   flexRender,
   getCoreRowModel,
@@ -280,7 +281,7 @@ function MobileListingCard({ listing, index }: { listing: MarketplaceListing; in
 // ============================================================
 
 export default function MarketplacePage() {
-
+  const router = useRouter()
   const [chainId, setChainId] = useState<number | undefined>(undefined)
   const [sort, setSort] = useState<ListingSortOrder>('recent')
   const [page, setPage] = useState(1)
@@ -435,27 +436,25 @@ export default function MarketplacePage() {
               table.getRowModel().rows.map((row) => {
                 const l = row.original
                 return (
-                  <Link
+                  <TableRow
                     key={row.id}
-                    href={`/trade/marketplace/${l.chain_id}-${l.listing_id}`}
-                    className="contents"
+                    className="cursor-pointer hover:bg-muted/30 transition-colors"
+                    onClick={() => router.push(`/trade/marketplace/${l.chain_id}-${l.listing_id}`)}
                   >
-                    <TableRow className="cursor-pointer hover:bg-muted/30 transition-colors">
-                      {row.getVisibleCells().map((cell) => {
-                        const meta = cell.column.columnDef.meta as
-                          | { className?: string }
-                          | undefined
-                        return (
-                          <TableCell key={cell.id} className={meta?.className}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        )
-                      })}
-                    </TableRow>
-                  </Link>
+                    {row.getVisibleCells().map((cell) => {
+                      const meta = cell.column.columnDef.meta as
+                        | { className?: string }
+                        | undefined
+                      return (
+                        <TableCell key={cell.id} className={meta?.className}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      )
+                    })}
+                  </TableRow>
                 )
               })
             )}

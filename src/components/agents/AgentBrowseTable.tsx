@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Star, ChevronLeft, ChevronRight, Users } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useAgents } from "@/hooks/useAgents";
@@ -80,6 +80,7 @@ function TableSkeleton({ rows }: { rows: number }) {
 }
 
 export function AgentBrowseTable() {
+  const router = useRouter();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [sort, setSort] = useState<SortOrder>("recent");
@@ -198,13 +199,10 @@ export function AgentBrowseTable() {
               agents.map((agent) => {
                 const agentPath = `/explore/agents/${agent.chain_id}-${agent.agent_id}`;
                 return (
-                  <Link
-                    key={`${agent.chain_id}-${agent.agent_id}`}
-                    href={agentPath}
-                    className="contents"
-                  >
                   <tr
+                    key={`${agent.chain_id}-${agent.agent_id}`}
                     className="group cursor-pointer border-b border-border/30 transition-colors hover:bg-accent/50"
+                    onClick={() => router.push(agentPath)}
                   >
                     {/* Name */}
                     <td className="px-4 py-3">
@@ -296,7 +294,6 @@ export function AgentBrowseTable() {
                       </span>
                     </td>
                   </tr>
-                  </Link>
                 );
               })
             )}

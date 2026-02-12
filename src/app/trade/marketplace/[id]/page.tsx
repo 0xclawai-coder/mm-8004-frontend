@@ -31,12 +31,13 @@ import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { EmptyState } from '@/components/ui/empty-state'
-import { cn, formatAddress, formatPrice, getTokenLabel } from '@/lib/utils'
+import { cn, formatAddress, formatDistanceToNowSmart, formatPrice, getTokenLabel } from '@/lib/utils'
 import TimeCounter from '@/components/ui/time-counter'
 import { useListing } from '@/hooks/useListing'
 import { useAgent } from '@/hooks/useAgent'
+import { useAgentActivity } from '@/hooks/useAgentActivity'
 import { useOffers } from '@/hooks/useOffers'
-import type { AgentDetail, MarketplaceOffer } from '@/types'
+import type { Activity as ActivityType, AgentDetail, EventCategory, MarketplaceOffer } from '@/types'
 
 // ============================================================
 // Helpers
@@ -544,51 +545,245 @@ function ReputationBadge({ score, feedbackCount }: { score: number | null; feedb
 // Item Activity (uses agent activity endpoint)
 // ============================================================
 
-function ItemActivitySection({ agentId }: { agentId: string }) {
-  const [filter, setFilter] = useState('all')
+const ACTIVITY_EVENT_CONFIG: Record<
+  string,
+  { label: string; color: string; icon: string }
+> = {
+  Registered: {
+    label: 'Registered',
+    color: 'border-green-500/30 bg-green-500/10 text-green-400',
+    icon: '🆕',
+  },
+  URIUpdated: {
+    label: 'URI Updated',
+    color: 'border-blue-500/30 bg-blue-500/10 text-blue-400',
+    icon: '🔗',
+  },
+  MetadataSet: {
+    label: 'Metadata Set',
+    color: 'border-violet-500/30 bg-violet-500/10 text-violet-400',
+    icon: '📝',
+  },
+  NewFeedback: {
+    label: 'New Feedback',
+    color: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
+    icon: '⭐',
+  },
+  FeedbackRevoked: {
+    label: 'Revoked',
+    color: 'border-red-500/30 bg-red-500/10 text-red-400',
+    icon: '🚫',
+  },
+  ResponseAppended: {
+    label: 'Response',
+    color: 'border-cyan-500/30 bg-cyan-500/10 text-cyan-400',
+    icon: '💬',
+  },
+}
 
-  const filters = ['all', 'list', 'sale', 'offer', 'transfer', 'price_change']
+function getActivityEventConfig(eventType: string) {
+  return (
+    ACTIVITY_EVENT_CONFIG[eventType] ?? {
+      label: eventType,
+      color: 'border-muted-foreground/30 bg-muted/50 text-muted-foreground',
+      icon: '📌',
+    }
+  )
+}
+
+function getActivityEventDetails(activity: ActivityType): { from: string; detail: string } {
+  const data = activity.event_data
+  if (!data) return { from: '—', detail: '' }
+
+  switch (activity.event_type) {
+    case 'Registered':
+      return {
+        from: data.owner ? formatAddress(data.owner as string) : '—',
+        detail: 'Agent registered on-chain',
+      }
+    case 'MetadataSet':
+      return {
+        from: '—',
+        detail: data.key ? `${data.key}: ${typeof data.value === 'string' ? (data.value.length > 30 ? data.value.slice(0, 30) + '…' : data.value) : JSON.stringify(data.value)}` : 'Metadata updated',
+      }
+    case 'NewFeedback':
+      return {
+        from: data.client ? formatAddress(data.client as string) : '—',
+        detail: [data.tag1 && `tag: ${data.tag1}`, data.tag2 && data.tag2].filter(Boolean).join(' · ') || 'Feedback submitted',
+      }
+    case 'FeedbackRevoked':
+      return {
+        from: data.client ? formatAddress(data.client as string) : '—',
+        detail: `Feedback #${data.feedback_index ?? '?'} revoked`,
+      }
+    case 'URIUpdated':
+      return { from: '—', detail: 'Agent URI updated' }
+    case 'ResponseAppended':
+      return { from: '—', detail: data.feedback_id ? `Response to feedback #${data.feedback_id}` : 'Response appended' }
+    default:
+      return { from: '—', detail: '' }
+  }
+}
+
+type ActivityFilterType = 'all' | 'identity' | 'reputation'
+
+function ItemActivitySection({ agentId }: { agentId: string }) {
+  const [filter, setFilter] = useState<ActivityFilterType>('all')
+  const [page, setPage] = useState(1)
+  const limit = 10
+
+  const { data, isLoading } = useAgentActivity(agentId, {
+    event_type: filter === 'all' ? undefined : (filter as EventCategory),
+    page,
+    limit,
+  })
+
+  const activities = data?.activities ?? []
+  const total = data?.total ?? 0
+  const totalPages = Math.max(1, Math.ceil(total / limit))
+
+  const filterOptions: { value: ActivityFilterType; label: string }[] = [
+    { value: 'all', label: 'ALL' },
+    { value: 'identity', label: 'IDENTITY' },
+    { value: 'reputation', label: 'REPUTATION' },
+  ]
 
   return (
     <div className="space-y-3">
       <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
         <Activity className="size-4 text-primary" />
         Item Activity
+        {total > 0 && (
+          <span className="text-xs font-normal text-muted-foreground">
+            ({total})
+          </span>
+        )}
       </h3>
 
       {/* Filter pills */}
       <div className="flex flex-wrap gap-1.5">
-        {filters.map((f) => (
+        {filterOptions.map((f) => (
           <button
-            key={f}
-            onClick={() => setFilter(f)}
+            key={f.value}
+            onClick={() => {
+              setFilter(f.value)
+              setPage(1)
+            }}
             className={cn(
               'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-              filter === f
+              filter === f.value
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-card/60 text-muted-foreground hover:text-foreground border border-border/30',
             )}
           >
-            {f === 'all' ? 'ALL' : f.replace('_', ' ').toUpperCase()}
+            {f.label}
           </button>
         ))}
       </div>
 
-      {/* Activity placeholder — in a real app this would fetch from the activity endpoint */}
+      {/* Activity table */}
       <div className="rounded-xl border border-border/30 bg-card/40 overflow-hidden">
-        <div className="flex items-center gap-4 px-4 py-2 border-b border-border/20 text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+        <div className="flex items-center gap-3 px-4 py-2 border-b border-border/20 text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+          <span className="w-6" />
           <span className="w-24">Event</span>
-          <span className="flex-1">Price</span>
-          <span className="w-28">From</span>
-          <span className="w-28 text-right">Date</span>
+          <span className="flex-1">Details</span>
+          <span className="w-24">From</span>
+          <span className="w-20 text-right">Date</span>
+          <span className="w-4">TX</span>
         </div>
-        <div className="px-4 py-12 text-center">
-          <p className="text-sm text-muted-foreground">Activity data coming soon</p>
-          <p className="mt-1 text-xs text-muted-foreground/70">
-            Agent ID: {agentId}
-          </p>
-        </div>
+
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 px-4 py-3 border-b border-border/10"
+            >
+              <Skeleton className="size-5 rounded" />
+              <Skeleton className="h-5 w-24 rounded-full" />
+              <Skeleton className="h-4 flex-1 max-w-[200px]" />
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="size-3.5" />
+            </div>
+          ))
+        ) : activities.length === 0 ? (
+          <div className="px-4 py-12 text-center">
+            <p className="text-sm text-muted-foreground">
+              {filter !== 'all' ? 'No matching events' : 'No activity recorded yet'}
+            </p>
+          </div>
+        ) : (
+          activities.map((activity) => {
+            const config = getActivityEventConfig(activity.event_type)
+            const { from, detail } = getActivityEventDetails(activity)
+            return (
+              <div
+                key={activity.id}
+                className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors border-b border-border/10 last:border-b-0"
+              >
+                <span className="text-sm shrink-0 w-6 text-center">
+                  {config.icon}
+                </span>
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    'text-[10px] shrink-0 w-24 justify-center',
+                    config.color,
+                  )}
+                >
+                  {config.label}
+                </Badge>
+                <span className="flex-1 truncate text-xs text-muted-foreground">
+                  {detail}
+                </span>
+                <span className="w-24 truncate font-mono text-xs text-muted-foreground">
+                  {from}
+                </span>
+                <span className="w-20 text-right text-xs text-muted-foreground">
+                  {formatDistanceToNowSmart(
+                    new Date(activity.block_timestamp),
+                    { addSuffix: true },
+                  )}
+                </span>
+                <a
+                  href={getTxUrl(activity.chain_id, activity.tx_hash)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 text-muted-foreground/50 hover:text-primary transition-colors"
+                  title={activity.tx_hash}
+                >
+                  <ExternalLink className="size-3.5" />
+                </a>
+              </div>
+            )
+          })
+        )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] text-muted-foreground">
+            Page {page}/{totalPages}
+          </p>
+          <div className="flex items-center gap-1.5">
+            <button
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="rounded-md border border-border/30 px-2 py-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors"
+            >
+              ← Prev
+            </button>
+            <button
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="rounded-md border border-border/30 px-2 py-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors"
+            >
+              Next →
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
