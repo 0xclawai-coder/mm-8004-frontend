@@ -53,7 +53,7 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
   const token = getTokenLabel(auction.payment_token)
 
   return (
-    <div className="group overflow-hidden rounded-xl border border-border/50 bg-card/60 transition-colors hover:border-primary/30">
+    <div className="group flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card/60 transition-colors hover:border-primary/30">
       {/* Image area */}
       <div className="relative aspect-square bg-gradient-to-br from-primary/20 via-card to-cyan-accent/10">
         {auction.agent_image ? (
@@ -90,16 +90,18 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
       </div>
 
       {/* Info */}
-      <div className="space-y-3 p-3">
-        {/* Buy now price — below image to avoid badge overlap */}
-        {parseFloat(auction.buy_now_price) > 0 && !ended && (
-          <Badge
-            variant="outline"
-            className="w-full justify-center border-primary/30 bg-primary/10 text-[10px] text-primary"
-          >
-            Buy Now {formatPrice(auction.buy_now_price)} {token}
-          </Badge>
-        )}
+      <div className="flex flex-1 flex-col space-y-3 p-3">
+        {/* Buy now price — fixed height slot to prevent card height variance */}
+        <div className="h-5">
+          {parseFloat(auction.buy_now_price) > 0 && !ended && (
+            <Badge
+              variant="outline"
+              className="w-full justify-center border-primary/30 bg-primary/10 text-[10px] text-primary"
+            >
+              Buy Now {formatPrice(auction.buy_now_price)} {token}
+            </Badge>
+          )}
+        </div>
 
         {/* Name + bid count */}
         <div className="flex items-start justify-between gap-2">
