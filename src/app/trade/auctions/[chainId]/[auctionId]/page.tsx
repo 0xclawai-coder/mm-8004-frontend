@@ -636,13 +636,23 @@ export default function AuctionDetailPage({
               agent={agent ?? undefined}
             />
           ) : (
-            <div className="w-full max-w-[300px] h-[420px] rounded-2xl border border-border/50 bg-card/95 overflow-hidden">
-              <Skeleton className="h-40 w-full" />
-              <div className="p-5 flex flex-col gap-3">
-                <Skeleton className="h-6 w-40" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-7 w-16" />
+            <div className="w-full max-w-[300px] min-h-[320px] rounded-2xl border border-border/50 bg-card/95 overflow-hidden">
+              {/* Image area — matches HoloCard h-40 */}
+              <Skeleton className="h-40 w-full rounded-none" />
+              {/* Content — matches HoloCard: score + stars + tags + chain */}
+              <div className="flex flex-col gap-3 p-5">
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-7 w-24" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+                <Skeleton className="h-4 w-32" />
+                <div className="flex gap-1.5">
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-5 w-20 rounded-full" />
+                </div>
+                <div className="flex justify-center">
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </div>
               </div>
             </div>
           )}
