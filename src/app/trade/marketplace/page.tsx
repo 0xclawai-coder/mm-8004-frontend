@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import {
   flexRender,
   getCoreRowModel,
@@ -195,7 +195,7 @@ function ListingSkeleton({ rows }: { rows: number }) {
 // ============================================================
 
 export default function MarketplacePage() {
-  const router = useRouter()
+
   const [chainId, setChainId] = useState<number | undefined>(undefined)
   const [sort, setSort] = useState<ListingSortOrder>('recent')
   const [page, setPage] = useState(1)
@@ -322,30 +322,32 @@ export default function MarketplacePage() {
                 </TableCell>
               </TableRow>
             ) : (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  className="cursor-pointer hover:bg-muted/30 transition-colors"
-                  onClick={() => {
-                    const l = row.original
-                    router.push(`/trade/marketplace/${l.chain_id}-${l.listing_id}`)
-                  }}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    const meta = cell.column.columnDef.meta as
-                      | { className?: string }
-                      | undefined
-                    return (
-                      <TableCell key={cell.id} className={meta?.className}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    )
-                  })}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const l = row.original
+                return (
+                  <Link
+                    key={row.id}
+                    href={`/trade/marketplace/${l.chain_id}-${l.listing_id}`}
+                    className="contents"
+                  >
+                    <TableRow className="cursor-pointer hover:bg-muted/30 transition-colors">
+                      {row.getVisibleCells().map((cell) => {
+                        const meta = cell.column.columnDef.meta as
+                          | { className?: string }
+                          | undefined
+                        return (
+                          <TableCell key={cell.id} className={meta?.className}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        )
+                      })}
+                    </TableRow>
+                  </Link>
+                )
+              })
             )}
           </TableBody>
         </Table>
