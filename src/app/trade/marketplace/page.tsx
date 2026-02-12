@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   flexRender,
   getCoreRowModel,
@@ -194,6 +195,7 @@ function ListingSkeleton({ rows }: { rows: number }) {
 // ============================================================
 
 export default function MarketplacePage() {
+  const router = useRouter()
   const [chainId, setChainId] = useState<number | undefined>(undefined)
   const [sort, setSort] = useState<ListingSortOrder>('recent')
   const [page, setPage] = useState(1)
@@ -321,7 +323,14 @@ export default function MarketplacePage() {
               </TableRow>
             ) : (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  className="cursor-pointer hover:bg-muted/30 transition-colors"
+                  onClick={() => {
+                    const l = row.original
+                    router.push(`/trade/marketplace/${l.chain_id}-${l.listing_id}`)
+                  }}
+                >
                   {row.getVisibleCells().map((cell) => {
                     const meta = cell.column.columnDef.meta as
                       | { className?: string }

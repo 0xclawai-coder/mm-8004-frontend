@@ -294,6 +294,26 @@ export interface BundlesResponse {
   limit: number
 }
 
+// ============================================================
+// Auction Detail Types
+// ============================================================
+
+export interface AuctionBid {
+  id: number
+  auction_id: number
+  chain_id: number
+  bidder: string
+  amount: string
+  block_number: number
+  block_timestamp: string
+  tx_hash: string
+}
+
+export interface AuctionDetailResponse {
+  auction: MarketplaceAuction
+  bids: AuctionBid[]
+}
+
 export type ListingSortOrder = 'recent' | 'price_asc' | 'price_desc'
 export type ListingStatus = 'Active' | 'Sold' | 'Cancelled' | 'Expired'
 export type AuctionSortOrder = 'recent' | 'ending_soon' | 'highest_bid'
@@ -321,6 +341,45 @@ export interface AuctionFilters {
 export interface BundleFilters {
   chain_id?: number
   seller?: string
+  status?: string
+  page?: number
+  limit?: number
+}
+
+// ============================================================
+// Offer Types
+// ============================================================
+
+export interface MarketplaceOffer {
+  id: number
+  offer_id: number
+  chain_id: number
+  offerer: string
+  nft_contract: string
+  token_id: string
+  payment_token: string
+  amount: string
+  expiry: number
+  status: string
+  block_number: number
+  block_timestamp: string
+  tx_hash: string
+  created_at: string
+  updated_at: string
+}
+
+export interface OffersResponse {
+  offers: MarketplaceOffer[]
+  total: number
+  page: number
+  limit: number
+}
+
+export interface OfferFilters {
+  chain_id?: number
+  nft_contract?: string
+  token_id?: string
+  offerer?: string
   status?: string
   page?: number
   limit?: number

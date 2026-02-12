@@ -4,6 +4,7 @@ import type {
   AgentsResponse,
   ActivitiesResponse,
   ActivityFilters,
+  AuctionDetailResponse,
   AuctionFilters,
   AuctionsResponse,
   BundleFilters,
@@ -13,7 +14,10 @@ import type {
   LeaderboardResponse,
   ListingFilters,
   ListingsResponse,
+  MarketplaceListing,
   MarketplaceStats,
+  OfferFilters,
+  OffersResponse,
   ReputationHistory,
   ReputationRange,
 } from '@/types'
@@ -147,6 +151,11 @@ export function getAuctions(filters?: AuctionFilters): Promise<AuctionsResponse>
   return fetchApi<AuctionsResponse>('/marketplace/auctions', params)
 }
 
+/** GET /api/marketplace/auctions/:id — single auction detail with bids */
+export function getAuctionDetail(id: string): Promise<AuctionDetailResponse> {
+  return fetchApi<AuctionDetailResponse>(`/marketplace/auctions/${id}`)
+}
+
 /** GET /api/marketplace/bundles — list bundles */
 export function getBundles(filters?: BundleFilters): Promise<BundlesResponse> {
   const params: Record<string, string | undefined> = {}
@@ -158,6 +167,26 @@ export function getBundles(filters?: BundleFilters): Promise<BundlesResponse> {
     if (filters.limit !== undefined) params.limit = String(filters.limit)
   }
   return fetchApi<BundlesResponse>('/marketplace/bundles', params)
+}
+
+/** GET /api/marketplace/listings/:id — single listing detail */
+export function getListing(id: string): Promise<MarketplaceListing> {
+  return fetchApi<MarketplaceListing>(`/marketplace/listings/${id}`)
+}
+
+/** GET /api/marketplace/offers — list offers */
+export function getOffers(filters?: OfferFilters): Promise<OffersResponse> {
+  const params: Record<string, string | undefined> = {}
+  if (filters) {
+    if (filters.chain_id !== undefined) params.chain_id = String(filters.chain_id)
+    if (filters.nft_contract) params.nft_contract = filters.nft_contract
+    if (filters.token_id) params.token_id = filters.token_id
+    if (filters.offerer) params.offerer = filters.offerer
+    if (filters.status) params.status = filters.status
+    if (filters.page !== undefined) params.page = String(filters.page)
+    if (filters.limit !== undefined) params.limit = String(filters.limit)
+  }
+  return fetchApi<OffersResponse>('/marketplace/offers', params)
 }
 
 /** GET /api/marketplace/stats — marketplace statistics */

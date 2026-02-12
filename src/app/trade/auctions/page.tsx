@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Gavel, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAuctions } from '@/hooks/useAuctions'
 import { PageHeader } from '@/components/layout/PageHeader'
@@ -257,10 +258,12 @@ export default function AuctionsPage() {
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {auctions.map((auction) => (
-            <AuctionCard
+            <Link
               key={`${auction.chain_id}-${auction.auction_id}`}
-              auction={auction}
-            />
+              href={`/trade/auctions/${auction.chain_id}-${auction.auction_id}`}
+            >
+              <AuctionCard auction={auction} />
+            </Link>
           ))}
         </div>
       )}
