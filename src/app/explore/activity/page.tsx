@@ -18,6 +18,7 @@ import {
 import { useStats } from '@/hooks/useStats'
 import { useGlobalActivity } from '@/hooks/useGlobalActivity'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { EmptyState } from '@/components/ui/empty-state'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -406,24 +407,15 @@ export default function ActivityPage() {
               <ActivityRowSkeleton key={i} />
             ))
           ) : activities.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-1 py-20">
-              <div className="relative pb-3">
-                <div className="flex size-16 items-center justify-center rounded-full bg-primary/10">
-                  <Radio className="size-7 text-primary" />
-                </div>
-                <div className="absolute -right-1 -top-1 flex size-6 items-center justify-center rounded-full bg-cyan-500/20">
-                  <Zap className="size-3 text-cyan-400" />
-                </div>
-              </div>
-              <p className="text-sm font-medium text-foreground">
-                No activity found
-              </p>
-              <p className="max-w-sm text-center text-xs text-muted-foreground">
-                {filter !== 'all'
+            <EmptyState
+              icon={Radio}
+              title="No Activity Found"
+              description={
+                filter !== 'all'
                   ? 'Try a different filter or check back later.'
-                  : 'On-chain events will appear here as they are indexed.'}
-              </p>
-            </div>
+                  : 'On-chain events will appear here as they are indexed.'
+              }
+            />
           ) : (
             activities.map((a) => <ActivityRow key={a.id} activity={a} />)
           )}

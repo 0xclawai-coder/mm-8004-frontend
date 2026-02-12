@@ -53,7 +53,7 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
   const token = getTokenLabel(auction.payment_token)
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card/60 transition-colors hover:border-primary/30">
+    <div className="group flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card/60 transition-all duration-300 hover:scale-[1.02] hover:border-primary/30 hover:glow-violet">
       {/* Image area */}
       <div className="relative aspect-square bg-gradient-to-br from-primary/20 via-card to-cyan-accent/10">
         {auction.agent_image ? (
@@ -90,7 +90,7 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
       </div>
 
       {/* Info */}
-      <div className="flex flex-1 flex-col space-y-3 p-3">
+      <div className="flex flex-1 flex-col gap-3 p-3">
         {/* Buy now price — fixed height slot to prevent card height variance */}
         <div className="h-5">
           {parseFloat(auction.buy_now_price) > 0 && !ended && (

@@ -49,59 +49,44 @@ export function AgentCard({ agent }: AgentCardProps) {
                   <TimeCounter targetTime={new Date(agent.block_timestamp)} />
                 </span>
               </div>
-              {agent.description ? (
-                <p className="min-h-8 line-clamp-2 text-xs text-muted-foreground">
-                  {agent.description}
-                </p>
-              ) : (
-                <div className="flex flex-wrap gap-1 pt-0.5">
-                  {agent.categories && agent.categories.length > 0 ? (
-                    agent.categories.slice(0, 2).map((category) => (
+              {/* Always reserve min-h-8 for description area to prevent layout shift */}
+              <div className="min-h-8">
+                {agent.description ? (
+                  <p className="line-clamp-2 text-xs text-muted-foreground">
+                    {agent.description}
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-1 pt-0.5">
+                    {agent.categories && agent.categories.length > 0 ? (
+                      agent.categories.slice(0, 2).map((category) => (
+                        <Badge
+                          key={category}
+                          variant="secondary"
+                          className="bg-primary/10 text-primary border-primary/20 text-[10px]"
+                        >
+                          {category}
+                        </Badge>
+                      ))
+                    ) : (
                       <Badge
-                        key={category}
-                        variant="secondary"
-                        className="bg-primary/10 text-primary border-primary/20 text-[10px]"
+                        variant="outline"
+                        className={cn(
+                          'text-[10px] px-1.5',
+                          agent.chain_id === 143
+                            ? 'border-green-500/30 bg-green-500/10 text-green-400'
+                            : 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400'
+                        )}
                       >
-                        {category}
+                        {getChainLabel(agent.chain_id)}
                       </Badge>
-                    ))
-                  ) : (
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        'text-[10px] px-1.5',
-                        agent.chain_id === 143
-                          ? 'border-green-500/30 bg-green-500/10 text-green-400'
-                          : 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400'
-                      )}
-                    >
-                      {getChainLabel(agent.chain_id)}
-                    </Badge>
-                  )}
-                </div>
-              )}
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Category tags — only show when description exists (otherwise shown inline above) */}
-          {agent.description && agent.categories && agent.categories.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {agent.categories.slice(0, 3).map((category) => (
-                <Badge
-                  key={category}
-                  variant="secondary"
-                  className="bg-primary/10 text-primary border-primary/20 text-[10px]"
-                >
-                  {category}
-                </Badge>
-              ))}
-              {agent.categories.length > 3 && (
-                <Badge variant="secondary" className="text-[10px]">
-                  +{agent.categories.length - 3}
-                </Badge>
-              )}
-            </div>
-          )}
+          {/* Category tags — removed separate section to prevent height variance between cards */}
 
           {/* Bottom row: Score + Feedbacks + Badges */}
           <div className="flex items-center justify-between">

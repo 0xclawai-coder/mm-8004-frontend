@@ -7,7 +7,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
       {/* Background gradient effect */}
       <div className="bg-gradient-radial pointer-events-none fixed inset-0 -z-10" />
       <Header />
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 pb-16 sm:px-6 lg:px-8 lg:py-8 lg:pb-20">
         {children}
       </main>
       <Footer />

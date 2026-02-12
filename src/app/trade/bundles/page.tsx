@@ -35,7 +35,7 @@ function BundleCard({ bundle }: { bundle: MarketplaceBundle }) {
   const isExpired = bundle.expiry > 0 && Math.floor(Date.now() / 1000) >= bundle.expiry
 
   return (
-    <div className="group overflow-hidden rounded-xl border border-border/50 bg-card/60 transition-colors hover:border-primary/30">
+    <div className="group overflow-hidden rounded-xl border border-border/50 bg-card/60 transition-all duration-300 hover:scale-[1.02] hover:border-primary/30 hover:glow-violet">
       {/* Image area */}
       <div className="relative flex aspect-square items-center justify-center bg-gradient-to-br from-primary/20 via-card to-cyan-accent/10">
         <div className="flex flex-col items-center gap-2">

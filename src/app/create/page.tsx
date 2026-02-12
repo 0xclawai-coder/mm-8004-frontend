@@ -473,18 +473,16 @@ export default function CreateMoltPage() {
 
   if (!isConnected || !address) {
     return (
-      <div className="min-h-screen bg-gradient-radial">
-        <div className="mx-auto max-w-7xl px-4 pt-6 pb-8 sm:px-6 sm:pt-10 lg:px-8">
-          <div className="flex flex-col gap-3 pb-4 text-center">
-            <h1 className="text-gradient-glow text-3xl font-extrabold sm:text-4xl lg:text-5xl">
-              Create Your Molt
-            </h1>
-            <p className="text-base text-muted-foreground sm:text-lg">
-              Register a new AI agent on the Monad chain
-            </p>
-          </div>
-          <ConnectWalletPrompt />
+      <div className="space-y-8">
+        <div className="flex flex-col gap-3 text-center">
+          <h1 className="text-gradient-glow text-3xl font-extrabold sm:text-4xl lg:text-5xl">
+            Create Your Molt
+          </h1>
+          <p className="text-base text-muted-foreground sm:text-lg">
+            Register a new AI agent on the Monad chain
+          </p>
         </div>
+        <ConnectWalletPrompt />
       </div>
     )
   }
@@ -504,20 +502,19 @@ export default function CreateMoltPage() {
       : null)
 
   return (
-    <div className="min-h-screen bg-gradient-radial">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex flex-col gap-2 pb-6 text-center">
-          <h1 className="text-gradient-glow text-3xl font-extrabold sm:text-4xl lg:text-5xl">
-            Create Your Molt
-          </h1>
-          <p className="text-base text-muted-foreground sm:text-lg">
-            Register a new AI agent on the Monad chain
-          </p>
-        </div>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col gap-2 text-center">
+        <h1 className="text-gradient-glow text-3xl font-extrabold sm:text-4xl lg:text-5xl">
+          Create Your Molt
+        </h1>
+        <p className="text-base text-muted-foreground sm:text-lg">
+          Register a new AI agent on the Monad chain
+        </p>
+      </div>
 
-        {/* Two-column layout */}
-        <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
+      {/* Two-column layout */}
+      <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
           {/* ====== LEFT: Form ====== */}
           <div className="space-y-8">
             {/* Agent URI */}
@@ -770,7 +767,6 @@ export default function CreateMoltPage() {
             <LivePreview form={form} chainId={chainId} />
           </div>
         </div>
-      </div>
 
       {/* ====== Transaction Status Dialog ====== */}
       <Dialog open={txDialogOpen} onOpenChange={setTxDialogOpen}>

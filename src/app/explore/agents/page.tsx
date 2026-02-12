@@ -10,24 +10,27 @@ import { Skeleton } from '@/components/ui/skeleton'
 import type { Agent } from '@/types'
 
 function AgentCardSkeleton() {
+  // Matches AgentCard layout exactly: avatar+name+desc row → bottom score row
+  // No separate category row — matches the most common card variant (with description)
   return (
     <Card className="border-border/50 bg-card/80 py-0">
       <CardContent className="flex flex-col gap-4 p-5">
-        {/* Top row: Avatar + Name + Description */}
+        {/* Top row: Avatar + Name + Description (matches AgentCard) */}
         <div className="flex items-start gap-3">
           <Skeleton className="size-12 shrink-0 rounded-full" />
-          <div className="min-w-0 flex-1 space-y-2">
-            <Skeleton className="h-4 w-28" />
-            <Skeleton className="h-3 w-full" />
-            <Skeleton className="h-3 w-2/3" />
+          <div className="min-w-0 flex-1 flex flex-col gap-1">
+            <div className="flex items-start justify-between gap-2">
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-3 w-12" />
+            </div>
+            {/* min-h-8 matches AgentCard description area */}
+            <div className="min-h-8 flex flex-col gap-1">
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-2/3" />
+            </div>
           </div>
         </div>
-        {/* Category tags */}
-        <div className="flex gap-1.5">
-          <Skeleton className="h-5 w-14 rounded-full" />
-          <Skeleton className="h-5 w-16 rounded-full" />
-        </div>
-        {/* Bottom row: Score + Feedbacks | x402 + Chain badge */}
+        {/* Bottom row: Score + Feedbacks | Chain badge (matches AgentCard) */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1">
@@ -36,10 +39,7 @@ function AgentCardSkeleton() {
             </div>
             <Skeleton className="h-3 w-20" />
           </div>
-          <div className="flex items-center gap-1.5">
-            <Skeleton className="h-5 w-10 rounded-full" />
-            <Skeleton className="h-5 w-14 rounded-full" />
-          </div>
+          <Skeleton className="h-5 w-14 rounded-full" />
         </div>
       </CardContent>
     </Card>

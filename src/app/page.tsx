@@ -326,7 +326,7 @@ function CTABanner() {
 
 export default function HomePage() {
   return (
-    <div className="space-y-12 pb-8">
+    <div className="space-y-10">
       {/* Hero */}
       <section className="relative flex flex-col items-center gap-4 overflow-hidden py-12 text-center sm:py-20">
         {/* Decorative blobs */}

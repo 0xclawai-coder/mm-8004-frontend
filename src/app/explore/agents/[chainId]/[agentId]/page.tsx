@@ -32,7 +32,7 @@ function isNewbie(createdAt: string): boolean {
 
 function ErrorState({ agentId }: { agentId: string }) {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="space-y-8">
       <Link href="/explore/agents">
         <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
@@ -106,7 +106,7 @@ export default function AgentDetailPage({
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+    <div className="space-y-8">
       {/* Back button */}
       <Link href="/explore/agents">
         <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">

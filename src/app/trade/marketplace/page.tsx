@@ -398,9 +398,11 @@ export default function MarketplacePage() {
         {isLoading ? (
           <MobileCardSkeleton count={8} />
         ) : listings.length === 0 ? (
-          <div className="rounded-xl border border-border/50 bg-card/40 py-12 text-center text-muted-foreground">
-            No listings found
-          </div>
+          <EmptyState
+            icon={ShoppingBag}
+            title="No Listings Found"
+            description="There are no marketplace listings matching your filters yet."
+          />
         ) : (
           <div className="space-y-2">
             {listings.map((listing, i) => (
