@@ -677,10 +677,10 @@ export default function AuctionDetailPage({
                 href={getExplorerUrl(chainId, auction.seller)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-primary/80 hover:text-primary transition-colors"
+                className="inline-flex items-center gap-1 font-mono text-primary/80 hover:text-primary transition-colors"
               >
                 {formatAddress(auction.seller)}
-                <ExternalLink className="ml-1 inline size-2.5" />
+                <ExternalLink className="size-2.5" />
               </a>
             </p>
           </div>

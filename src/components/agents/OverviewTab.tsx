@@ -92,10 +92,10 @@ function FeedbackPreview({ event, chainId }: { event: Activity; chainId: number 
                 href={getExplorerUrl(chainId, event.tx_hash)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-xs text-primary/70 hover:text-primary transition-colors"
+                className="inline-flex items-center gap-1 font-mono text-xs text-primary/70 hover:text-primary transition-colors"
               >
                 {truncateAddress(clientAddress)}
-                <ExternalLink className="ml-1 inline size-2.5" />
+                <ExternalLink className="size-2.5" />
               </a>
             )}
             <span className="text-xs text-muted-foreground"><TimeCounter targetTime={new Date(event.block_timestamp)} /></span>
@@ -112,12 +112,14 @@ function FeedbackPreview({ event, chainId }: { event: Activity; chainId: number 
           'shrink-0 rounded-lg border px-3 py-1.5 text-center',
           getScoreBg(displayValue),
         )}>
-          <span className={cn('text-lg font-bold tabular-nums', getScoreColor(displayValue))}>
-            {Number.isInteger(displayValue) ? displayValue : displayValue.toFixed(1)}
+          <span className="inline-flex items-baseline gap-1">
+            <span className={cn('text-lg font-bold tabular-nums', getScoreColor(displayValue))}>
+              {Number.isInteger(displayValue) ? displayValue : displayValue.toFixed(1)}
+            </span>
+            {tag1 && (
+              <span className="text-[10px] text-muted-foreground">{tag1}</span>
+            )}
           </span>
-          {tag1 && (
-            <span className="ml-1 text-[10px] text-muted-foreground">{tag1}</span>
-          )}
         </div>
       )}
     </div>
@@ -282,10 +284,10 @@ export function OverviewTab({ agent, agentId, chainId, agentNumericId, onSwitchT
                   href={ep.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="min-w-0 truncate font-mono text-xs text-foreground/80 hover:text-primary transition-colors"
+                  className="inline-flex min-w-0 items-center gap-1 truncate font-mono text-xs text-foreground/80 hover:text-primary transition-colors"
                 >
                   {ep.url}
-                  <ExternalLink className="ml-1 inline size-2.5" />
+                  <ExternalLink className="shrink-0 size-2.5" />
                 </a>
               </div>
             ))}

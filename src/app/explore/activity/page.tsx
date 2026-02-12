@@ -367,7 +367,7 @@ export default function ActivityPage() {
 
         {/* Filter pills */}
         <div className="flex flex-wrap items-center gap-1.5">
-          <Filter className="size-3.5 text-muted-foreground mr-1" />
+          <Filter className="size-3.5 text-muted-foreground" />
           {FILTER_OPTIONS.map((opt) => (
             <button
               key={opt.value}
@@ -406,8 +406,8 @@ export default function ActivityPage() {
               <ActivityRowSkeleton key={i} />
             ))
           ) : activities.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <div className="relative mb-4">
+            <div className="flex flex-col items-center justify-center gap-1 py-20">
+              <div className="relative pb-3">
                 <div className="flex size-16 items-center justify-center rounded-full bg-primary/10">
                   <Radio className="size-7 text-primary" />
                 </div>
@@ -418,7 +418,7 @@ export default function ActivityPage() {
               <p className="text-sm font-medium text-foreground">
                 No activity found
               </p>
-              <p className="mt-1 max-w-sm text-center text-xs text-muted-foreground">
+              <p className="max-w-sm text-center text-xs text-muted-foreground">
                 {filter !== 'all'
                   ? 'Try a different filter or check back later.'
                   : 'On-chain events will appear here as they are indexed.'}

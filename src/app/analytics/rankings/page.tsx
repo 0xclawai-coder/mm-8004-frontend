@@ -138,7 +138,7 @@ const columns: ColumnDef<LeaderboardEntry, unknown>[] = [
     cell: ({ getValue }) =>
       getValue<boolean>() ? (
         <Badge variant="outline" className="border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-[10px]">
-          <Shield className="mr-0.5 size-3" /> x402
+          <Shield className="size-3" /> x402
         </Badge>
       ) : (
         <span className="text-xs text-muted-foreground">—</span>
