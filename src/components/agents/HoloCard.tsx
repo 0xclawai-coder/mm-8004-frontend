@@ -99,7 +99,9 @@ export function HoloCard(props: HoloCardProps) {
   const image = props.image !== undefined ? props.image : agent?.image ?? null;
   const name = props.name ?? agent?.name ?? (agent ? `Agent #${agent.agent_id}` : undefined);
   const description = props.description !== undefined ? props.description : agent?.description ?? null;
-  const score = props.score !== undefined ? props.score : agent?.reputation_score ?? null;
+  // Score: treat null/undefined as 0 once we have agent data (not loading)
+  const rawScore = props.score !== undefined ? props.score : agent?.reputation_score ?? null;
+  const score = rawScore ?? (props.name != null || agent != null ? 0 : null);
   const feedbackCount = props.feedbackCount ?? agent?.feedback_count ?? 0;
   const chainId = props.chainId ?? agent?.chain_id;
   const owner = props.owner ?? agent?.owner;
