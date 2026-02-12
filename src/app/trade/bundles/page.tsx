@@ -106,22 +106,30 @@ function BundleCard({ bundle }: { bundle: MarketplaceBundle }) {
 function BundleCardSkeleton() {
   return (
     <div className="overflow-hidden rounded-xl border border-border/50 bg-card/60">
+      {/* Image area — matches aspect-square of BundleCard */}
       <Skeleton className="aspect-square w-full rounded-none" />
+      {/* Info — matches space-y-3 p-3 structure of BundleCard */}
       <div className="space-y-3 p-3">
-        <div className="flex items-center justify-between">
+        {/* Row 1: name + badge — flex items-start justify-between gap-2 */}
+        <div className="flex items-start justify-between gap-2">
           <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-5 w-14 rounded-full" />
+          <Skeleton className="h-5 w-14 shrink-0 rounded-full" />
         </div>
-        <div className="flex items-end justify-between">
+        {/* Row 2: price + seller — flex items-end justify-between gap-2 */}
+        <div className="flex items-end justify-between gap-2">
           <div className="space-y-1">
             <Skeleton className="h-3 w-10" />
-            <Skeleton className="h-4 w-20" />
+            <div className="flex items-center gap-1">
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-3 w-8" />
+            </div>
           </div>
           <div className="space-y-1">
             <Skeleton className="ml-auto h-3 w-10" />
             <Skeleton className="ml-auto h-3 w-16" />
           </div>
         </div>
+        {/* Row 3: timestamp */}
         <Skeleton className="h-3 w-24" />
       </div>
     </div>
@@ -174,7 +182,7 @@ export default function BundlesPage() {
       {/* Grid */}
       {isLoading ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {Array.from({ length: limit }).map((_, i) => <BundleCardSkeleton key={i} />)}
+          {Array.from({ length: 6 }).map((_, i) => <BundleCardSkeleton key={i} />)}
         </div>
       ) : bundles.length === 0 ? (
         <EmptyState

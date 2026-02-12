@@ -244,7 +244,7 @@ export default function RankingsPage() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <RankingSkeleton rows={20} />
+              <RankingSkeleton rows={10} />
             ) : entries.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length}>
