@@ -2,7 +2,6 @@
 
 import { use, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import {
   ArrowLeft,
   Shield,
@@ -637,22 +636,18 @@ export default function ListingDetailPage({
     return <ErrorState id={id} />
   }
 
-  const router = useRouter()
   const isActive = listing.status === 'Active'
   const isExpired = listing.expiry > 0 && listing.expiry * 1000 < Date.now()
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Back button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => router.back()}
-        className="mb-6 gap-2 text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="size-4" />
-        Back
-      </Button>
+      <Link href="/trade/marketplace">
+        <Button variant="ghost" size="sm" className="mb-6 gap-2 text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="size-4" />
+          Back to Marketplace
+        </Button>
+      </Link>
 
       {/* Main two-column layout */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1.2fr]">
