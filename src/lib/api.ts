@@ -4,8 +4,10 @@ import type {
   AgentsResponse,
   ActivitiesResponse,
   ActivityFilters,
+  AuctionBid,
   AuctionDetailResponse,
   AuctionFilters,
+  MarketplaceAuction,
   AuctionsResponse,
   BundleFilters,
   BundlesResponse,
@@ -166,8 +168,14 @@ export function getAuctions(filters?: AuctionFilters): Promise<AuctionsResponse>
 }
 
 /** GET /api/marketplace/auctions/:id — single auction detail with bids */
-export function getAuctionDetail(id: string): Promise<AuctionDetailResponse> {
-  return fetchApi<AuctionDetailResponse>(`/marketplace/auctions/${id}`)
+export async function getAuctionDetail(id: string): Promise<AuctionDetailResponse> {
+  const raw = await fetchApi<Record<string, unknown>>(`/marketplace/auctions/${id}`)
+  // API returns flat structure with bids[] embedded — normalize to { auction, bids }
+  if ('auction_id' in raw && !('auction' in raw)) {
+    const { bids, ...auction } = raw as Record<string, unknown> & { bids?: AuctionBid[] }
+    return { auction: auction as unknown as MarketplaceAuction, bids: bids ?? [] }
+  }
+  return raw as unknown as AuctionDetailResponse
 }
 
 /** GET /api/marketplace/bundles — list bundles */
