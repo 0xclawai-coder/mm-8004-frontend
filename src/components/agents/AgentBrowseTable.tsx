@@ -197,7 +197,7 @@ export function AgentBrowseTable() {
               </tr>
             ) : (
               agents.map((agent) => {
-                const agentPath = `/explore/agents/${agent.chain_id}-${agent.agent_id}`;
+                const agentPath = `/explore/agents/${agent.chain_id}/${agent.agent_id}`;
                 return (
                   <tr
                     key={`${agent.chain_id}-${agent.agent_id}`}

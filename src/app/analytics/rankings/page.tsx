@@ -68,7 +68,7 @@ const columns: ColumnDef<LeaderboardEntry, unknown>[] = [
     cell: ({ row }) => {
       const e = row.original
       return (
-        <Link href={`/explore/agents/${e.chain_id}-${e.agent_id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+        <Link href={`/explore/agents/${e.chain_id}/${e.agent_id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
           <Avatar className="size-9 shrink-0 rounded-lg ring-1 ring-border">
             <AvatarImage src={e.image ?? undefined} alt={e.name ?? `Agent #${e.agent_id}`} />
             <AvatarFallback className="rounded-lg bg-primary/10 text-xs font-bold text-primary">

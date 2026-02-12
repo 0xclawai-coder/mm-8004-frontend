@@ -198,7 +198,7 @@ function ActivityRow({ activity }: { activity: GlobalActivityType }) {
 
       {/* Agent name */}
       <Link
-        href={`/explore/agents/${activity.chain_id}-${activity.agent_id}`}
+        href={`/explore/agents/${activity.chain_id}/${activity.agent_id}`}
         className="shrink-0 w-36 truncate text-sm font-medium text-foreground hover:text-primary transition-colors"
       >
         {agentName}

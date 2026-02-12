@@ -178,16 +178,14 @@ function ErrorState({ agentId }: { agentId: string }) {
 export default function AgentDetailPage({
   params,
 }: {
-  params: Promise<{ agentId: string }>
+  params: Promise<{ chainId: string; agentId: string }>
 }) {
-  const { agentId } = use(params)
+  const { chainId: chainIdParam, agentId: agentNumericId } = use(params)
   const [activeTab, setActiveTab] = useState('overview')
   const tabsRef = useRef<HTMLDivElement>(null)
 
-  // Parse agentId format: "{chainId}-{agentId}" e.g. "143-1"
-  const parts = agentId.split('-')
-  const chainId = parts.length >= 2 ? parseInt(parts[0], 10) : 0
-  const agentNumericId = parts.length >= 2 ? parts.slice(1).join('-') : agentId
+  const chainId = parseInt(chainIdParam, 10)
+  const agentId = `${chainIdParam}-${agentNumericId}`
 
   const { data: agent, isLoading, error } = useAgent(agentId)
 

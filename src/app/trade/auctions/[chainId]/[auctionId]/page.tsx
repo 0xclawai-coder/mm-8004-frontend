@@ -517,15 +517,13 @@ function ErrorState({ id }: { id: string }) {
 export default function AuctionDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ chainId: string; auctionId: string }>
 }) {
-  const { id } = use(params)
+  const { chainId: chainIdParam, auctionId } = use(params)
   const [bidAmount, setBidAmount] = useState('')
 
-  // Parse id format: "{chainId}-{auctionId}" e.g. "143-5"
-  const parts = id.split('-')
-  const chainId = parts.length >= 2 ? parseInt(parts[0], 10) : 0
-  const tokenIdPart = parts.length >= 2 ? parts.slice(1).join('-') : id
+  const chainId = parseInt(chainIdParam, 10)
+  const id = `${chainIdParam}-${auctionId}`
 
   const { data, isLoading, error } = useAuctionDetail(id)
   const auction = data?.auction

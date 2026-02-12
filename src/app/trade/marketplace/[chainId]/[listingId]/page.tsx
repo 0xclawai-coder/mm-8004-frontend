@@ -800,14 +800,12 @@ function ItemActivitySection({ agentId }: { agentId: string }) {
 export default function ListingDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ chainId: string; listingId: string }>
 }) {
-  const { id } = use(params)
+  const { chainId: chainIdParam, listingId } = use(params)
 
-  // Parse id format: "{chainId}-{listingId}"
-  const parts = id.split('-')
-  const chainId = parts.length >= 2 ? parseInt(parts[0], 10) : 0
-  const listingId = parts.length >= 2 ? parts.slice(1).join('-') : id
+  const chainId = parseInt(chainIdParam, 10)
+  const id = `${chainIdParam}-${listingId}`
 
   // Fetch listing
   const { data: listing, isLoading: listingLoading, error: listingError } = useListing(id)

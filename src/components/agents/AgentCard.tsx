@@ -26,7 +26,7 @@ function getChainLabel(chainId: number): string {
 }
 
 export function AgentCard({ agent }: AgentCardProps) {
-  const agentPath = `/explore/agents/${agent.chain_id}-${agent.agent_id}`
+  const agentPath = `/explore/agents/${agent.chain_id}/${agent.agent_id}`
 
   return (
     <Link href={agentPath} className="group block">

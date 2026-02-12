@@ -229,7 +229,7 @@ function MobileCardSkeleton({ count }: { count: number }) {
 function MobileListingCard({ listing, index }: { listing: MarketplaceListing; index: number }) {
   return (
     <Link
-      href={`/trade/marketplace/${listing.chain_id}-${listing.listing_id}`}
+      href={`/trade/marketplace/${listing.chain_id}/${listing.listing_id}`}
       className="flex items-center gap-3 rounded-xl border border-border/50 bg-card/60 p-3 transition-colors active:bg-muted/30"
     >
       {/* Agent image */}
@@ -438,7 +438,7 @@ export default function MarketplacePage() {
             ) : (
               table.getRowModel().rows.map((row) => {
                 const l = row.original
-                const href = `/trade/marketplace/${l.chain_id}-${l.listing_id}`
+                const href = `/trade/marketplace/${l.chain_id}/${l.listing_id}`
                 return (
                     <TableRow
                       key={row.id}

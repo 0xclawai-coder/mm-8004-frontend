@@ -270,7 +270,7 @@ export default function AuctionsPage() {
           {auctions.map((auction) => (
             <Link
               key={`${auction.chain_id}-${auction.auction_id}`}
-              href={`/trade/auctions/${auction.chain_id}-${auction.auction_id}`}
+              href={`/trade/auctions/${auction.chain_id}/${auction.auction_id}`}
             >
               <AuctionCard auction={auction} />
             </Link>

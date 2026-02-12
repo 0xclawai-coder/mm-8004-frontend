@@ -164,7 +164,7 @@ function RecentListings() {
           : listings.map((listing) => (
               <Link
                 key={`${listing.chain_id}-${listing.listing_id}`}
-                href={`/trade/marketplace/${listing.chain_id}-${listing.listing_id}`}
+                href={`/trade/marketplace/${listing.chain_id}/${listing.listing_id}`}
                 className="group block"
               >
                 <Card className="overflow-hidden border-border/50 bg-card/80 py-0 transition-all duration-300 group-hover:scale-[1.03] group-hover:border-primary/30 group-hover:glow-violet">

@@ -81,7 +81,7 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
         </thead>
         <tbody>
           {entries.map((entry) => {
-            const agentPath = `/explore/agents/${entry.chain_id}-${entry.agent_id}`
+            const agentPath = `/explore/agents/${entry.chain_id}/${entry.agent_id}`
             return (
               <tr
                 key={`${entry.chain_id}-${entry.agent_id}`}
