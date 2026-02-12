@@ -244,15 +244,11 @@ export default function MarketplacePage() {
       />
 
       {/* Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          {!isLoading && <span>{total} Listings</span>}
-        </div>
-        <div className="flex items-center gap-3">
-          <ChainFilter
-            selected={chainId}
-            onSelect={(v) => { setChainId(v); setPage(1) }}
-          />
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            {!isLoading && <span>{total} Listings</span>}
+          </div>
           <Select value={sort} onValueChange={(v) => { setSort(v as ListingSortOrder); setPage(1) }}>
             <SelectTrigger size="sm" className="w-auto gap-1.5 border-border/50 bg-card/80">
               <SelectValue />
@@ -263,6 +259,13 @@ export default function MarketplacePage() {
               <SelectItem value="price_desc">Price: High → Low</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        <div className="-mx-1 overflow-x-auto px-1 pb-1">
+          <ChainFilter
+            selected={chainId}
+            onSelect={(v) => { setChainId(v); setPage(1) }}
+            className="w-max"
+          />
         </div>
       </div>
 

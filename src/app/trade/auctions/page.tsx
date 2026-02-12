@@ -218,19 +218,15 @@ export default function AuctionsPage() {
       />
 
       {/* Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          {isLoading ? (
-            <Skeleton className="h-4 w-24" />
-          ) : (
-            <span>{total} Auctions</span>
-          )}
-        </div>
-        <div className="flex items-center gap-3">
-          <ChainFilter
-            selected={chainId}
-            onSelect={(v) => { setChainId(v); setPage(1) }}
-          />
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            {isLoading ? (
+              <Skeleton className="h-4 w-24" />
+            ) : (
+              <span>{total} Auctions</span>
+            )}
+          </div>
           <Select value={sort} onValueChange={(v) => { setSort(v as AuctionSortOrder); setPage(1) }}>
             <SelectTrigger size="sm" className="w-auto gap-1.5 border-border/50 bg-card/80">
               <SelectValue />
@@ -241,6 +237,13 @@ export default function AuctionsPage() {
               <SelectItem value="recent">Newest</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        <div className="-mx-1 overflow-x-auto px-1 pb-1">
+          <ChainFilter
+            selected={chainId}
+            onSelect={(v) => { setChainId(v); setPage(1) }}
+            className="w-max"
+          />
         </div>
       </div>
 
