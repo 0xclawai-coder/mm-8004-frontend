@@ -42,8 +42,8 @@ function StatCard({ label, value, icon, accent }: StatCardProps) {
           {icon}
         </div>
         <div className="min-w-0">
-          <p className="text-xs text-muted-foreground">{label}</p>
-          <p className="text-xl font-bold tracking-tight text-foreground">
+          <p className="truncate text-xs text-muted-foreground">{label}</p>
+          <p className="truncate text-xl font-bold tracking-tight text-foreground">
             {typeof value === 'number' ? value.toLocaleString() : value}
           </p>
         </div>
