@@ -71,10 +71,10 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
       <table className="w-full">
         <thead>
           <tr className="border-b border-border/50 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            <th className="px-4 py-3 w-16">Rank</th>
-            <th className="px-4 py-3">Agent</th>
+            <th className="px-2 py-3 w-12 sm:px-4 sm:w-16">Rank</th>
+            <th className="px-2 py-3 sm:px-4">Agent</th>
             <th className="hidden px-4 py-3 sm:table-cell">Category</th>
-            <th className="px-4 py-3 text-right">Score</th>
+            <th className="whitespace-nowrap px-2 py-3 text-right sm:px-4">Score</th>
             <th className="hidden px-4 py-3 text-right md:table-cell">Feedbacks</th>
             <th className="hidden px-4 py-3 text-right lg:table-cell">Chain</th>
           </tr>
@@ -90,12 +90,12 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
                 onMouseEnter={() => router.prefetch(agentPath)}
               >
                 {/* Rank */}
-                <td className="px-4 py-3">
+                <td className="px-2 py-3 sm:px-4">
                   <RankBadge rank={entry.rank} />
                 </td>
 
                 {/* Agent */}
-                <td className="px-4 py-3">
+                <td className="px-2 py-3 sm:px-4">
                   <div className="flex items-center gap-3">
                     <Avatar className="size-9 ring-1 ring-border">
                       <AvatarImage src={entry.image ?? undefined} alt={entry.name ?? undefined} />
@@ -135,7 +135,7 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
                 </td>
 
                 {/* Score */}
-                <td className="px-4 py-3 text-right">
+                <td className="whitespace-nowrap px-2 py-3 text-right sm:px-4">
                   <div className="flex items-center justify-end gap-1">
                     <Star className={cn('size-3.5', getScoreColor(entry.reputation_score ?? 0))} />
                     <span className={cn('text-sm font-semibold', getScoreColor(entry.reputation_score ?? 0))}>

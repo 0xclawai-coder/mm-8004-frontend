@@ -133,7 +133,7 @@ export function AgentBrowseTable() {
               setSearch(v);
               setPage(1);
             }}
-            className="w-full sm:max-w-xs"
+            className="w-full sm:max-w-md"
           />
           <Select value={sort} onValueChange={(v) => { setSort(v as SortOrder); setPage(1); }}>
             <SelectTrigger size="sm" className="w-auto gap-1.5 border-border/50 bg-card/80">

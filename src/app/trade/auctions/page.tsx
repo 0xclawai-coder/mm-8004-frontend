@@ -87,19 +87,20 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
           </Badge>
         )}
 
-        {/* Buy now price */}
-        {parseFloat(auction.buy_now_price) > 0 && !ended && (
-          <Badge
-            variant="outline"
-            className="absolute top-2 right-2 border-primary/30 bg-card/80 text-[10px] text-primary backdrop-blur-sm"
-          >
-            Buy Now {formatPrice(auction.buy_now_price)} {token}
-          </Badge>
-        )}
       </div>
 
       {/* Info */}
       <div className="space-y-3 p-3">
+        {/* Buy now price — below image to avoid badge overlap */}
+        {parseFloat(auction.buy_now_price) > 0 && !ended && (
+          <Badge
+            variant="outline"
+            className="w-full justify-center border-primary/30 bg-primary/10 text-[10px] text-primary"
+          >
+            Buy Now {formatPrice(auction.buy_now_price)} {token}
+          </Badge>
+        )}
+
         {/* Name + bid count */}
         <div className="flex items-start justify-between gap-2">
           <p className="truncate text-sm font-medium text-foreground">
@@ -253,7 +254,7 @@ export default function AuctionsPage() {
 
       {/* Card Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {Array.from({ length: limit }).map((_, i) => (
             <AuctionCardSkeleton key={i} />
           ))}
@@ -265,7 +266,7 @@ export default function AuctionsPage() {
           description="There are no auctions matching your filters right now. Check back soon!"
         />
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {auctions.map((auction) => (
             <Link
               key={`${auction.chain_id}-${auction.auction_id}`}

@@ -72,6 +72,8 @@ const columns: ColumnDef<MarketplaceListing, unknown>[] = [
   {
     accessorKey: 'token_id',
     header: 'Identity',
+    size: 220,
+    maxSize: 280,
     cell: ({ row }) => {
       const l = row.original
       return (
@@ -392,6 +394,7 @@ export default function MarketplacePage() {
                   return (
                     <TableHead
                       key={header.id}
+                      style={header.column.columnDef.size ? { width: header.column.getSize(), maxWidth: header.column.columnDef.maxSize ?? undefined } : undefined}
                       className={cn(
                         header.column.getCanSort() &&
                           'cursor-pointer select-none',
@@ -448,7 +451,7 @@ export default function MarketplacePage() {
                           | { className?: string }
                           | undefined
                         return (
-                          <TableCell key={cell.id} className={meta?.className}>
+                          <TableCell key={cell.id} style={cell.column.columnDef.size ? { width: cell.column.getSize(), maxWidth: cell.column.columnDef.maxSize ?? undefined } : undefined} className={meta?.className}>
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()

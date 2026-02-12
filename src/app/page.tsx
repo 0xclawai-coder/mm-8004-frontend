@@ -33,39 +33,47 @@ function StatsBar() {
   const { data: mStats, isLoading: mLoading } = useMarketplaceStats()
   const isLoading = statsLoading || mLoading
 
+  const totalSales = mStats?.total_sales ?? 0
+
   const items = [
     { label: 'Total Agents', value: stats?.total_agents ?? 0, icon: <Users className="size-4" />, href: '/explore/agents' },
     { label: 'Active Listings', value: mStats?.active_listings ?? 0, icon: <ShoppingBag className="size-4" />, href: '/trade/marketplace' },
-    { label: 'Total Sales', value: mStats?.total_sales ?? 0, icon: <TrendingUp className="size-4" />, href: '/analytics/overview' },
+    { label: 'Total Sales', value: totalSales === 0 ? 'Coming Soon' : totalSales, icon: <TrendingUp className="size-4" />, href: '/analytics/overview', dimmed: totalSales === 0 },
     { label: 'Active Auctions', value: mStats?.active_auctions ?? 0, icon: <Gavel className="size-4" />, href: '/trade/auctions' },
     { label: 'Total Feedbacks', value: stats?.total_feedbacks ?? 0, icon: <MessageSquare className="size-4" />, href: '/analytics/overview' },
   ]
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-      {items.map((item) => (
-        <Link
-          key={item.label}
-          href={item.href}
-          className="rounded-xl border border-border/30 bg-card/40 p-4 text-center transition-colors hover:border-primary/30 hover:bg-card/60"
-        >
-          <div className="mb-2 flex items-center justify-center text-primary">
-            {item.icon}
-          </div>
-          {isLoading ? (
-            <Skeleton className="mx-auto h-7 w-16" />
-          ) : (
-            <p className="text-xl font-bold text-foreground">
-              {typeof item.value === 'number'
-                ? item.value.toLocaleString()
-                : item.value}
+      {items.map((item) => {
+        const dimmed = 'dimmed' in item && item.dimmed
+        return (
+          <Link
+            key={item.label}
+            href={item.href}
+            className={cn(
+              "rounded-xl border border-border/30 bg-card/40 p-4 text-center transition-colors hover:border-primary/30 hover:bg-card/60",
+              dimmed && "opacity-60"
+            )}
+          >
+            <div className={cn("mb-2 flex items-center justify-center", dimmed ? "text-muted-foreground" : "text-primary")}>
+              {item.icon}
+            </div>
+            {isLoading ? (
+              <Skeleton className="mx-auto h-7 w-16" />
+            ) : (
+              <p className={cn("text-xl font-bold", dimmed ? "text-muted-foreground text-sm" : "text-foreground")}>
+                {typeof item.value === 'number'
+                  ? item.value.toLocaleString()
+                  : item.value}
+              </p>
+            )}
+            <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+              {item.label}
             </p>
-          )}
-          <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
-            {item.label}
-          </p>
-        </Link>
-      ))}
+          </Link>
+        )
+      })}
     </div>
   )
 }
@@ -142,7 +150,7 @@ function RecentListings() {
           View Marketplace <ArrowRight className="size-3.5" />
         </Link>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {isLoading
           ? Array.from({ length: 6 }).map((_, i) => (
               <Card key={i} className="border-border/50 bg-card/80 py-0 overflow-hidden">

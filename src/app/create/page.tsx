@@ -444,9 +444,9 @@ export default function CreateMoltPage() {
   if (!isConnected || !address) {
     return (
       <div className="min-h-screen bg-gradient-radial">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 pt-6 pb-8 sm:px-6 sm:pt-10 lg:px-8">
           {/* Header */}
-          <div className="mb-8 text-center">
+          <div className="mb-4 text-center">
             <h1 className="text-gradient-glow text-3xl font-extrabold sm:text-4xl lg:text-5xl">
               Create Your Molt
             </h1>

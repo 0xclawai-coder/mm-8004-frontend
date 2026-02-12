@@ -13,8 +13,9 @@ interface CategoryFilterProps {
 
 export function CategoryFilter({ selected, onSelect, className }: CategoryFilterProps) {
   return (
-    <div className={cn('flex gap-2 overflow-x-auto pb-1 scrollbar-none', className)}>
-      {categories.map((category) => {
+    <div className={cn('relative', className)}>
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {categories.map((category) => {
         const isActive = selected === category || (category === 'All' && !selected)
         return (
           <Button
@@ -33,6 +34,9 @@ export function CategoryFilter({ selected, onSelect, className }: CategoryFilter
           </Button>
         )
       })}
+      </div>
+      {/* Scroll fade indicator */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent sm:hidden" />
     </div>
   )
 }
