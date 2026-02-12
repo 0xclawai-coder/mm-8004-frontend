@@ -30,7 +30,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 
   return (
     <Link href={agentPath} className="group block">
-      <Card className="relative overflow-hidden border-border/50 bg-card/80 py-0 transition-all duration-300 group-hover:scale-[1.02] group-hover:border-primary/30 group-hover:glow-violet">
+      <Card className="relative h-full overflow-hidden border-border/50 bg-card/80 py-0 transition-all duration-300 group-hover:scale-[1.02] group-hover:border-primary/30 group-hover:glow-violet">
         <CardContent className="flex flex-col gap-4 p-5">
           {/* Top row: Avatar + Name + Description + Created */}
           <div className="flex items-start gap-3">
@@ -49,7 +49,7 @@ export function AgentCard({ agent }: AgentCardProps) {
                   <TimeCounter targetTime={new Date(agent.block_timestamp)} />
                 </span>
               </div>
-              <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+              <p className="mt-1 min-h-8 line-clamp-2 text-xs text-muted-foreground">
                 {agent.description || 'No description available'}
               </p>
             </div>

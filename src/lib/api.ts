@@ -4,9 +4,16 @@ import type {
   AgentsResponse,
   ActivitiesResponse,
   ActivityFilters,
+  AuctionFilters,
+  AuctionsResponse,
+  BundleFilters,
+  BundlesResponse,
   DashboardStats,
   LeaderboardFilters,
   LeaderboardResponse,
+  ListingFilters,
+  ListingsResponse,
+  MarketplaceStats,
   ReputationHistory,
   ReputationRange,
 } from '@/types'
@@ -104,4 +111,56 @@ export function getLeaderboard(
 /** GET /api/stats — global marketplace statistics */
 export function getStats(): Promise<DashboardStats> {
   return fetchApi<DashboardStats>('/stats')
+}
+
+// ============================================================
+// Marketplace endpoints
+// ============================================================
+
+/** GET /api/marketplace/listings — list marketplace listings */
+export function getListings(filters?: ListingFilters): Promise<ListingsResponse> {
+  const params: Record<string, string | undefined> = {}
+  if (filters) {
+    if (filters.chain_id !== undefined) params.chain_id = String(filters.chain_id)
+    if (filters.nft_contract) params.nft_contract = filters.nft_contract
+    if (filters.seller) params.seller = filters.seller
+    if (filters.status) params.status = filters.status
+    if (filters.sort) params.sort = filters.sort
+    if (filters.page !== undefined) params.page = String(filters.page)
+    if (filters.limit !== undefined) params.limit = String(filters.limit)
+  }
+  return fetchApi<ListingsResponse>('/marketplace/listings', params)
+}
+
+/** GET /api/marketplace/auctions — list auctions */
+export function getAuctions(filters?: AuctionFilters): Promise<AuctionsResponse> {
+  const params: Record<string, string | undefined> = {}
+  if (filters) {
+    if (filters.chain_id !== undefined) params.chain_id = String(filters.chain_id)
+    if (filters.nft_contract) params.nft_contract = filters.nft_contract
+    if (filters.seller) params.seller = filters.seller
+    if (filters.status) params.status = filters.status
+    if (filters.sort) params.sort = filters.sort
+    if (filters.page !== undefined) params.page = String(filters.page)
+    if (filters.limit !== undefined) params.limit = String(filters.limit)
+  }
+  return fetchApi<AuctionsResponse>('/marketplace/auctions', params)
+}
+
+/** GET /api/marketplace/bundles — list bundles */
+export function getBundles(filters?: BundleFilters): Promise<BundlesResponse> {
+  const params: Record<string, string | undefined> = {}
+  if (filters) {
+    if (filters.chain_id !== undefined) params.chain_id = String(filters.chain_id)
+    if (filters.seller) params.seller = filters.seller
+    if (filters.status) params.status = filters.status
+    if (filters.page !== undefined) params.page = String(filters.page)
+    if (filters.limit !== undefined) params.limit = String(filters.limit)
+  }
+  return fetchApi<BundlesResponse>('/marketplace/bundles', params)
+}
+
+/** GET /api/marketplace/stats — marketplace statistics */
+export function getMarketplaceStats(): Promise<MarketplaceStats> {
+  return fetchApi<MarketplaceStats>('/marketplace/stats')
 }

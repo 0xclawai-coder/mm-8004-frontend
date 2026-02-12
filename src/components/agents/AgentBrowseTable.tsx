@@ -10,7 +10,14 @@ import { CategoryFilter } from "@/components/agents/CategoryFilter";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn, formatAddress } from "@/lib/utils";
 import TimeCounter from "@/components/ui/time-counter";
 import type { SortOrder } from "@/types";
 
@@ -24,10 +31,6 @@ function getChainLabel(chainId: number): string {
   if (chainId === 143) return "Monad";
   if (chainId === 10143) return "Testnet";
   return `Chain ${chainId}`;
-}
-
-function formatAddress(addr: string): string {
-  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
 function TableSkeleton({ rows }: { rows: number }) {
@@ -137,18 +140,16 @@ export function AgentBrowseTable() {
               setPage(1);
             }}
           />
-          <select
-            value={sort}
-            onChange={(e) => {
-              setSort(e.target.value as SortOrder);
-              setPage(1);
-            }}
-            className="rounded-lg border border-border/50 bg-card/80 px-3 py-1.5 text-sm text-foreground outline-none focus:border-primary/50"
-          >
-            <option value="recent">Newest</option>
-            <option value="score">Top Score</option>
-            <option value="name">Name</option>
-          </select>
+          <Select value={sort} onValueChange={(v) => { setSort(v as SortOrder); setPage(1); }}>
+            <SelectTrigger size="sm" className="w-auto gap-1.5 border-border/50 bg-card/80">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="recent">Newest</SelectItem>
+              <SelectItem value="score">Top Score</SelectItem>
+              <SelectItem value="name">Name</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -294,64 +295,74 @@ export function AgentBrowseTable() {
         </table>
       </div>
 
-      {/* Pagination */}
-      {total > 0 && (
-        <div className="mt-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+      {/* Pagination — always rendered to prevent layout shift */}
+      <div className="mt-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          {isLoading ? (
+            <Skeleton className="h-4 w-40" />
+          ) : total > 0 ? (
             <span>
               Showing {start}-{end} of {total} agents
             </span>
-            <div className="flex items-center gap-1.5">
-              <span>Per page:</span>
-              <select
-                value={limit}
-                onChange={(e) => {
-                  setLimit(Number(e.target.value));
-                  setPage(1);
-                }}
-                className="rounded border border-border/50 bg-card/80 px-2 py-0.5 text-sm text-foreground outline-none"
-              >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-              </select>
-            </div>
+          ) : (
+            <span>&nbsp;</span>
+          )}
+          <div className="flex items-center gap-1.5">
+            <span>Per page:</span>
+            <Select value={String(limit)} onValueChange={(v) => { setLimit(Number(v)); setPage(1); }}>
+              <SelectTrigger size="sm" className="w-auto gap-1 border-border/50 bg-card/80">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+        </div>
 
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page <= 1}
-              className="flex items-center gap-1 rounded-lg border border-border/50 bg-card/80 px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-accent/50 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <ChevronLeft className="size-4" />
-              Previous
-            </button>
-            {pageNumbers.map((p) => (
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1 || isLoading}
+            className="flex items-center gap-1 rounded-lg border border-border/50 bg-card/80 px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-accent/50 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft className="size-4" />
+            Previous
+          </button>
+          {isLoading && pageNumbers.length === 0 ? (
+            <div className="flex items-center gap-1">
+              <Skeleton className="size-8 rounded-lg" />
+            </div>
+          ) : (
+            pageNumbers.map((p) => (
               <button
                 key={p}
                 onClick={() => setPage(p)}
+                disabled={isLoading}
                 className={cn(
                   "size-8 rounded-lg text-sm font-medium transition-colors",
                   p === page
                     ? "bg-primary text-primary-foreground"
                     : "border border-border/50 bg-card/80 text-foreground hover:bg-accent/50",
+                  isLoading && "opacity-60",
                 )}
               >
                 {p}
               </button>
-            ))}
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page >= totalPages}
-              className="flex items-center gap-1 rounded-lg border border-border/50 bg-card/80 px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-accent/50 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              Next
-              <ChevronRight className="size-4" />
-            </button>
-          </div>
+            ))
+          )}
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages || isLoading}
+            className="flex items-center gap-1 rounded-lg border border-border/50 bg-card/80 px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-accent/50 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Next
+            <ChevronRight className="size-4" />
+          </button>
         </div>
-      )}
+      </div>
     </section>
   );
 }

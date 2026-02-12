@@ -191,6 +191,138 @@ export interface ApiError {
 }
 
 // ============================================================
+// Marketplace Types
+// ============================================================
+
+export interface MarketplaceListing {
+  id: number
+  listing_id: number
+  chain_id: number
+  seller: string
+  nft_contract: string
+  token_id: string
+  payment_token: string
+  price: string
+  expiry: number
+  status: string
+  buyer: string | null
+  sold_price: string | null
+  block_number: number
+  block_timestamp: string
+  tx_hash: string
+  created_at: string
+  updated_at: string
+}
+
+export interface MarketplaceAuction {
+  id: number
+  auction_id: number
+  chain_id: number
+  seller: string
+  nft_contract: string
+  token_id: string
+  payment_token: string
+  start_price: string
+  reserve_price: string
+  buy_now_price: string
+  highest_bid: string | null
+  highest_bidder: string | null
+  start_time: number
+  end_time: number
+  bid_count: number | null
+  status: string
+  winner: string | null
+  settled_price: string | null
+  block_number: number
+  block_timestamp: string
+  tx_hash: string
+  created_at: string
+  updated_at: string
+}
+
+export interface MarketplaceBundle {
+  id: number
+  bundle_id: number
+  chain_id: number
+  seller: string
+  nft_contracts: string[]
+  token_ids: string[]
+  payment_token: string
+  price: string
+  expiry: number
+  item_count: number
+  status: string
+  buyer: string | null
+  sold_price: string | null
+  block_number: number
+  block_timestamp: string
+  tx_hash: string
+  created_at: string
+  updated_at: string
+}
+
+export interface MarketplaceStats {
+  total_listings: number
+  active_listings: number
+  total_sales: number
+  total_volume: string
+  active_auctions: number
+}
+
+export interface ListingsResponse {
+  listings: MarketplaceListing[]
+  total: number
+  page: number
+  limit: number
+}
+
+export interface AuctionsResponse {
+  auctions: MarketplaceAuction[]
+  total: number
+  page: number
+  limit: number
+}
+
+export interface BundlesResponse {
+  bundles: MarketplaceBundle[]
+  total: number
+  page: number
+  limit: number
+}
+
+export type ListingSortOrder = 'recent' | 'price_asc' | 'price_desc'
+export type ListingStatus = 'Active' | 'Sold' | 'Cancelled' | 'Expired'
+export type AuctionSortOrder = 'recent' | 'ending_soon' | 'highest_bid'
+
+export interface ListingFilters {
+  chain_id?: number
+  nft_contract?: string
+  seller?: string
+  status?: ListingStatus
+  sort?: ListingSortOrder
+  page?: number
+  limit?: number
+}
+
+export interface AuctionFilters {
+  chain_id?: number
+  nft_contract?: string
+  seller?: string
+  status?: string
+  sort?: AuctionSortOrder
+  page?: number
+  limit?: number
+}
+
+export interface BundleFilters {
+  chain_id?: number
+  seller?: string
+  status?: string
+  page?: number
+  limit?: number
+}
+
+// ============================================================
 // Query Param Types
 // ============================================================
 

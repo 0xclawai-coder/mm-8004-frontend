@@ -1,17 +1,385 @@
-import { ShoppingCart } from 'lucide-react'
+'use client'
+
+import { useState } from 'react'
+import {
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type ColumnDef,
+  type SortingState,
+} from '@tanstack/react-table'
+import { ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useListings } from '@/hooks/useListings'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { ChainFilter } from '@/components/agents/ChainFilter'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { cn, formatAddress, formatPrice, getTokenLabel } from '@/lib/utils'
+import TimeCounter from '@/components/ui/time-counter'
+import type { MarketplaceListing, ListingSortOrder } from '@/types'
+
+function getStatusColor(status: string) {
+  switch (status) {
+    case 'Active':
+      return 'border-green-500/30 bg-green-500/10 text-green-400'
+    case 'Sold':
+      return 'border-blue-500/30 bg-blue-500/10 text-blue-400'
+    case 'Cancelled':
+      return 'border-muted-foreground/30 bg-muted/50 text-muted-foreground'
+    case 'Expired':
+      return 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400'
+    default:
+      return ''
+  }
+}
+
+// ============================================================
+// Columns
+// ============================================================
+
+const columns: ColumnDef<MarketplaceListing, unknown>[] = [
+  {
+    id: 'rank',
+    header: '#',
+    cell: ({ row }) => (
+      <span className="text-sm text-muted-foreground">{row.index + 1}</span>
+    ),
+    enableSorting: false,
+    size: 48,
+  },
+  {
+    accessorKey: 'token_id',
+    header: 'NFT',
+    cell: ({ row }) => {
+      const l = row.original
+      return (
+        <div className="flex items-center gap-3">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-xs font-bold text-primary">
+            #{l.token_id}
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium text-foreground">
+              Agent #{l.token_id}
+            </p>
+            <p className="truncate text-xs text-muted-foreground">
+              {formatAddress(l.nft_contract)}
+            </p>
+          </div>
+        </div>
+      )
+    },
+    enableSorting: false,
+  },
+  {
+    accessorKey: 'seller',
+    header: 'Seller',
+    cell: ({ getValue }) => (
+      <span className="font-mono text-xs text-muted-foreground">
+        {formatAddress(getValue<string>())}
+      </span>
+    ),
+    enableSorting: false,
+    meta: { className: 'hidden md:table-cell' },
+  },
+  {
+    accessorKey: 'price',
+    header: 'Price',
+    cell: ({ row }) => {
+      const l = row.original
+      return (
+        <div className="text-right">
+          <span className="text-sm font-semibold text-foreground">
+            {formatPrice(l.price)}
+          </span>{' '}
+          <span className="text-xs text-muted-foreground">
+            {getTokenLabel(l.payment_token)}
+          </span>
+        </div>
+      )
+    },
+    enableSorting: true,
+    meta: { className: 'text-right' },
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ getValue }) => {
+      const status = getValue<string>()
+      return (
+        <Badge
+          variant="outline"
+          className={cn('text-[10px]', getStatusColor(status))}
+        >
+          {status}
+        </Badge>
+      )
+    },
+    enableSorting: false,
+    meta: { className: 'hidden sm:table-cell' },
+  },
+  {
+    accessorKey: 'block_timestamp',
+    header: 'Listed',
+    cell: ({ getValue }) => (
+      <span className="text-xs text-muted-foreground">
+        <TimeCounter targetTime={new Date(getValue<string>())} />
+      </span>
+    ),
+    enableSorting: false,
+    meta: { className: 'hidden lg:table-cell' },
+  },
+]
+
+// ============================================================
+// Skeleton
+// ============================================================
+
+function ListingSkeleton({ rows }: { rows: number }) {
+  return (
+    <>
+      {Array.from({ length: rows }).map((_, i) => (
+        <TableRow key={i}>
+          <TableCell><Skeleton className="h-4 w-6" /></TableCell>
+          <TableCell>
+            <div className="flex items-center gap-3">
+              <Skeleton className="size-9 rounded-lg" />
+              <div className="space-y-1">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+            </div>
+          </TableCell>
+          <TableCell className="hidden md:table-cell">
+            <Skeleton className="h-3 w-24" />
+          </TableCell>
+          <TableCell><Skeleton className="ml-auto h-4 w-20" /></TableCell>
+          <TableCell className="hidden sm:table-cell">
+            <Skeleton className="h-5 w-14 rounded-full" />
+          </TableCell>
+          <TableCell className="hidden lg:table-cell">
+            <Skeleton className="h-3 w-16" />
+          </TableCell>
+        </TableRow>
+      ))}
+    </>
+  )
+}
+
+// ============================================================
+// Page
+// ============================================================
 
 export default function MarketplacePage() {
+  const [chainId, setChainId] = useState<number | undefined>(undefined)
+  const [sort, setSort] = useState<ListingSortOrder>('recent')
+  const [page, setPage] = useState(1)
+  const [limit] = useState(20)
+  const [sorting, setSorting] = useState<SortingState>([])
+
+  const { data, isLoading } = useListings({
+    chain_id: chainId,
+    sort,
+    page,
+    limit,
+  })
+
+  const listings = data?.listings ?? []
+  const total = data?.total ?? 0
+  const totalPages = Math.ceil(total / limit)
+
+  const table = useReactTable({
+    data: listings,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    state: { sorting },
+    manualPagination: true,
+    pageCount: totalPages,
+  })
+
+  // Page numbers
+  const pageNumbers: number[] = []
+  const maxVisible = 5
+  let startPage = Math.max(1, page - Math.floor(maxVisible / 2))
+  const endPage = Math.min(totalPages, startPage + maxVisible - 1)
+  if (endPage - startPage + 1 < maxVisible) {
+    startPage = Math.max(1, endPage - maxVisible + 1)
+  }
+  for (let i = startPage; i <= endPage; i++) {
+    pageNumbers.push(i)
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center py-24">
-      <div className="rounded-2xl border border-border/50 bg-card/60 p-12 text-center">
-        <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-primary/10">
-          <ShoppingCart className="size-8 text-primary" />
+    <div className="space-y-6">
+      <PageHeader
+        title="Marketplace"
+        subtitle="Buy and sell AI Agents"
+      />
+
+      {/* Filters */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          {!isLoading && <span>{total} Listings</span>}
         </div>
-        <h1 className="text-2xl font-bold text-foreground">Marketplace</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Buy and sell AI Agents — Coming Soon
-        </p>
+        <div className="flex items-center gap-3">
+          <ChainFilter
+            selected={chainId}
+            onSelect={(v) => { setChainId(v); setPage(1) }}
+          />
+          <Select value={sort} onValueChange={(v) => { setSort(v as ListingSortOrder); setPage(1) }}>
+            <SelectTrigger size="sm" className="w-auto gap-1.5 border-border/50 bg-card/80">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="recent">Newest</SelectItem>
+              <SelectItem value="price_asc">Price: Low → High</SelectItem>
+              <SelectItem value="price_desc">Price: High → Low</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+
+      {/* Table */}
+      <div className="overflow-hidden rounded-xl border border-border/50 bg-card/40">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow
+                key={headerGroup.id}
+                className="border-b border-border/50 hover:bg-transparent"
+              >
+                {headerGroup.headers.map((header) => {
+                  const meta = header.column.columnDef.meta as
+                    | { className?: string }
+                    | undefined
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className={cn(
+                        header.column.getCanSort() &&
+                          'cursor-pointer select-none',
+                        meta?.className
+                      )}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      <div className={cn(
+                        "flex items-center gap-1",
+                        meta?.className?.includes('text-right') && 'justify-end',
+                      )}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                        {header.column.getCanSort() && (
+                          <ArrowUpDown className="size-3 text-muted-foreground/50" />
+                        )}
+                      </div>
+                    </TableHead>
+                  )
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <ListingSkeleton rows={limit} />
+            ) : listings.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-32 text-center text-muted-foreground"
+                >
+                  No listings found
+                </TableCell>
+              </TableRow>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => {
+                    const meta = cell.column.columnDef.meta as
+                      | { className?: string }
+                      | undefined
+                    return (
+                      <TableCell key={cell.id} className={meta?.className}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    )
+                  })}
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
+          <p className="text-sm text-muted-foreground">
+            Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of{' '}
+            {total}
+          </p>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="h-8 gap-1 border-border/50 bg-card/80 px-3 text-xs"
+            >
+              <ChevronLeft className="size-3.5" />
+              Prev
+            </Button>
+            {pageNumbers.map((p) => (
+              <Button
+                key={p}
+                variant={p === page ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setPage(p)}
+                className={cn(
+                  'size-8 p-0 text-xs',
+                  p !== page && 'border-border/50 bg-card/80'
+                )}
+              >
+                {p}
+              </Button>
+            ))}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              className="h-8 gap-1 border-border/50 bg-card/80 px-3 text-xs"
+            >
+              Next
+              <ChevronRight className="size-3.5" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

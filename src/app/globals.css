@@ -50,6 +50,15 @@ html {
   color-scheme: dark;
 }
 
+/* Default border color — prevents bright white borders from currentColor */
+*,
+::after,
+::before,
+::backdrop,
+::file-selector-button {
+  border-color: var(--color-border);
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);

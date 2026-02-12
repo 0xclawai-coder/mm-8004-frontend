@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { useAgents } from '@/hooks/useAgents'
 import { AgentCard } from '@/components/agents/AgentCard'
 import { AgentBrowseTable } from '@/components/agents/AgentBrowseTable'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Agent } from '@/types'
@@ -102,16 +103,10 @@ export default function AgentsPage() {
 
   return (
     <div className="space-y-8">
-      {/* Hero Banner */}
-      <section className="py-8 text-center sm:py-12">
-        <h1 className="text-gradient-glow text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-          Molt Marketplace
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
-          Track every on-chain AI agent in one place — ERC-8004 identity & reputation,
-          x402 payment activity, and real-time agentic data across Monad.
-        </p>
-      </section>
+      <PageHeader
+        title="Explore Agents"
+        subtitle="Track every on-chain AI agent — ERC-8004 identity & reputation, x402 payment activity, and real-time data across Monad."
+      />
 
       {/* Three sections side by side */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">

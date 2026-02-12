@@ -6,6 +6,34 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+// ─── Address / Token formatting ─────────────────────────────────────
+
+const NATIVE_TOKEN = '0x0000000000000000000000000000000000000000'
+
+/** 0x1234…abcd */
+export function formatAddress(addr: string): string {
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`
+}
+
+/** Return human-readable token symbol from payment token address */
+export function getTokenLabel(addr: string): string {
+  if (addr === NATIVE_TOKEN) return 'MON'
+  return formatAddress(addr)
+}
+
+// ─── Price formatting (wei → human) ────────────────────────────────
+
+/** Format a raw wei string (18 decimals) into a compact human-readable price */
+export function formatPrice(raw: string, decimals = 18): string {
+  const human = parseFloat(raw) / 10 ** decimals
+  if (human === 0) return '0'
+  if (human >= 1_000_000) return `${(human / 1_000_000).toFixed(2)}M`
+  if (human >= 1_000) return `${(human / 1_000).toFixed(2)}K`
+  if (human >= 1) return human.toFixed(2)
+  if (human >= 0.001) return human.toFixed(4)
+  return human.toExponential(2)
+}
+
 // ─── Time formatting ────────────────────────────────────────────────
 
 type FormatDistanceToNowParameter = Parameters<typeof formatDistanceToNowStrict>

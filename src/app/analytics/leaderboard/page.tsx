@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Trophy } from 'lucide-react'
 import { useLeaderboard } from '@/hooks/useLeaderboard'
 import { LeaderboardTable } from '@/components/leaderboard/LeaderboardTable'
 import { CategoryFilter } from '@/components/agents/CategoryFilter'
 import { ChainFilter } from '@/components/agents/ChainFilter'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { Skeleton } from '@/components/ui/skeleton'
 
 function LeaderboardSkeleton() {
@@ -80,18 +80,10 @@ export default function LeaderboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Title */}
-      <section className="flex items-center gap-3 pt-4">
-        <div className="flex size-10 items-center justify-center rounded-xl bg-yellow-500/10">
-          <Trophy className="size-5 text-yellow-400" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Agent Leaderboard</h1>
-          <p className="text-sm text-muted-foreground">
-            Top agents ranked by reputation score
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        title="Agent Leaderboard"
+        subtitle="Top agents ranked by reputation score"
+      />
 
       {/* Filters */}
       <section className="space-y-4">

@@ -14,6 +14,8 @@ import {
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
 import { ConnectButton } from '@/components/wallet/ConnectButton'
+import { ChainSwitcher } from '@/components/wallet/ChainSwitcher'
+import { MoltLogo } from '@/components/layout/MoltLogo'
 import { navGroups } from '@/lib/navigation'
 import { cn } from '@/lib/utils'
 
@@ -30,76 +32,83 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full glass glass-border">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-gradient-violet text-xl font-bold tracking-tight">
-            Molt Marketplace
-          </span>
-        </Link>
+    <header className="sticky top-0 z-50 w-full glass">
+      <div className="relative flex h-14 items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Left: Logo + Desktop Nav inline */}
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-2">
+            <MoltLogo size={28} />
+            <span className="text-gradient-violet text-lg font-extrabold uppercase tracking-wider">
+              MOLT
+            </span>
+          </Link>
 
-        {/* Desktop Nav — NavigationMenu */}
-        <NavigationMenu className="hidden md:flex">
-          <NavigationMenuList>
-            {navGroups.map((group) => (
-              <NavigationMenuItem key={group.label}>
-                <NavigationMenuTrigger
-                  className={cn(
-                    'bg-transparent text-sm font-medium',
-                    isGroupActive(group)
-                      ? 'text-primary'
-                      : 'text-muted-foreground'
-                  )}
-                >
-                  {group.label}
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[320px] gap-1 p-3">
-                    {group.items.map((item) => {
-                      const Icon = item.icon
-                      const isActive = pathname.startsWith(item.href)
-                      return (
-                        <li key={item.href}>
-                          <Link
-                            href={item.href}
-                            className={cn(
-                              'flex items-center gap-3 rounded-md p-3 transition-colors hover:bg-accent',
-                              isActive && 'bg-accent'
-                            )}
-                          >
-                            <div className={cn(
-                              'flex size-9 shrink-0 items-center justify-center rounded-md',
-                              isActive
-                                ? 'bg-primary/20 text-primary'
-                                : 'bg-muted text-muted-foreground'
-                            )}>
-                              <Icon className="size-4" />
-                            </div>
-                            <div>
-                              <p className={cn(
-                                'text-sm font-medium',
-                                isActive ? 'text-primary' : 'text-foreground'
-                              )}>
-                                {item.label}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {item.subtitle}
-                              </p>
-                            </div>
-                          </Link>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
+          {/* Desktop Nav — inline next to logo */}
+          <NavigationMenu className="hidden md:flex">
+            <NavigationMenuList className="gap-1">
+              {navGroups.map((group) => {
+                const active = isGroupActive(group)
+                return (
+                  <NavigationMenuItem key={group.label}>
+                    <NavigationMenuTrigger
+                      className={cn(
+                        'h-8 bg-transparent px-3 text-sm font-medium transition-colors',
+                        active
+                          ? 'bg-primary/10 text-primary rounded-full'
+                          : 'text-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      {group.label}
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <ul className="grid w-[280px] gap-1 p-2">
+                        {group.items.map((item) => {
+                          const Icon = item.icon
+                          const isActive = pathname.startsWith(item.href)
+                          return (
+                            <li key={item.href}>
+                              <Link
+                                href={item.href}
+                                className={cn(
+                                  'flex items-center gap-3 rounded-md p-2.5 transition-colors hover:bg-accent',
+                                  isActive && 'bg-accent'
+                                )}
+                              >
+                                <div className={cn(
+                                  'flex size-8 shrink-0 items-center justify-center rounded-md',
+                                  isActive
+                                    ? 'bg-primary/20 text-primary'
+                                    : 'bg-muted text-muted-foreground'
+                                )}>
+                                  <Icon className="size-4" />
+                                </div>
+                                <div>
+                                  <p className={cn(
+                                    'text-sm font-medium',
+                                    isActive ? 'text-primary' : 'text-foreground'
+                                  )}>
+                                    {item.label}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {item.subtitle}
+                                  </p>
+                                </div>
+                              </Link>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                )
+              })}
+            </NavigationMenuList>
+          </NavigationMenu>
+        </div>
 
-        {/* Right side: wallet + mobile menu */}
+        {/* Right: ChainSwitcher + Wallet + Mobile menu */}
         <div className="flex items-center gap-2">
+          <ChainSwitcher />
           <ConnectButton />
 
           {/* Mobile hamburger */}
@@ -111,7 +120,15 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-72 bg-card">
-              <nav className="mt-8 flex flex-col gap-1 px-2">
+              {/* Mobile logo */}
+              <div className="flex items-center gap-2 px-4 pb-4 pt-2">
+                <MoltLogo size={24} />
+                <span className="text-gradient-violet text-lg font-extrabold uppercase tracking-wider">
+                  MOLT
+                </span>
+              </div>
+
+              <nav className="flex flex-col gap-1 px-2">
                 {navGroups.map((group) => {
                   const isOpen = openSections[group.label] ?? isGroupActive(group)
                   return (
@@ -174,9 +191,17 @@ export function Header() {
                   )
                 })}
               </nav>
+
+              {/* Mobile ChainSwitcher at bottom */}
+              <div className="mt-auto border-t border-border px-4 pt-4">
+                <ChainSwitcher />
+              </div>
             </SheetContent>
           </Sheet>
         </div>
+
+        {/* Bottom gradient border line */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
       </div>
     </header>
   )
