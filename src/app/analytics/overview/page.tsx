@@ -233,7 +233,7 @@ export default function OverviewPage() {
         <CardContent>
           {statsLoading ? (
             <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
+              {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <Skeleton className="h-5 w-24 rounded-full" />
                   <Skeleton className="h-2 flex-1 rounded-full" />
