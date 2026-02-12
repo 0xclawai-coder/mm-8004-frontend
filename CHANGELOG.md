@@ -2,6 +2,11 @@
 
 ## Code Rules
 
+### ⚠️ Drawer > Sheet — 필수!
+- 모바일 바텀시트/모달은 **Drawer** 사용 (Sheet 대신)
+- `@/components/ui/drawer` (vaul 기반)
+- Sheet는 desktop side panel 용도로만 제한적 사용
+
 ### ⚠️ Gap over Margin — 필수!
 - `margin` (m-, mt-, mb-, ml-, mr-, mx-, my-) 사용 금지
 - 대신 **flex/grid + gap** 시스템 사용

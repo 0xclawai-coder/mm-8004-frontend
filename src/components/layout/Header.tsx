@@ -6,7 +6,11 @@ import { usePathname } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { Menu, ChevronDown, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -131,14 +135,14 @@ export function Header() {
           <ConnectButton />
 
           {/* Mobile hamburger */}
-          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-            <SheetTrigger asChild>
+          <Drawer open={sheetOpen} onOpenChange={setSheetOpen}>
+            <DrawerTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="size-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-72 bg-card">
+            </DrawerTrigger>
+            <DrawerContent className="max-h-[85vh] bg-card px-0 pb-6">
               {/* Mobile logo */}
               <div className="flex items-center gap-2 px-4 pb-4 pt-2">
                 <MoltLogo size={24} />
@@ -228,8 +232,8 @@ export function Header() {
                 </Link>
                 <ChainSwitcher />
               </div>
-            </SheetContent>
-          </Sheet>
+            </DrawerContent>
+          </Drawer>
         </div>
 
         {/* Bottom gradient border line */}
