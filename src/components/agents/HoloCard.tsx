@@ -166,7 +166,7 @@ export function HoloCard(props: HoloCardProps) {
   const glowY = mousePos.y * 100;
 
   return (
-    <div className="holo-perspective w-full" style={{ perspective: "1000px" }}>
+    <div className="holo-perspective flex w-full justify-center lg:justify-start" style={{ perspective: "1000px" }}>
       <div
         ref={cardRef}
         className={cn(
