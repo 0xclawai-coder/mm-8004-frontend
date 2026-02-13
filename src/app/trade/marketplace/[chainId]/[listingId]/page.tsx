@@ -1116,7 +1116,7 @@ export default function ListingDetailPage({
   useEffect(() => {
     if (isBuyConfirmed) {
       toast.success('Purchase successful! 🎉', {
-        description: 'The agent NFT has been transferred to your wallet.',
+        description: 'The agent identity has been transferred to your wallet.',
       })
     }
   }, [isBuyConfirmed])

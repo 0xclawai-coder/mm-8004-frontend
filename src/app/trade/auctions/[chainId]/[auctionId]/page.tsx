@@ -587,7 +587,7 @@ export default function AuctionDetailPage({
   useEffect(() => {
     if (isBuyNowConfirmed) {
       toast.success('Purchase successful! 🎉', {
-        description: 'You bought the agent NFT at the buy-now price.',
+        description: 'You bought the agent identity at the buy-now price.',
       })
     }
   }, [isBuyNowConfirmed])

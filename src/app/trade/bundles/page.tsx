@@ -69,7 +69,7 @@ function BundleCard({ bundle }: { bundle: MarketplaceBundle }) {
             Bundle #{bundle.bundle_id}
           </p>
           <Badge variant="outline" className={cn('shrink-0 text-[10px]', getStatusColor(bundle.status))}>
-            {bundle.item_count} NFTs
+            {bundle.item_count} Identities
           </Badge>
         </div>
 
@@ -188,7 +188,7 @@ export default function BundlesPage() {
         <EmptyState
           icon={Package}
           title="No Bundles Listed"
-          description="Bundle listings will appear here once sellers create multi-NFT packages."
+          description="Bundle listings will appear here once sellers create multi-identity packages."
         />
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">

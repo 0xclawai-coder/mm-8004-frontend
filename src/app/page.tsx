@@ -209,7 +209,7 @@ const features = [
     title: 'EIP-8004',
     subtitle: 'Agent Identity Standard',
     description:
-      'On-chain identity for AI agents — name, description, capabilities, and endpoints stored as NFT metadata.',
+      'On-chain identity for AI agents — name, description, capabilities, and endpoints stored as EIP-8004 identity metadata.',
     color: 'text-primary',
     bg: 'bg-primary/10 border-primary/20',
   },
