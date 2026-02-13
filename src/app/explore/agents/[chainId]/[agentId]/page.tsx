@@ -26,6 +26,51 @@ function isNewbie(createdAt: string): boolean {
 }
 
 
+function SkeletonInfoRow({ label }: { label: string }) {
+  return (
+    <div className="flex items-center justify-between gap-2 py-2">
+      <span className="shrink-0 text-xs text-muted-foreground uppercase tracking-wider">{label}</span>
+      <Skeleton className="h-4 w-24" />
+    </div>
+  )
+}
+
+function BasicInfoPanelSkeleton() {
+  return (
+    <div className="rounded-xl border border-border/50 bg-card/60 p-5 space-y-1">
+      <h3 className="text-base font-semibold text-foreground pb-2">Basic Information</h3>
+
+      {/* On-chain Identity */}
+      <div className="space-y-0.5">
+        <div className="flex items-center gap-2 pb-2">
+          <Shield className="size-3.5 text-primary" />
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">On-chain Identity</span>
+        </div>
+        <div className="divide-y divide-border/30">
+          <SkeletonInfoRow label="Agent ID" />
+          <SkeletonInfoRow label="Chain" />
+          <SkeletonInfoRow label="Owner" />
+          <SkeletonInfoRow label="x402" />
+          <SkeletonInfoRow label="Status" />
+        </div>
+      </div>
+
+      {/* Off-chain Metadata */}
+      <div className="space-y-0.5 pt-3">
+        <div className="flex items-center gap-2 pb-2">
+          <Sparkles className="size-3.5 text-primary" />
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Off-chain Metadata</span>
+        </div>
+        <div className="divide-y divide-border/30">
+          <SkeletonInfoRow label="Agent URI" />
+          <SkeletonInfoRow label="Categories" />
+          <SkeletonInfoRow label="Created" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ErrorState({ agentId }: { agentId: string }) {
   return (
     <div className="space-y-8">
@@ -167,25 +212,7 @@ export default function AgentDetailPage({
           {agent ? (
             <HoloCard agent={agent} />
           ) : (
-            <div className="w-full max-w-[300px] aspect-[5/7] rounded-2xl border border-border/50 bg-card/95 overflow-hidden">
-              {/* Image area — matches HoloCard 55% */}
-              <Skeleton className="h-[55%] w-full rounded-none" />
-              {/* Content — matches HoloCard: score + stars + tags + chain */}
-              <div className="flex flex-col gap-3 p-5">
-                <div className="flex items-center justify-between">
-                  <Skeleton className="h-7 w-24" />
-                  <Skeleton className="h-3 w-20" />
-                </div>
-                <Skeleton className="h-4 w-32" />
-                <div className="flex gap-1.5">
-                  <Skeleton className="h-5 w-16 rounded-full" />
-                  <Skeleton className="h-5 w-20 rounded-full" />
-                </div>
-                <div className="flex justify-center">
-                  <Skeleton className="h-5 w-16 rounded-full" />
-                </div>
-              </div>
-            </div>
+            <HoloCard />
           )}
         </div>
 
@@ -193,15 +220,7 @@ export default function AgentDetailPage({
         {agent ? (
           <BasicInfoPanel agent={agent} />
         ) : (
-          <div className="rounded-xl border border-border/50 bg-card/60 p-5 flex flex-col gap-3">
-            <Skeleton className="h-5 w-36" />
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center justify-between py-2">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-4 w-24" />
-              </div>
-            ))}
-          </div>
+          <BasicInfoPanelSkeleton />
         )}
       </div>
 
