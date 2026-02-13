@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback, useMemo } from "react";
-import Image from "next/image";
+import { AgentImage } from "@/components/ui/agent-image";
 import { Star, Shield, Zap, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -314,20 +314,13 @@ export function HoloCard(props: HoloCardProps) {
               transition: "box-shadow 0.3s ease",
             }}
           >
-            {image ? (
-              <Image
+            {name != null ? (
+              <AgentImage
                 src={image}
                 alt={name ?? "Agent"}
-                fill
-                className="object-cover"
+                fallbackText={name}
                 sizes="300px"
               />
-            ) : name != null ? (
-              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/30 via-violet-500/20 to-cyan-500/15">
-                <span className="text-5xl font-bold text-primary/40">
-                  {name?.charAt(0)?.toUpperCase() || "?"}
-                </span>
-              </div>
             ) : (
               <Skeleton className="h-full w-full rounded-none" />
             )}

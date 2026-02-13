@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { AgentImage } from '@/components/ui/agent-image'
 import { useRouter } from 'next/navigation'
 import {
   flexRender,
@@ -266,19 +266,12 @@ function MobileListingCard({ listing, index }: { listing: MarketplaceListing; in
     >
       {/* Agent image */}
       <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-primary/20 to-cyan-500/10 ring-1 ring-border">
-        {listing.agent_image ? (
-          <Image
-            src={listing.agent_image}
-            alt={listing.agent_name ?? `Agent #${listing.token_id}`}
-            fill
-            className="object-cover"
-            sizes="56px"
-          />
-        ) : (
-          <div className="flex size-full items-center justify-center">
-            <Cpu className="size-6 text-primary/30" />
-          </div>
-        )}
+        <AgentImage
+          src={listing.agent_image}
+          alt={listing.agent_name ?? `Agent #${listing.token_id}`}
+          fallbackText={listing.agent_name ?? `#${listing.token_id}`}
+          sizes="56px"
+        />
       </div>
 
       {/* Info */}

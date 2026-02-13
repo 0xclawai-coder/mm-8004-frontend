@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { AgentImage } from '@/components/ui/agent-image'
 import { Gavel, ChevronLeft, ChevronRight } from 'lucide-react'
 import { EmptyState } from '@/components/ui/empty-state'
 import { useAuctions } from '@/hooks/useAuctions'
@@ -56,21 +56,12 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
     <div className="group flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card/60 transition-all duration-300 hover:scale-[1.02] hover:border-primary/30 hover:glow-violet">
       {/* Image area */}
       <div className="relative aspect-square bg-gradient-to-br from-primary/20 via-card to-cyan-accent/10">
-        {auction.agent_image ? (
-          <Image
-            src={auction.agent_image}
-            alt={auction.agent_name ?? `Agent #${auction.token_id}`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        ) : (
-          <div className="flex size-full items-center justify-center">
-            <span className="text-3xl font-bold text-primary/40">
-              #{auction.token_id}
-            </span>
-          </div>
-        )}
+        <AgentImage
+          src={auction.agent_image}
+          alt={auction.agent_name ?? `Agent #${auction.token_id}`}
+          fallbackText={auction.agent_name ?? `#${auction.token_id}`}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
 
         {/* Status badge overlay */}
         {ended ? (
