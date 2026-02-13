@@ -320,46 +320,69 @@ export default function HomePage() {
   return (
     <div className="space-y-10">
       {/* Hero */}
-      <section className="relative flex flex-col items-center gap-4 overflow-hidden py-12 text-center sm:py-20">
+      <section className="relative overflow-hidden py-10 sm:py-16 lg:py-20">
         {/* Decorative blobs */}
         <div className="pointer-events-none absolute -left-32 -top-32 size-64 rounded-full bg-primary/10 blur-[100px]" />
         <div className="pointer-events-none absolute -right-32 bottom-0 size-64 rounded-full bg-cyan-accent/10 blur-[100px]" />
 
-        <Badge
-          variant="outline"
-          className="border-primary/30 bg-primary/10 text-primary text-xs"
-        >
-          Built on Monad · EIP-8004 · x402
-        </Badge>
-
-        <h1 className="text-gradient-glow text-3xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
-          Incorporate. Build Track Record. Exit.
-        </h1>
-
-        <p className="mx-auto max-w-xl text-sm text-muted-foreground sm:text-base">
-          The full lifecycle infrastructure for AI agents — from Day 0 to acquisition.
-        </p>
-
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <Link href="/create">
-            <Button
-              size="lg"
-              className="gap-2 bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90 transition-opacity text-base"
-            >
-              Incorporate Your Agent
-              <ArrowRight className="size-4" />
-            </Button>
-          </Link>
-          <Link href="/explore/agents">
-            <Button
-              size="lg"
+        <div className="relative grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
+          {/* Left: Text */}
+          <div className="flex flex-col gap-5 text-center lg:text-left">
+            <Badge
               variant="outline"
-              className="gap-2 border-border/50 text-base"
+              className="w-fit mx-auto lg:mx-0 border-primary/30 bg-primary/10 text-primary text-xs"
             >
-              <Cpu className="size-4" />
-              Browse Directory
-            </Button>
-          </Link>
+              Built on Monad · EIP-8004 · x402
+            </Badge>
+
+            <h1 className="text-gradient-glow text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
+              Incorporate,{' '}
+              <br className="hidden sm:block" />
+              Build Track{' '}
+              <br className="hidden sm:block" />
+              Record, Exit
+            </h1>
+
+            <p className="max-w-md mx-auto lg:mx-0 text-sm text-muted-foreground sm:text-base">
+              The full lifecycle infrastructure for AI agents —
+              <br className="hidden sm:block" />
+              from Day 0 to acquisition.
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+              <Link href="/create">
+                <Button
+                  size="lg"
+                  className="gap-2 bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90 transition-opacity text-base"
+                >
+                  Incorporate Your Agent
+                  <ArrowRight className="size-4" />
+                </Button>
+              </Link>
+              <Link href="/explore/agents">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="gap-2 border-border/50 text-base"
+                >
+                  Browse Directory
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Right: Hero Image */}
+          <div className="flex justify-center lg:justify-end">
+            <div className="relative w-full max-w-[480px] aspect-square">
+              <img
+                src="/hero-agents.jpg"
+                alt="AI Agents"
+                className="size-full rounded-2xl object-cover shadow-2xl shadow-primary/10"
+              />
+              {/* Subtle glow behind image */}
+              <div className="pointer-events-none absolute inset-0 -z-10 translate-x-2 translate-y-2 rounded-2xl bg-gradient-to-br from-primary/20 to-violet-500/10 blur-2xl" />
+            </div>
+          </div>
         </div>
       </section>
 
