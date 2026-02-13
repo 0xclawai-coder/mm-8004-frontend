@@ -36,7 +36,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { cn, formatAddress, formatPrice, getTokenLabel, formatDistanceToNowSmart } from '@/lib/utils'
 import { useAuctionDetail } from '@/hooks/useAuctionDetail'
-import { useAgent } from '@/hooks/useAgent'
 import { HoloCard } from '@/components/agents/HoloCard'
 import {
   NATIVE_TOKEN,
@@ -479,8 +478,9 @@ export default function AuctionDetailPage({
   const auction = data?.auction
   const bids = data?.bids ?? []
 
+  // Extract embedded agent from auction response (avoids second API call)
+  const agent = (data as Record<string, unknown> | undefined)?.agent as AgentDetail | undefined
   const agentId = auction ? `${auction.chain_id}-${auction.token_id}` : ''
-  const { data: agent } = useAgent(agentId)
 
   // Contract
   const marketplaceAddress = getMoltMarketplaceAddress(chainId)
