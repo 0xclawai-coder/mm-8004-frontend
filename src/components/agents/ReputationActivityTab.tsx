@@ -126,10 +126,12 @@ function FeedbackCard({ event }: { event: Activity }) {
       <div className="flex flex-wrap items-center gap-3">
         {value !== undefined && (
           <div className="flex items-center gap-1.5">
-            <ScoreStars value={value} />
-            <span className="text-sm font-semibold tabular-nums text-foreground">
-              {typeof value === 'number' ? value.toFixed(1) : value}
-            </span>
+            <div className="flex items-center gap-1 rounded-md bg-yellow-500/10 border border-yellow-500/20 px-2 py-0.5">
+              <Star className="size-3 fill-yellow-400 text-yellow-400" />
+              <span className="text-sm font-bold tabular-nums text-yellow-400">
+                {typeof value === 'number' ? (value >= 10 ? value.toLocaleString() : value.toFixed(1)) : value}
+              </span>
+            </div>
           </div>
         )}
         {tag1 && (

@@ -137,6 +137,7 @@ function getEventDetails(activity: GlobalActivityType): string {
       return data.key ? `key: ${data.key}` : ''
     case 'NewFeedback':
       return [
+        data.value != null && `score: ${Number(data.value).toLocaleString()}`,
         data.tag1 && `tag: ${data.tag1}`,
         data.client && `from ${formatAddress(data.client as string)}`,
       ]
