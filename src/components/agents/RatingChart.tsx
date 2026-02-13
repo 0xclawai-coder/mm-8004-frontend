@@ -77,60 +77,11 @@ export function RatingChart({ agentId, chainId }: RatingChartProps) {
   const [range, setRange] = useState<ReputationRange>('30d')
   const { data, isLoading, error } = useAgentReputation(id, range)
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
-        {/* Header - always visible, never skeletonized */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="size-4 text-primary" />
-            <h3 className="text-sm font-semibold text-foreground">
-              Reputation Over Time
-            </h3>
-          </div>
-
-          {/* Range selector - always visible, never skeletonized */}
-          <div className="flex gap-1 rounded-lg border border-border/50 bg-muted/50 p-0.5">
-            {RANGES.map((r) => (
-              <Button
-                key={r.value}
-                variant="ghost"
-                size="sm"
-                className={cn(
-                  'h-7 px-3 text-xs font-medium',
-                  range === r.value
-                    ? 'bg-primary/20 text-primary hover:bg-primary/20'
-                    : 'text-muted-foreground hover:text-foreground',
-                )}
-                onClick={() => setRange(r.value)}
-              >
-                {r.label}
-              </Button>
-            ))}
-          </div>
-        </div>
-        
-        {/* Only the chart area shows loading state */}
-        <Skeleton className="h-56 w-full rounded-lg" />
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="rounded-xl border border-border/50 bg-card/60 p-6">
-        <p className="text-sm text-muted-foreground">
-          Failed to load reputation chart.
-        </p>
-      </div>
-    )
-  }
-
   const history = data?.history || []
 
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
-      {/* Header */}
+      {/* Header — always visible */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <TrendingUp className="size-4 text-primary" />
@@ -144,7 +95,7 @@ export function RatingChart({ agentId, chainId }: RatingChartProps) {
           )}
         </div>
 
-        {/* Range selector */}
+        {/* Range selector — always visible */}
         <div className="flex gap-1 rounded-lg border border-border/50 bg-muted/50 p-0.5">
           {RANGES.map((r) => (
             <Button
@@ -165,9 +116,15 @@ export function RatingChart({ agentId, chainId }: RatingChartProps) {
         </div>
       </div>
 
-      {/* Chart */}
-      {history.length === 0 ? (
-        <div className="flex h-48 items-center justify-center">
+      {/* Chart area — only this part changes based on state */}
+      {isLoading ? (
+        <Skeleton className="h-56 w-full rounded-lg" />
+      ) : error ? (
+        <div className="flex h-56 items-center justify-center">
+          <p className="text-sm text-muted-foreground">Failed to load reputation chart.</p>
+        </div>
+      ) : history.length === 0 ? (
+        <div className="flex h-56 items-center justify-center">
           <p className="text-sm text-muted-foreground">No data available for this range.</p>
         </div>
       ) : (

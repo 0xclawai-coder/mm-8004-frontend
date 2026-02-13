@@ -2,7 +2,7 @@
 
 import { use, useState, useRef } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Shield, Sparkles, MessageSquare, Star, Zap, ShieldCheck, Construction } from 'lucide-react'
+import { ArrowLeft, Shield, Sparkles, MessageSquare, Star, Zap, ShieldCheck, Construction, ThumbsUp, ThumbsDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -262,23 +262,46 @@ export default function AgentDetailPage({
               />
             ) : (
               <div className="space-y-6 py-4">
-                {/* Statistics Overview — show header + card structure */}
+                {/* Statistics Overview — labels + icons always visible, values skeleton */}
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold text-foreground">Statistics Overview</h3>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    {['Average Score', 'Total Feedback', 'Positive', 'Negative'].map((label) => (
-                      <div key={label} className="flex flex-col items-center gap-2 rounded-lg border border-border/50 p-4 text-center">
-                        <Skeleton className="size-8 rounded-lg" />
+                    {[
+                      { label: 'Average Score', icon: <Star className="size-4 text-muted-foreground" />, border: 'border-border/50' },
+                      { label: 'Total Feedback', icon: <MessageSquare className="size-4 text-blue-400" />, border: 'border-blue-500/30 bg-blue-500/10' },
+                      { label: 'Positive', icon: <ThumbsUp className="size-4 text-green-400" />, border: 'border-green-500/30 bg-green-500/10' },
+                      { label: 'Negative', icon: <ThumbsDown className="size-4 text-red-400" />, border: 'border-red-500/30 bg-red-500/10' },
+                    ].map((card) => (
+                      <div key={card.label} className={cn('flex flex-col items-center gap-2 rounded-lg border p-4 text-center', card.border)}>
+                        <div className={cn('flex size-8 items-center justify-center rounded-lg', card.border)}>
+                          {card.icon}
+                        </div>
                         <div className="flex flex-col gap-0.5">
                           <Skeleton className="mx-auto h-6 w-12" />
-                          <p className="text-xs text-muted-foreground">{label}</p>
+                          <p className="text-xs text-muted-foreground">{card.label}</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-                {/* Reputation Chart skeleton is handled by RatingChart internally */}
-                <Skeleton className="h-80 w-full rounded-xl" />
+                {/* Recent Feedback — header always visible, rows skeleton */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground">Recent Feedback</h3>
+                  <div className="space-y-2">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="flex items-center justify-between gap-3 rounded-lg border border-border/30 bg-card/40 px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <Skeleton className="size-8 rounded-full" />
+                          <div className="flex flex-col gap-1">
+                            <Skeleton className="h-3 w-28" />
+                            <Skeleton className="h-3 w-12 rounded-full" />
+                          </div>
+                        </div>
+                        <Skeleton className="h-8 w-16 rounded-lg" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </TabsContent>

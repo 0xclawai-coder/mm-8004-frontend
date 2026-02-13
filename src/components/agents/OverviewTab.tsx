@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { Star, MessageSquare, ThumbsUp, ThumbsDown, Globe, ExternalLink, Tag } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import TimeCounter from '@/components/ui/time-counter'
 import { RatingChart } from '@/components/agents/RatingChart'
@@ -133,7 +134,7 @@ const SCALE_LABELS: Record<string, string> = {
 export function OverviewTab({ agent, agentId, chainId, agentNumericId, onSwitchToFeedback }: OverviewTabProps) {
   const [scaleFilter, setScaleFilter] = useState('all')
 
-  const { data: reputationData } = useAgentActivity(agentId, {
+  const { data: reputationData, isLoading: feedbackLoading } = useAgentActivity(agentId, {
     event_type: 'reputation',
     limit: 3,
   })
@@ -291,29 +292,44 @@ export function OverviewTab({ agent, agentId, chainId, agentNumericId, onSwitchT
         </div>
       )}
 
-      {/* Recent Feedback */}
-      {recentFeedbacks.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground">
-              Recent Feedback
-            </h3>
-            {onSwitchToFeedback && agent.feedback_count > 3 && (
-              <button
-                onClick={onSwitchToFeedback}
-                className="text-xs text-primary hover:text-primary/80 transition-colors"
-              >
-                View all ({agent.feedback_count})
-              </button>
-            )}
-          </div>
-          <div className="space-y-2">
-            {recentFeedbacks.map((event) => (
-              <FeedbackPreview key={event.id} event={event} chainId={chainId} />
-            ))}
-          </div>
+      {/* Recent Feedback — header always visible */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-foreground">
+            Recent Feedback
+          </h3>
+          {onSwitchToFeedback && agent.feedback_count > 3 && (
+            <button
+              onClick={onSwitchToFeedback}
+              className="text-xs text-primary hover:text-primary/80 transition-colors"
+            >
+              View all ({agent.feedback_count})
+            </button>
+          )}
         </div>
-      )}
+        <div className="space-y-2">
+          {feedbackLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex items-center justify-between gap-3 rounded-lg border border-border/30 bg-card/40 px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="size-8 rounded-full" />
+                  <div className="flex flex-col gap-1">
+                    <Skeleton className="h-3 w-28" />
+                    <Skeleton className="h-3 w-12 rounded-full" />
+                  </div>
+                </div>
+                <Skeleton className="h-8 w-16 rounded-lg" />
+              </div>
+            ))
+          ) : recentFeedbacks.length > 0 ? (
+            recentFeedbacks.map((event) => (
+              <FeedbackPreview key={event.id} event={event} chainId={chainId} />
+            ))
+          ) : (
+            <p className="py-4 text-center text-xs text-muted-foreground">No feedback yet.</p>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
