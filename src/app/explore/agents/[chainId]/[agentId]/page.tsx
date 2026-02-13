@@ -203,7 +203,7 @@ export default function AgentDetailPage({
       {/* Tabs */}
       <div ref={tabsRef}>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full justify-start">
+          <TabsList className="w-full justify-start overflow-x-auto">
             <TabsTrigger value="overview">
               Overview
             </TabsTrigger>
