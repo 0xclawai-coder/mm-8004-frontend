@@ -1249,9 +1249,9 @@ export default function ListingDetailPage({
               agent={agent ?? undefined}
             />
           ) : (
-            <div className="w-full max-w-[300px] min-h-[320px] rounded-2xl border border-border/50 bg-card/95 overflow-hidden">
-              {/* Image area — matches HoloCard h-40 */}
-              <Skeleton className="h-40 w-full rounded-none" />
+            <div className="w-full max-w-[300px] aspect-[5/7] rounded-2xl border border-border/50 bg-card/95 overflow-hidden">
+              {/* Image area — matches HoloCard 55% */}
+              <Skeleton className="h-[55%] w-full rounded-none" />
               {/* Content — matches HoloCard: score + stars + tags + chain */}
               <div className="flex flex-col gap-3 p-5">
                 <div className="flex items-center justify-between">
