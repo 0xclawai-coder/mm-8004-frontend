@@ -25,7 +25,7 @@ export const NATIVE_TOKEN = '0x0000000000000000000000000000000000000000' as cons
 // WMON (Wrapped MON) — needed for offers/auctions that require ERC-20
 export const WMON_ADDRESSES = {
   143: '0x3bd359C1119Da7Da1d913d1c4D2b7C461115433a' as const,   // Monad Mainnet (verified)
-  // 10143: no official WMON on testnet yet
+  10143: '0xc0574d351f35eb7683d58528fd73da842e7aef4d' as const,  // Monad Testnet (deployed by us)
 } as const
 
 export function getWmonAddress(chainId: number): `0x${string}` | undefined {
