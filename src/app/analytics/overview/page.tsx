@@ -52,14 +52,21 @@ function StatCard({ label, value, icon, accent }: StatCardProps) {
   )
 }
 
-function StatCardSkeleton() {
+function StatCardLoading({ label, icon, accent }: { label: string; icon: React.ReactNode; accent?: string }) {
   return (
     <Card className="border-border/50 bg-card/60 py-0">
       <CardContent className="flex items-center gap-4 p-4">
-        <Skeleton className="size-10 shrink-0 rounded-lg" />
-        <div className="space-y-1.5">
-          <Skeleton className="h-3 w-20" />
-          <Skeleton className="h-6 w-16" />
+        <div
+          className={cn(
+            'flex size-10 shrink-0 items-center justify-center rounded-lg',
+            accent ?? 'bg-primary/10 text-primary'
+          )}
+        >
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-xs text-muted-foreground">{label}</p>
+          <Skeleton className="mt-1 h-6 w-16" />
         </div>
       </CardContent>
     </Card>
@@ -172,7 +179,14 @@ export default function OverviewPage() {
       {/* Key Stats Grid */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         {isLoading ? (
-          Array.from({ length: 6 }).map((_, i) => <StatCardSkeleton key={i} />)
+          <>
+            <StatCardLoading label="Incorporated Entities" icon={<Users className="size-5" />} accent="bg-primary/10 text-primary" />
+            <StatCardLoading label="Track Records" icon={<MessageSquare className="size-5" />} accent="bg-cyan-500/10 text-cyan-400" />
+            <StatCardLoading label="Open Deals" icon={<ShoppingBag className="size-5" />} accent="bg-green-500/10 text-green-400" />
+            <StatCardLoading label="Total Volume" icon={<DollarSign className="size-5" />} accent="bg-yellow-500/10 text-yellow-400" />
+            <StatCardLoading label="Acquisitions" icon={<TrendingUp className="size-5" />} accent="bg-purple-500/10 text-purple-400" />
+            <StatCardLoading label="24h Activity" icon={<Zap className="size-5" />} accent="bg-orange-500/10 text-orange-400" />
+          </>
         ) : (
           <>
             <StatCard
@@ -236,7 +250,9 @@ export default function OverviewPage() {
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <Skeleton className="h-5 w-24 rounded-full" />
-                  <Skeleton className="h-2 flex-1 rounded-full" />
+                  <div className="flex-1">
+                    <Skeleton className="h-2 w-full rounded-full" />
+                  </div>
                   <Skeleton className="h-4 w-8" />
                 </div>
               ))}
@@ -272,7 +288,19 @@ export default function OverviewPage() {
           {statsLoading ? (
             <div className="grid gap-3 sm:grid-cols-2">
               {Array.from({ length: 2 }).map((_, i) => (
-                <Skeleton key={i} className="h-16 rounded-lg" />
+                <div key={i} className="flex items-center justify-between rounded-lg border border-border/30 bg-card/40 px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="size-2.5 rounded-full" />
+                    <div>
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="mt-1 h-3 w-16" />
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <Skeleton className="h-4 w-8" />
+                    <Skeleton className="mt-1 h-3 w-10" />
+                  </div>
+                </div>
               ))}
             </div>
           ) : stats?.agents_by_chain &&

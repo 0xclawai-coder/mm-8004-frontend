@@ -217,14 +217,24 @@ function StatCard({ label, value, icon, accent, subtext }: StatCardProps) {
   )
 }
 
-function StatCardSkeleton() {
+function StatCardLoading({ label, icon, accent, subtext }: { label: string; icon: React.ReactNode; accent?: string; subtext?: string }) {
   return (
     <Card className="border-border/50 bg-card/60 py-0">
       <CardContent className="flex items-center gap-4 p-4">
-        <Skeleton className="size-10 shrink-0 rounded-lg" />
-        <div className="space-y-1.5">
-          <Skeleton className="h-3 w-20" />
-          <Skeleton className="h-6 w-16" />
+        <div
+          className={cn(
+            'flex size-10 shrink-0 items-center justify-center rounded-lg',
+            accent ?? 'bg-primary/10 text-primary'
+          )}
+        >
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <p className="text-xs text-muted-foreground">{label}</p>
+          <Skeleton className="mt-1 h-6 w-16" />
+          {subtext && (
+            <p className="text-[10px] text-muted-foreground">{subtext}</p>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -341,7 +351,12 @@ export default function ActivityPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {statsLoading ? (
-          Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
+          <>
+            <StatCardLoading label="Incorporated Entities" icon={<Users className="size-5" />} accent="bg-primary/10 text-primary" />
+            <StatCardLoading label="Track Records" icon={<MessageSquare className="size-5" />} accent="bg-cyan-500/10 text-cyan-400" />
+            <StatCardLoading label="24h Incorporations" icon={<UserPlus className="size-5" />} accent="bg-green-500/10 text-green-400" subtext="New entities last 24h" />
+            <StatCardLoading label="24h Track Records" icon={<MessagesSquare className="size-5" />} accent="bg-yellow-500/10 text-yellow-400" subtext="Track records last 24h" />
+          </>
         ) : (
           <>
             <StatCard

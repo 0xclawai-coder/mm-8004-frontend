@@ -80,18 +80,37 @@ export function RatingChart({ agentId, chainId }: RatingChartProps) {
   if (isLoading) {
     return (
       <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
+        {/* Header - always visible, never skeletonized */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
-            <Skeleton className="size-4 rounded" />
-            <Skeleton className="h-4 w-36" />
-            <Skeleton className="h-5 w-12 rounded-md" />
+            <TrendingUp className="size-4 text-primary" />
+            <h3 className="text-sm font-semibold text-foreground">
+              Reputation Over Time
+            </h3>
           </div>
+
+          {/* Range selector - always visible, never skeletonized */}
           <div className="flex gap-1 rounded-lg border border-border/50 bg-muted/50 p-0.5">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-7 w-10 rounded-md" />
+            {RANGES.map((r) => (
+              <Button
+                key={r.value}
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  'h-7 px-3 text-xs font-medium',
+                  range === r.value
+                    ? 'bg-primary/20 text-primary hover:bg-primary/20'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+                onClick={() => setRange(r.value)}
+              >
+                {r.label}
+              </Button>
             ))}
           </div>
         </div>
+        
+        {/* Only the chart area shows loading state */}
         <Skeleton className="h-56 w-full rounded-lg" />
       </div>
     )
