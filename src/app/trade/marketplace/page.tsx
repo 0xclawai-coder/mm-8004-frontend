@@ -352,8 +352,8 @@ export default function MarketplacePage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Marketplace"
-        subtitle="Buy and sell AI Agents"
+        title="Deal Room"
+        subtitle="Agents open for acquisition"
       />
 
       {/* Filters */}
@@ -389,8 +389,8 @@ export default function MarketplacePage() {
         ) : listings.length === 0 ? (
           <EmptyState
             icon={ShoppingBag}
-            title="No Listings Found"
-            description="There are no marketplace listings matching your filters yet."
+            title="No Deals Found"
+            description="There are no agents open for acquisition matching your filters yet."
           />
         ) : (
           <div className="space-y-2">
@@ -457,8 +457,8 @@ export default function MarketplacePage() {
                 <TableCell colSpan={columns.length}>
                   <EmptyState
                     icon={ShoppingBag}
-                    title="No Listings Found"
-                    description="There are no marketplace listings matching your filters yet."
+                    title="No Deals Found"
+                    description="There are no agents open for acquisition matching your filters yet."
                   />
                 </TableCell>
               </TableRow>

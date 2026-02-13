@@ -227,7 +227,7 @@ export function Header() {
                 )}
                 <Link href="/create" onClick={() => setSheetOpen(false)}>
                   <Button className="w-full gap-2 bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90">
-                    Create Molt
+                    Incorporate Agent
                   </Button>
                 </Link>
                 <ChainSwitcher />

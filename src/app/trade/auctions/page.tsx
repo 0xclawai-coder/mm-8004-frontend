@@ -89,7 +89,7 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
               variant="outline"
               className="w-full justify-center border-primary/30 bg-primary/10 text-[10px] text-primary"
             >
-              Buy Now {formatPrice(auction.buy_now_price)} {token}
+              Acquire Now {formatPrice(auction.buy_now_price)} {token}
             </Badge>
           )}
         </div>
@@ -111,7 +111,7 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
         <div className="flex items-end justify-between gap-2">
           <div>
             <p className="text-[10px] text-muted-foreground">
-              {hasBids ? 'Current Bid' : 'Starting Bid'}
+              {hasBids ? 'Leading Offer' : 'Floor Valuation'}
             </p>
             <div className="flex items-center gap-1">
               <span
@@ -222,8 +222,8 @@ export default function AuctionsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Auctions"
-        subtitle="Live & Upcoming Auctions"
+        title="Live Rounds"
+        subtitle="Competitive Acquisition Rounds"
       />
 
       {/* Filters */}
@@ -233,7 +233,7 @@ export default function AuctionsPage() {
             {isLoading ? (
               <Skeleton className="h-4 w-24" />
             ) : (
-              <span>{total} Auctions</span>
+              <span>{total} Rounds</span>
             )}
           </div>
           <Select value={sort} onValueChange={(v) => { setSort(v as AuctionSortOrder); setPage(1) }}>
@@ -242,7 +242,7 @@ export default function AuctionsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ending_soon">Ending Soonest</SelectItem>
-              <SelectItem value="highest_bid">Highest Bid</SelectItem>
+              <SelectItem value="highest_bid">Highest Offer</SelectItem>
               <SelectItem value="recent">Newest</SelectItem>
             </SelectContent>
           </Select>
@@ -266,8 +266,8 @@ export default function AuctionsPage() {
       ) : auctions.length === 0 ? (
         <EmptyState
           icon={Gavel}
-          title="No Auctions Found"
-          description="There are no auctions matching your filters right now. Check back soon!"
+          title="No Rounds Found"
+          description="There are no acquisition rounds matching your filters right now. Check back soon!"
         />
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">

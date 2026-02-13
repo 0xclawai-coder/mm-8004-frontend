@@ -462,10 +462,10 @@ export default function CreateMoltPage() {
       <div className="space-y-8">
         <div className="flex flex-col gap-3 text-center">
           <h1 className="text-gradient-glow text-3xl font-extrabold sm:text-4xl lg:text-5xl">
-            Create Your Molt
+            Incorporate Agent
           </h1>
           <p className="text-base text-muted-foreground sm:text-lg">
-            Register a new AI agent on the Monad chain
+            Issue an on-chain identity (DID) for your agent. ERC-8004 compliant.
           </p>
         </div>
         <ConnectWalletPrompt />
@@ -492,10 +492,10 @@ export default function CreateMoltPage() {
       {/* Header */}
       <div className="flex flex-col gap-2 text-center">
         <h1 className="text-gradient-glow text-3xl font-extrabold sm:text-4xl lg:text-5xl">
-          Create Your Molt
+          Incorporate Agent
         </h1>
         <p className="text-base text-muted-foreground sm:text-lg">
-          Register a new AI agent on the Monad chain
+          Issue an on-chain identity (DID) for your agent. ERC-8004 compliant.
         </p>
       </div>
 
@@ -734,7 +734,7 @@ export default function CreateMoltPage() {
                 ) : (
                   <>
                     <Sparkles className="size-4" />
-                    Register Agent
+                    Incorporate
                   </>
                 )}
               </Button>

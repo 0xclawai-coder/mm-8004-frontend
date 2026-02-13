@@ -201,8 +201,8 @@ function BidHistoryTable({ bids, chainId, token }: { bids: AuctionBid[]; chainId
     return (
       <div className="flex flex-col items-center gap-2 py-8 text-center">
         <Gavel className="size-8 text-muted-foreground/30" />
-        <p className="text-sm text-muted-foreground">No bids yet</p>
-        <p className="text-xs text-muted-foreground/60">Be the first to place a bid!</p>
+        <p className="text-sm text-muted-foreground">No offers yet</p>
+        <p className="text-xs text-muted-foreground/60">Be the first to place an offer!</p>
       </div>
     )
   }
@@ -213,7 +213,7 @@ function BidHistoryTable({ bids, chainId, token }: { bids: AuctionBid[]; chainId
         <thead>
           <tr className="border-b border-border/30">
             <th className="pb-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">#</th>
-            <th className="pb-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Bidder</th>
+            <th className="pb-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Acquirer</th>
             <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount</th>
             <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Time</th>
             <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Tx</th>
@@ -398,7 +398,7 @@ function ProvenanceSection({ agent, chainId }: { agent: AgentDetail; chainId: nu
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-        📋 Provenance
+        📋 Cap Table & Ownership
       </h3>
       <div className="rounded-xl border border-border/50 bg-card/60 p-4">
         <div className="divide-y divide-border/30">
@@ -436,19 +436,19 @@ function ErrorState({ id }: { id: string }) {
       <Link href="/trade/auctions">
         <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
-          Back to Auctions
+          Back to Live Rounds
         </Button>
       </Link>
       <div className="flex flex-col items-center justify-center py-24">
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-border/50 bg-card/60 p-12 text-center">
           <Gavel className="size-12 text-muted-foreground/30" />
-          <h2 className="text-xl font-semibold text-foreground">Auction Not Found</h2>
+          <h2 className="text-xl font-semibold text-foreground">Round Not Found</h2>
           <p className="text-sm text-muted-foreground">
             Could not find auction &quot;{id}&quot;.
           </p>
           <Link href="/trade/auctions">
             <Button variant="default" size="sm">
-              Browse All Auctions
+              Browse All Rounds
             </Button>
           </Link>
         </div>
@@ -525,7 +525,7 @@ export default function AuctionDetailPage({
     }
     if (!auction || !marketplaceAddress || !bidAmount) return
     if (isSeller) {
-      toast.error('Seller cannot bid on their own auction')
+      toast.error('Seller cannot place offers on their own round')
       return
     }
 
@@ -548,7 +548,7 @@ export default function AuctionDetailPage({
     }
     if (!auction || !marketplaceAddress) return
     if (isSeller) {
-      toast.error('Seller cannot buy their own auction')
+      toast.error('Seller cannot acquire from their own round')
       return
     }
 
@@ -567,8 +567,8 @@ export default function AuctionDetailPage({
   // Toast effects
   useEffect(() => {
     if (isBidConfirmed) {
-      toast.success('Bid placed! 🎉', {
-        description: `Your bid of ${bidAmount} has been recorded.`,
+      toast.success('Offer placed! 🎉', {
+        description: `Your offer of ${bidAmount} has been recorded.`,
       })
       setBidAmount('')
       const toastId = toast.loading('Syncing with blockchain...')
@@ -588,7 +588,7 @@ export default function AuctionDetailPage({
 
   useEffect(() => {
     if (bidError) {
-      toast.error('Bid failed', {
+      toast.error('Offer failed', {
         description: bidError.message.slice(0, 100),
       })
     }
@@ -597,7 +597,7 @@ export default function AuctionDetailPage({
   useEffect(() => {
     if (isBuyNowConfirmed) {
       toast.success('Purchase successful! 🎉', {
-        description: 'You bought the agent identity at the buy-now price.',
+        description: 'You acquired the agent identity at the acquire-now price.',
       })
       const toastId = toast.loading('Syncing with blockchain...')
       let attempts = 0
@@ -617,7 +617,7 @@ export default function AuctionDetailPage({
 
   useEffect(() => {
     if (buyNowError) {
-      toast.error('Buy Now failed', {
+      toast.error('Acquire Now failed', {
         description: buyNowError.message.slice(0, 100),
       })
     }
@@ -700,7 +700,7 @@ export default function AuctionDetailPage({
       <Link href="/trade/auctions">
         <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
-          Back to Auctions
+          Back to Live Rounds
         </Button>
       </Link>
 
@@ -747,7 +747,7 @@ export default function AuctionDetailPage({
           {/* Header */}
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-xs font-medium uppercase tracking-wider text-primary">MOLT MARKETPLACE</p>
+              <p className="text-xs font-medium uppercase tracking-wider text-primary">MOLT DEAL ROOM</p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
@@ -798,7 +798,7 @@ export default function AuctionDetailPage({
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                   <div className="flex flex-col gap-1">
                     <p className="text-xs text-muted-foreground">
-                      {hasBids ? 'Current Bid' : 'Starting Bid'}
+                      {hasBids ? 'Leading Offer' : 'Floor Valuation'}
                     </p>
                     <div className="flex items-baseline gap-2">
                       <span className="text-3xl font-bold text-foreground">
@@ -836,7 +836,7 @@ export default function AuctionDetailPage({
                         onClick={openConnectModal}
                       >
                         <Wallet className="size-5" />
-                        Connect Wallet to Bid
+                        Connect Wallet to Place Offer
                       </Button>
                     ) : isSeller ? (
                       <div className="space-y-3">
@@ -880,7 +880,7 @@ export default function AuctionDetailPage({
                           <div className="relative flex-1">
                             <Input
                               type="number"
-                              placeholder={`Min bid: ${formatPrice(hasBids ? auction.highest_bid! : auction.start_price)} ${token}`}
+                              placeholder={`Min offer: ${formatPrice(hasBids ? auction.highest_bid! : auction.start_price)} ${token}`}
                               value={bidAmount}
                               onChange={(e) => setBidAmount(e.target.value)}
                               className="pr-14 bg-muted/30 border-border/50"
@@ -901,7 +901,7 @@ export default function AuctionDetailPage({
                             ) : (
                               <>
                                 <Gavel className="size-4" />
-                                Place Bid
+                                Place Offer
                               </>
                             )}
                           </Button>
@@ -921,7 +921,7 @@ export default function AuctionDetailPage({
                             ) : (
                               <>
                                 <ShoppingCart className="size-4" />
-                                Buy Now for {formatPrice(auction.buy_now_price)} {token}
+                                Acquire Now for {formatPrice(auction.buy_now_price)} {token}
                               </>
                             )}
                           </Button>
@@ -1007,7 +1007,7 @@ export default function AuctionDetailPage({
                 {/* Stats grid */}
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Start Bid</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Floor</p>
                     <p className="text-sm font-semibold text-foreground">{formatPrice(auction.start_price)}</p>
                     <p className="text-[10px] text-muted-foreground">{token}</p>
                   </div>
@@ -1019,14 +1019,14 @@ export default function AuctionDetailPage({
                     {hasReserve && <p className="text-[10px] text-muted-foreground">{token}</p>}
                   </div>
                   <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Buy Now</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Acquire Now</p>
                     <p className="text-sm font-semibold text-foreground">
                       {hasBuyNow ? formatPrice(auction.buy_now_price) : '—'}
                     </p>
                     {hasBuyNow && <p className="text-[10px] text-muted-foreground">{token}</p>}
                   </div>
                   <div className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Bids</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Offers</p>
                     <p className="text-sm font-semibold text-foreground">{auction.bid_count ?? 0}</p>
                     <p className="text-[10px] text-muted-foreground">total</p>
                   </div>
@@ -1064,7 +1064,7 @@ export default function AuctionDetailPage({
           {/* Bid History */}
           <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-              📜 Bid History
+              📜 Offer History
               {bids.length > 0 && (
                 <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold text-primary">
                   {bids.length}
@@ -1100,7 +1100,7 @@ export default function AuctionDetailPage({
           {/* Item Activity */}
           <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-              ⚡ Item Activity
+              ⚡ Deal Activity
             </h3>
             {auction ? (
               <div className="overflow-x-auto">

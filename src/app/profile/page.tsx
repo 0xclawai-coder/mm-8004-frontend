@@ -617,7 +617,7 @@ function ConnectWalletPrompt() {
           <div className="space-y-2">
             <h2 className="text-xl font-bold text-foreground">Connect Your Wallet</h2>
             <p className="text-sm text-muted-foreground">
-              Connect your wallet to view your registered AI agents.
+              Connect your wallet to view your portfolio of incorporated entities.
             </p>
           </div>
           <Button
@@ -650,8 +650,8 @@ export default function ProfilePage() {
     return (
       <div className="space-y-8">
         <PageHeader
-          title="Profile"
-          subtitle="Manage your registered AI agents"
+          title="My Portfolio"
+          subtitle="Manage your incorporated entities"
         />
         <ConnectWalletPrompt />
       </div>
@@ -661,13 +661,13 @@ export default function ProfilePage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Profile"
-        subtitle="Manage your registered AI agents"
+        title="My Portfolio"
+        subtitle="Manage your incorporated entities"
       >
         <Link href="/create">
           <Button className="gap-2 bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90">
             <Plus className="size-4" />
-            Create Molt
+            Incorporate Agent
           </Button>
         </Link>
       </PageHeader>
@@ -696,9 +696,9 @@ export default function ProfilePage() {
         ) : agents.length === 0 ? (
           <EmptyState
             icon={User}
-            title="No Agents Found"
-            description="You haven't registered any agents on this chain yet."
-            action={{ label: 'Create Your First Agent', href: '/create' }}
+            title="No Entities Found"
+            description="You haven't incorporated any entities on this chain yet."
+            action={{ label: 'Incorporate Your First Agent', href: '/create' }}
           />
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

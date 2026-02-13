@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-// Top categories from DB. "Others" covers: oracle, bridge, storage, privacy, etc.
+// Top sectors from DB. "Others" covers: oracle, bridge, storage, privacy, etc.
 const MAIN_CATEGORIES = ['defi', 'analytics', 'security', 'identity', 'trading', 'ai', 'compute', 'gaming', 'social', 'dao']
 
 const DISPLAY_LABELS: Record<string, string> = {

@@ -25,70 +25,70 @@ export interface NavGroup {
 
 export const navGroups: NavGroup[] = [
   {
-    label: 'Trade',
-    items: [
-      {
-        href: '/trade/marketplace',
-        label: 'Marketplace',
-        subtitle: 'Buy and Sell AI Agents',
-        icon: ShoppingCart,
-      },
-      {
-        href: '/trade/auctions',
-        label: 'Auctions',
-        subtitle: 'Live & Upcoming Auctions',
-        icon: Gavel,
-      },
-      {
-        href: '/trade/bundles',
-        label: 'Bundles',
-        subtitle: 'Agent Bundles',
-        icon: Package,
-      },
-    ],
-  },
-  {
-    label: 'Explorer',
+    label: 'Directory',
     items: [
       {
         href: '/explore/agents',
-        label: 'Agents',
-        subtitle: 'Browse AI Agents',
+        label: 'Entities',
+        subtitle: 'Browse Incorporated Agents',
         icon: Search,
       },
       {
         href: '/explore/activity',
-        label: 'Activity',
-        subtitle: 'Recent Transactions',
+        label: 'Feed',
+        subtitle: 'On-chain Activity Feed',
         icon: Activity,
       },
       {
         href: '/create',
-        label: 'Create Molt',
-        subtitle: 'Register New Agent',
+        label: 'Incorporate',
+        subtitle: 'Register Agent DID',
         icon: PlusCircle,
       },
     ],
   },
   {
-    label: 'Analytics',
+    label: 'M&A',
+    items: [
+      {
+        href: '/trade/marketplace',
+        label: 'Deals',
+        subtitle: 'Agents Open for Acquisition',
+        icon: ShoppingCart,
+      },
+      {
+        href: '/trade/auctions',
+        label: 'Live Rounds',
+        subtitle: 'Competitive Acquisition Rounds',
+        icon: Gavel,
+      },
+      {
+        href: '/trade/bundles',
+        label: 'Bundles',
+        subtitle: 'Entity Bundles',
+        icon: Package,
+      },
+    ],
+  },
+  {
+    label: 'Intelligence',
     items: [
       {
         href: '/analytics/overview',
-        label: 'Overview',
-        subtitle: 'Marketplace Stats',
+        label: 'Market Overview',
+        subtitle: 'Deal Volume & Metrics',
         icon: BarChart3,
       },
       {
         href: '/analytics/leaderboard',
-        label: 'Top Wallets',
-        subtitle: 'Wallet Trading Leaderboard',
+        label: 'Leaderboard',
+        subtitle: 'Top Acquirers & Sellers',
         icon: Trophy,
       },
       {
         href: '/analytics/rankings',
-        label: 'Agent Rankings',
-        subtitle: 'Agents by Reputation Score',
+        label: 'Entity Rankings',
+        subtitle: 'By Track Record Score',
         icon: TrendingUp,
       },
     ],

@@ -26,7 +26,7 @@ export default function NotFound() {
         <Link href="/explore/agents">
           <Button variant="outline" className="gap-2 border-border/50">
             <Search className="size-4" />
-            Explore Agents
+            Browse Directory
           </Button>
         </Link>
       </div>

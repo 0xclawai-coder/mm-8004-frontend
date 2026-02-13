@@ -114,10 +114,10 @@ export function AgentBrowseTable() {
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-lg font-semibold text-foreground">
-        Agent Registry
+        Entity Registry
       </h2>
       <p className="text-sm text-muted-foreground">
-        Browse and search all registered agents
+        Browse and search all incorporated entities
       </p>
 
       {/* Search + Sort */}
@@ -186,8 +186,8 @@ export function AgentBrowseTable() {
                 <td colSpan={7}>
                   <EmptyState
                     icon={Users}
-                    title="No Agents Found"
-                    description="No agents match your current search or filter criteria."
+                    title="No Entities Found"
+                    description="No entities match your current search or filter criteria."
                   />
                 </td>
               </tr>
@@ -305,7 +305,7 @@ export function AgentBrowseTable() {
             <Skeleton className="h-4 w-40" />
           ) : total > 0 ? (
             <span>
-              Showing {start}-{end} of {total} agents
+              Showing {start}-{end} of {total} entities
             </span>
           ) : (
             <span>&nbsp;</span>

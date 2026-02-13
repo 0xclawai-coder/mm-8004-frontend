@@ -38,9 +38,9 @@ function ErrorState({ agentId }: { agentId: string }) {
       <div className="flex flex-col items-center justify-center py-24">
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-border/50 bg-card/60 p-12 text-center">
           <div className="flex flex-col items-center gap-2">
-            <h2 className="text-xl font-semibold text-foreground">Agent Not Found</h2>
+            <h2 className="text-xl font-semibold text-foreground">Entity Not Found</h2>
             <p className="text-sm text-muted-foreground">
-              Could not find agent with ID &quot;{agentId}&quot;.
+              Could not find entity with ID &quot;{agentId}&quot;.
             </p>
           </div>
           <Link href="/explore/agents">
@@ -204,7 +204,7 @@ export default function AgentDetailPage({
               Overview
             </TabsTrigger>
             <TabsTrigger value="feedback" className="gap-1">
-              Feedback
+              Track Record
               {agent && agent.feedback_count > 0 && (
                 <span className="rounded-full bg-primary/20 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
                   {agent.feedback_count}
@@ -212,11 +212,11 @@ export default function AgentDetailPage({
               )}
             </TabsTrigger>
             <TabsTrigger value="identity">
-              Identity
+              Profile
             </TabsTrigger>
             <TabsTrigger value="verification" className="gap-1">
               <ShieldCheck className="size-3" />
-              Verification
+              Certification
             </TabsTrigger>
             <TabsTrigger value="metadata">
               Metadata
@@ -257,10 +257,10 @@ export default function AgentDetailPage({
                   <Construction className="size-8 text-yellow-400" />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <h3 className="text-lg font-semibold text-foreground">Verification — Coming Soon</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Certification — Coming Soon</h3>
                   <p className="mx-auto max-w-md text-sm text-muted-foreground">
-                    Monad has not yet deployed the EIP-8004 verification contract.
-                    Once deployed, agents will be able to undergo on-chain identity verification,
+                    Monad has not yet deployed the EIP-8004 certification contract.
+                    Once deployed, entities will be able to undergo on-chain identity certification,
                     proving ownership and authenticity of their capabilities.
                   </p>
                 </div>

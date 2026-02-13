@@ -135,20 +135,20 @@ function ErrorState({ id }: { id: string }) {
       <Link href="/trade/marketplace">
         <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
-          Back to Marketplace
+          Back to Deals
         </Button>
       </Link>
       <div className="flex flex-col items-center justify-center py-24">
         <div className="flex flex-col items-center gap-6 rounded-2xl border border-border/50 bg-card/60 p-12 text-center">
           <div className="flex flex-col gap-2">
-            <h2 className="text-xl font-semibold text-foreground">Listing Not Found</h2>
+            <h2 className="text-xl font-semibold text-foreground">Deal Not Found</h2>
             <p className="text-sm text-muted-foreground">
               Could not find listing &quot;{id}&quot;.
             </p>
           </div>
           <Link href="/trade/marketplace">
             <Button variant="default" size="sm">
-              Browse Marketplace
+              Browse Deals
             </Button>
           </Link>
         </div>
@@ -234,7 +234,7 @@ function AgentPropertiesGrid({ agent }: { agent: AgentDetail }) {
     <div className="space-y-3">
       <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
         <Layers className="size-4 text-primary" />
-        Agent Properties
+        Business Registration
       </h3>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
         {properties.map((p, i) => (
@@ -315,7 +315,7 @@ function ProvenanceSection({
     <div className="space-y-3">
       <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
         <Hash className="size-4 text-primary" />
-        Provenance
+        Cap Table & Ownership
       </h3>
       <div className="rounded-xl border border-border/30 bg-card/40 divide-y divide-border/20">
         <div className="flex items-center justify-between gap-2 px-4 py-3">
@@ -408,7 +408,7 @@ function TopOffersTable({
     <div className="space-y-3">
       <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
         <DollarSign className="size-4 text-primary" />
-        Top Offers
+        Top Offers (M&A)
       </h3>
       <div className="rounded-xl border border-border/30 bg-card/40 overflow-hidden">
         {isLoading ? (
@@ -702,7 +702,7 @@ function ItemActivitySection({ agentId }: { agentId: string }) {
     <div className="space-y-3">
       <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
         <Activity className="size-4 text-primary" />
-        Item Activity
+        Deal Activity
         {total > 0 && (
           <span className="text-xs font-normal text-muted-foreground">
             ({total})
@@ -1016,7 +1016,7 @@ function MakeOfferDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Make an Offer</DialogTitle>
+          <DialogTitle>Submit an Offer</DialogTitle>
           <DialogDescription>
             Enter the amount you want to offer. Offers require ERC-20 token approval.
             Default expiry: 24 hours.
@@ -1073,6 +1073,7 @@ function MakeOfferDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
   )
 }
 
@@ -1294,7 +1295,7 @@ export default function ListingDetailPage({
       <Link href="/trade/marketplace">
         <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
-          Back to Marketplace
+          Back to Deals
         </Button>
       </Link>
 
@@ -1342,7 +1343,7 @@ export default function ListingDetailPage({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-widest text-primary">
-                MOLT MARKETPLACE
+                MOLT DEAL ROOM
               </span>
               {listing ? (
                 <>
@@ -1425,7 +1426,7 @@ export default function ListingDetailPage({
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               {listing ? (
                 <>
-                  <span>Listed by</span>
+                  <span>Current Owner</span>
                   <a
                     href={getExplorerUrl(listing.chain_id, listing.seller)}
                     target="_blank"
@@ -1466,7 +1467,7 @@ export default function ListingDetailPage({
                   )}
                 </div>
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm text-muted-foreground">Current Price</p>
+                  <p className="text-sm text-muted-foreground">Asking Price</p>
                   <div className="flex items-baseline gap-2">
                     <span className="text-3xl font-bold text-foreground">
                       {formatPrice(listing.price)}
@@ -1479,7 +1480,7 @@ export default function ListingDetailPage({
                     {!isConnected ? (
                       <Button size="lg" className="flex-1 gap-2 text-base font-semibold" onClick={openConnectModal}>
                         <Wallet className="size-5" />
-                        Connect Wallet to Buy
+                        Connect Wallet to Acquire
                       </Button>
                     ) : isSeller ? (
                       <>
@@ -1526,7 +1527,7 @@ export default function ListingDetailPage({
                           ) : (
                             <>
                               <ShoppingCart className="size-5" />
-                              Buy Now
+                              Acquire Now
                             </>
                           )}
                         </Button>
@@ -1537,7 +1538,7 @@ export default function ListingDetailPage({
                           onClick={handleMakeOffer}
                         >
                           <HandCoins className="size-5" />
-                          Make Offer
+                          Submit Offer
                         </Button>
                       </>
                     )}

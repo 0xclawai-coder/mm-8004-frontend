@@ -4,21 +4,21 @@ import { Separator } from '@/components/ui/separator'
 
 const footerLinks = [
   {
-    title: 'Marketplace',
+    title: 'Directory',
     links: [
-      { label: 'Explore Agents', href: '/explore/agents' },
-      { label: 'Marketplace', href: '/trade/marketplace' },
-      { label: 'Auctions', href: '/trade/auctions' },
-      { label: 'Create Molt', href: '/create' },
+      { label: 'Entities', href: '/explore/agents' },
+      { label: 'Deals', href: '/trade/marketplace' },
+      { label: 'Live Rounds', href: '/trade/auctions' },
+      { label: 'Incorporate', href: '/create' },
     ],
   },
   {
-    title: 'Analytics',
+    title: 'Intelligence',
     links: [
-      { label: 'Overview', href: '/analytics/overview' },
+      { label: 'Market Overview', href: '/analytics/overview' },
       { label: 'Leaderboard', href: '/analytics/leaderboard' },
-      { label: 'Rankings', href: '/analytics/rankings' },
-      { label: 'Activity', href: '/explore/activity' },
+      { label: 'Entity Rankings', href: '/analytics/rankings' },
+      { label: 'Feed', href: '/explore/activity' },
     ],
   },
   {
@@ -92,7 +92,7 @@ export function Footer() {
             </span>
           </div>
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} Molt Lab. EIP-8004 Agent Marketplace.
+            &copy; {new Date().getFullYear()} Molt Lab. The M&A Infrastructure for AI Agents.
           </p>
         </div>
       </div>

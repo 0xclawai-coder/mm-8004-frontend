@@ -208,15 +208,15 @@ export default function RankingsPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Agent Rankings"
-        subtitle="Comprehensive agent ranking by reputation, feedback, and on-chain activity"
+        title="Entity Rankings"
+        subtitle="Comprehensive entity ranking by track record, feedback, and on-chain activity"
       />
 
       {/* Filters */}
       <section className="space-y-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-sm text-muted-foreground">
-            {isLoading ? <Skeleton className="h-4 w-24" /> : <span>{entries.length} Agents</span>}
+            {isLoading ? <Skeleton className="h-4 w-24" /> : <span>{entries.length} Entities</span>}
           </div>
           <ChainFilter selected={chainId} onSelect={setChainId} />
         </div>
@@ -250,8 +250,8 @@ export default function RankingsPage() {
                 <TableCell colSpan={columns.length}>
                   <EmptyState
                     icon={Trophy}
-                    title="No Agents Found"
-                    description="No agents match your current filter criteria."
+                    title="No Entities Found"
+                    description="No entities match your current filter criteria."
                   />
                 </TableCell>
               </TableRow>

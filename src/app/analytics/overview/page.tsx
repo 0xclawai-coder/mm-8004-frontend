@@ -165,8 +165,8 @@ export default function OverviewPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Analytics Overview"
-        subtitle="Global marketplace statistics and insights"
+        title="Market Intelligence"
+        subtitle="Deal volume, metrics, and market insights"
       />
 
       {/* Key Stats Grid */}
@@ -176,19 +176,19 @@ export default function OverviewPage() {
         ) : (
           <>
             <StatCard
-              label="Total Agents"
+              label="Incorporated Entities"
               value={stats?.total_agents ?? 0}
               icon={<Users className="size-5" />}
               accent="bg-primary/10 text-primary"
             />
             <StatCard
-              label="Total Feedbacks"
+              label="Track Records"
               value={stats?.total_feedbacks ?? 0}
               icon={<MessageSquare className="size-5" />}
               accent="bg-cyan-500/10 text-cyan-400"
             />
             <StatCard
-              label="Active Listings"
+              label="Open Deals"
               value={mktStats?.active_listings ?? 0}
               icon={<ShoppingBag className="size-5" />}
               accent="bg-green-500/10 text-green-400"
@@ -204,7 +204,7 @@ export default function OverviewPage() {
               accent="bg-yellow-500/10 text-yellow-400"
             />
             <StatCard
-              label="Total Sales"
+              label="Acquisitions"
               value={mktStats?.total_sales ?? 0}
               icon={<TrendingUp className="size-5" />}
               accent="bg-purple-500/10 text-purple-400"

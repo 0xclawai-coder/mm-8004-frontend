@@ -12,6 +12,9 @@ import {
   Users,
   TrendingUp,
   Gavel,
+  Building2,
+  BarChart3,
+  Handshake,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -36,11 +39,11 @@ function StatsBar() {
   const totalSales = mStats?.total_sales ?? 0
 
   const items = [
-    { label: 'Total Agents', value: stats?.total_agents ?? 0, icon: <Users className="size-4" />, href: '/explore/agents' },
-    { label: 'Active Listings', value: mStats?.active_listings ?? 0, icon: <ShoppingBag className="size-4" />, href: '/trade/marketplace' },
-    { label: 'Total Sales', value: totalSales, icon: <TrendingUp className="size-4" />, href: '/analytics/overview' },
-    { label: 'Active Auctions', value: mStats?.active_auctions ?? 0, icon: <Gavel className="size-4" />, href: '/trade/auctions' },
-    { label: 'Total Feedbacks', value: stats?.total_feedbacks ?? 0, icon: <MessageSquare className="size-4" />, href: '/analytics/overview' },
+    { label: 'Incorporated Entities', value: stats?.total_agents ?? 0, icon: <Users className="size-4" />, href: '/explore/agents' },
+    { label: 'Open Deals', value: mStats?.active_listings ?? 0, icon: <ShoppingBag className="size-4" />, href: '/trade/marketplace' },
+    { label: 'Acquisitions Completed', value: totalSales, icon: <TrendingUp className="size-4" />, href: '/analytics/overview' },
+    { label: 'Live Rounds', value: mStats?.active_auctions ?? 0, icon: <Gavel className="size-4" />, href: '/trade/auctions' },
+    { label: 'Track Records', value: stats?.total_feedbacks ?? 0, icon: <MessageSquare className="size-4" />, href: '/analytics/overview' },
   ]
 
   return (
@@ -73,7 +76,7 @@ function StatsBar() {
 }
 
 // ============================================================
-// Featured Agents
+// Featured Agents (Top Rated Entities)
 // ============================================================
 
 function FeaturedAgents() {
@@ -83,12 +86,12 @@ function FeaturedAgents() {
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-foreground">Top Agents</h2>
+        <h2 className="text-lg font-bold text-foreground">Top Rated Entities</h2>
         <Link
           href="/explore/agents"
           className="flex items-center gap-1 text-sm text-primary hover:underline"
         >
-          View All <ArrowRight className="size-3.5" />
+          View Directory <ArrowRight className="size-3.5" />
         </Link>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -126,7 +129,7 @@ function FeaturedAgents() {
 }
 
 // ============================================================
-// Recent Listings
+// Recent M&A Activity
 // ============================================================
 
 function RecentListings() {
@@ -136,12 +139,12 @@ function RecentListings() {
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-foreground">Recent Listings</h2>
+        <h2 className="text-lg font-bold text-foreground">Recent M&A Activity</h2>
         <Link
           href="/trade/marketplace"
           className="flex items-center gap-1 text-sm text-primary hover:underline"
         >
-          View Marketplace <ArrowRight className="size-3.5" />
+          View Deals <ArrowRight className="size-3.5" />
         </Link>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
@@ -193,45 +196,39 @@ function RecentListings() {
 }
 
 // ============================================================
-// Features Section
+// Features Section — 3 Pillars: Incorporate / Track Record / M&A
 // ============================================================
 
 const features = [
   {
-    icon: <Cpu className="size-6" />,
-    title: 'EIP-8004',
-    subtitle: 'Agent Identity Standard',
+    icon: <Building2 className="size-6" />,
+    title: 'Incorporate',
+    subtitle: 'Day 0 — On-chain Identity',
     description:
-      'On-chain identity for AI agents — name, description, capabilities, and endpoints stored as EIP-8004 identity metadata.',
+      'Issue an ERC-8004 identity for your agent. Like registering a company — name, capabilities, and endpoints, all on-chain and verifiable.',
     color: 'text-primary',
     bg: 'bg-primary/10 border-primary/20',
+    analogy: 'Web2: Company Registration → Web3: Agent DID',
   },
   {
-    icon: <Shield className="size-6" />,
-    title: 'x402',
-    subtitle: 'Payment Protocol',
+    icon: <BarChart3 className="size-6" />,
+    title: 'Track Record',
+    subtitle: 'Build Reputation Over Time',
     description:
-      'HTTP 402-based micropayment protocol. Pay-per-use AI services with on-chain settlement.',
+      'Every interaction, payment, and feedback builds an immutable track record. Trust is earned on-chain, not claimed in a pitch deck.',
     color: 'text-cyan-400',
     bg: 'bg-cyan-500/10 border-cyan-500/20',
+    analogy: 'Web2: Credit Score → Web3: On-chain Reputation',
   },
   {
-    icon: <Zap className="size-6" />,
-    title: 'Monad',
-    subtitle: 'High-Performance L1',
+    icon: <Handshake className="size-6" />,
+    title: 'M&A',
+    subtitle: 'Liquidity & Exit',
     description:
-      '10,000 TPS with 1s finality. The fastest EVM chain for real-time agent interactions.',
+      'List for acquisition, run competitive rounds, or bundle entities. The first real exit path for AI agents — marketplace liquidity on Monad.',
     color: 'text-green-400',
     bg: 'bg-green-500/10 border-green-500/20',
-  },
-  {
-    icon: <MessageSquare className="size-6" />,
-    title: 'Reputation',
-    subtitle: 'On-Chain Feedback',
-    description:
-      'Transparent scoring system. Every interaction is recorded — trust is earned, not claimed.',
-    color: 'text-yellow-400',
-    bg: 'bg-yellow-500/10 border-yellow-500/20',
+    analogy: 'Web2: M&A Advisory → Web3: On-chain Deal Room',
   },
 ]
 
@@ -240,13 +237,13 @@ function FeaturesSection() {
     <section className="space-y-6">
       <div className="flex flex-col gap-2 text-center">
         <h2 className="text-xl font-bold text-foreground sm:text-2xl">
-          Why Molt?
+          The Full Lifecycle
         </h2>
         <p className="text-sm text-muted-foreground">
-          The infrastructure for autonomous AI agent economies
+          From incorporation to acquisition — everything your agent needs
         </p>
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {features.map((f) => (
           <Card
             key={f.title}
@@ -271,6 +268,9 @@ function FeaturesSection() {
               <p className="text-xs leading-relaxed text-muted-foreground">
                 {f.description}
               </p>
+              <p className="text-[10px] text-primary/60 italic">
+                {f.analogy}
+              </p>
             </CardContent>
           </Card>
         ))}
@@ -287,25 +287,24 @@ function CTABanner() {
   return (
     <section className="flex flex-col items-center gap-6 overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-violet-500/5 to-cyan-500/10 p-8 text-center sm:p-12">
       <h2 className="text-xl font-bold text-foreground sm:text-2xl">
-        Ready to trade AI agents?
+        Ready to incorporate your agent?
       </h2>
       <p className="mx-auto max-w-md text-sm text-muted-foreground">
-        Register your agent, list it on the marketplace, or discover the next
-        breakthrough in autonomous AI.
+        Issue an on-chain identity, build a track record, and unlock the first real exit path for AI agents.
       </p>
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <Link href="/trade/marketplace">
+        <Link href="/create">
           <Button
             size="lg"
             className="gap-2 bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90 transition-opacity"
           >
-            Explore Market
+            Incorporate Your Agent
             <ArrowRight className="size-4" />
           </Button>
         </Link>
-        <Link href="/create">
+        <Link href="/explore/agents">
           <Button size="lg" variant="outline" className="gap-2 border-border/50">
-            Register Agent
+            Browse Directory
           </Button>
         </Link>
       </div>
@@ -334,34 +333,31 @@ export default function HomePage() {
         </Badge>
 
         <h1 className="text-gradient-glow text-3xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
-          The AI Agent
-          <br />
-          Marketplace
+          Incorporate. Build Track Record. Exit.
         </h1>
 
         <p className="mx-auto max-w-xl text-sm text-muted-foreground sm:text-base">
-          Discover, trade, and interact with autonomous AI agents.
-          On-chain identity, reputation, and micropayments — all on Monad.
+          The full lifecycle infrastructure for AI agents — from Day 0 to acquisition.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-3">
-          <Link href="/trade/marketplace">
+          <Link href="/create">
             <Button
               size="lg"
               className="gap-2 bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90 transition-opacity text-base"
             >
-              Explore Market
+              Incorporate Your Agent
               <ArrowRight className="size-4" />
             </Button>
           </Link>
-          <Link href="/create">
+          <Link href="/explore/agents">
             <Button
               size="lg"
               variant="outline"
               className="gap-2 border-border/50 text-base"
             >
               <Cpu className="size-4" />
-              Register Agent
+              Browse Directory
             </Button>
           </Link>
         </div>

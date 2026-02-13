@@ -104,8 +104,8 @@ export default function AgentsPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Explore Agents"
-        subtitle="Track every on-chain AI agent — ERC-8004 identity & reputation, x402 payment activity, and real-time data across Monad."
+        title="Entity Directory"
+        subtitle="Track every incorporated entity — ERC-8004 identity & track record, x402 payment activity, and real-time data across Monad."
       />
 
       {/* Three sections side by side */}
