@@ -261,11 +261,24 @@ export default function AgentDetailPage({
                 onSwitchToFeedback={handleSwitchToFeedback}
               />
             ) : (
-              <div className="py-6 flex flex-col gap-4">
-                <Skeleton className="h-5 w-48" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-32 w-full rounded-xl" />
+              <div className="space-y-6 py-4">
+                {/* Statistics Overview — show header + card structure */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground">Statistics Overview</h3>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {['Average Score', 'Total Feedback', 'Positive', 'Negative'].map((label) => (
+                      <div key={label} className="flex flex-col items-center gap-2 rounded-lg border border-border/50 p-4 text-center">
+                        <Skeleton className="size-8 rounded-lg" />
+                        <div className="flex flex-col gap-0.5">
+                          <Skeleton className="mx-auto h-6 w-12" />
+                          <p className="text-xs text-muted-foreground">{label}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Reputation Chart skeleton is handled by RatingChart internally */}
+                <Skeleton className="h-80 w-full rounded-xl" />
               </div>
             )}
           </TabsContent>
@@ -316,7 +329,7 @@ export default function AgentDetailPage({
                 )
               ) : (
                 <div className="flex flex-col gap-4 rounded-xl border border-border/50 bg-card/60 p-6">
-                  <Skeleton className="h-5 w-32" />
+                  <h3 className="text-sm font-semibold text-foreground">Raw Metadata</h3>
                   <Skeleton className="h-40 w-full rounded-lg" />
                 </div>
               )}

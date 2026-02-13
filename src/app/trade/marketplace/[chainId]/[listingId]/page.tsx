@@ -1441,7 +1441,7 @@ export default function ListingDetailPage({
                 </>
               ) : (
                 <>
-                  <Skeleton className="h-3 w-16" />
+                  <span>Current Owner</span>
                   <Skeleton className="h-3 w-24" />
                 </>
               )}
@@ -1560,9 +1560,12 @@ export default function ListingDetailPage({
               </>
             ) : (
               <>
-                <Skeleton className="h-4 w-32" />
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Clock className="size-3" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
                 <div className="flex flex-col gap-1">
-                  <Skeleton className="h-4 w-24" />
+                  <p className="text-sm text-muted-foreground">Asking Price</p>
                   <Skeleton className="h-9 w-48" />
                 </div>
                 <div className="flex gap-3 pt-2">
@@ -1599,12 +1602,36 @@ export default function ListingDetailPage({
                 />
               </>
             ) : (
-              Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="rounded-xl border border-border/30 bg-card/40 p-3 text-center space-y-1">
-                  <Skeleton className="mx-auto h-3 w-12" />
+              <>
+                <div className="rounded-xl border border-border/30 bg-card/40 p-3 text-center space-y-1">
+                  <div className="flex items-center justify-center gap-1.5 text-muted-foreground">
+                    <DollarSign className="size-3" />
+                    <span className="text-[10px] uppercase tracking-wider font-medium">Price</span>
+                  </div>
                   <Skeleton className="mx-auto h-5 w-20" />
                 </div>
-              ))
+                <div className="rounded-xl border border-border/30 bg-card/40 p-3 text-center space-y-1">
+                  <div className="flex items-center justify-center gap-1.5 text-muted-foreground">
+                    <TrendingUp className="size-3" />
+                    <span className="text-[10px] uppercase tracking-wider font-medium">Last Sale</span>
+                  </div>
+                  <Skeleton className="mx-auto h-5 w-20" />
+                </div>
+                <div className="rounded-xl border border-border/30 bg-card/40 p-3 text-center space-y-1">
+                  <div className="flex items-center justify-center gap-1.5 text-muted-foreground">
+                    <User className="size-3" />
+                    <span className="text-[10px] uppercase tracking-wider font-medium">Owner</span>
+                  </div>
+                  <Skeleton className="mx-auto h-5 w-20" />
+                </div>
+                <div className="rounded-xl border border-border/30 bg-card/40 p-3 text-center space-y-1">
+                  <div className="flex items-center justify-center gap-1.5 text-muted-foreground">
+                    <HandCoins className="size-3" />
+                    <span className="text-[10px] uppercase tracking-wider font-medium">Top Offer</span>
+                  </div>
+                  <Skeleton className="mx-auto h-5 w-20" />
+                </div>
+              </>
             )}
           </div>
 
@@ -1613,11 +1640,14 @@ export default function ListingDetailPage({
             <ListingDetailsSection listing={listing} />
           ) : (
             <div className="space-y-3">
-              <Skeleton className="h-5 w-32" />
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <CircleDot className="size-4 text-primary" />
+                Listing Details
+              </h3>
               <div className="rounded-xl border border-border/30 bg-card/40 divide-y divide-border/20">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="flex items-center justify-between px-4 py-3">
-                    <Skeleton className="h-3 w-16" />
+                {['Listing ID', 'Status', 'Payment', 'Listed', 'Expiry'].map((label) => (
+                  <div key={label} className="flex items-center justify-between gap-2 px-4 py-3">
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">{label}</span>
                     <Skeleton className="h-4 w-24" />
                   </div>
                 ))}
@@ -1628,10 +1658,16 @@ export default function ListingDetailPage({
           {/* Agent Properties (right column = wider, no truncate) */}
           {agentLoading ? (
             <div className="space-y-3">
-              <Skeleton className="h-5 w-32" />
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <Layers className="size-4 text-primary" />
+                Business Registration
+              </h3>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <Skeleton key={i} className="h-20 rounded-xl" />
+                  <div key={i} className="rounded-xl border border-border/30 bg-card/40 p-3 space-y-2">
+                    <Skeleton className="h-3 w-16" />
+                    <Skeleton className="h-5 w-20" />
+                  </div>
                 ))}
               </div>
             </div>
@@ -1662,7 +1698,10 @@ export default function ListingDetailPage({
             />
           ) : (
             <div className="space-y-3">
-              <Skeleton className="h-5 w-24" />
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <DollarSign className="size-4 text-primary" />
+                Top Offers (M&A)
+              </h3>
               <div className="rounded-xl border border-border/30 bg-card/40 p-4 space-y-3">
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div key={i} className="flex items-center justify-between">

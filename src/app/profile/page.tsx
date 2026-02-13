@@ -21,6 +21,7 @@ import {
   User,
   Plus,
   Tag,
+  Loader2,
 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
@@ -559,7 +560,7 @@ function EditAgentDialog({ agent, chainId, open, onOpenChange }: EditAgentDialog
             >
               {isPending || isConfirming ? (
                 <span className="flex items-center gap-2">
-                  <Skeleton className="size-4 rounded-full" />
+                  <Loader2 className="size-4 animate-spin" />
                   {isPending ? 'Confirm...' : 'Confirming...'}
                 </span>
               ) : (

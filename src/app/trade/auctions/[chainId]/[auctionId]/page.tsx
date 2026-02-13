@@ -786,7 +786,9 @@ export default function AuctionDetailPage({
                 </a>
               </p>
             ) : (
-              <Skeleton className="h-4 w-48" />
+              <p className="text-sm text-muted-foreground">
+                Sold by <Skeleton className="inline-block h-3 w-24 align-middle" />
+              </p>
             )}
           </div>
 
@@ -1034,26 +1036,25 @@ export default function AuctionDetailPage({
               </>
             ) : (
               <>
-                {/* Skeleton for bid + countdown */}
+                {/* Skeleton for bid + countdown — labels always visible */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                  <div className="flex flex-col gap-2">
-                    <Skeleton className="h-3 w-20" />
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xs text-muted-foreground">Floor Valuation</p>
                     <Skeleton className="h-9 w-48" />
                   </div>
-                  <div className="flex flex-col gap-2 items-end">
-                    <Skeleton className="h-3 w-16" />
+                  <div className="flex flex-col gap-1 items-end">
+                    <p className="text-xs text-muted-foreground">Ends In</p>
                     <Skeleton className="h-8 w-40" />
                   </div>
                 </div>
                 {/* Skeleton for CTA */}
                 <Skeleton className="h-10 w-full rounded-lg" />
-                {/* Skeleton for stats */}
+                {/* Skeleton for stats — labels always visible */}
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
-                      <Skeleton className="mx-auto h-3 w-12" />
+                  {['Floor', 'Reserve', 'Acquire Now', 'Offers'].map((label) => (
+                    <div key={label} className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</p>
                       <Skeleton className="mx-auto h-5 w-16" />
-                      <Skeleton className="mx-auto h-3 w-8" />
                     </div>
                   ))}
                 </div>

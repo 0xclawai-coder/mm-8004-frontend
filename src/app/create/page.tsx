@@ -22,6 +22,7 @@ import {
   Sparkles,
   Cpu,
   Shield,
+  Loader2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -37,7 +38,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import {
   CONTRACT_ADDRESSES,
@@ -728,7 +728,7 @@ export default function CreateMoltPage() {
               >
                 {isWritePending || isConfirming ? (
                   <span className="flex items-center gap-2">
-                    <Skeleton className="size-4 rounded-full" />
+                    <Loader2 className="size-4 animate-spin" />
                     {isWritePending ? 'Confirm in Wallet...' : 'Confirming...'}
                   </span>
                 ) : (
@@ -762,7 +762,7 @@ export default function CreateMoltPage() {
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <Skeleton className="size-5 rounded-full" />
+                  <Loader2 className="size-5 animate-spin text-primary" />
                   {txStatus === 'pending'
                     ? 'Waiting for Confirmation'
                     : 'Transaction Submitted'}
