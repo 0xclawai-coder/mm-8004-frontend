@@ -49,7 +49,6 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { cn, formatAddress, formatDistanceToNowSmart, formatPrice, getTokenLabel } from '@/lib/utils'
 import TimeCounter from '@/components/ui/time-counter'
 import { useListing } from '@/hooks/useListing'
-import { useAgent } from '@/hooks/useAgent'
 import { useAgentActivity } from '@/hooks/useAgentActivity'
 import { useOffers } from '@/hooks/useOffers'
 import { HoloCard } from '@/components/agents/HoloCard'
@@ -1038,12 +1037,14 @@ export default function ListingDetailPage({
   const { address, isConnected } = useAccount()
   const { openConnectModal } = useConnectModal()
 
-  // Fetch listing
-  const { data: listing, isLoading: listingLoading, error: listingError } = useListing(id)
+  // Fetch listing (includes embedded agent data)
+  const { data: listingRaw, isLoading: listingLoading, error: listingError } = useListing(id)
 
-  // Fetch agent data
+  // Extract embedded agent from listing response
+  const listing = listingRaw
+  const agent = (listingRaw as Record<string, unknown> | undefined)?.agent as AgentDetail | undefined
+  const agentLoading = listingLoading
   const agentId = listing ? `${listing.chain_id}-${listing.token_id}` : ''
-  const { data: agent, isLoading: agentLoading } = useAgent(agentId)
 
   // Fetch offers
   const { data: offersData, isLoading: offersLoading } = useOffers(
