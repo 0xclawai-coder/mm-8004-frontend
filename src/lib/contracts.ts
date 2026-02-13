@@ -64,6 +64,18 @@ export const moltMarketplaceAbi = [
     ],
     outputs: [{ name: 'offerId', type: 'uint256' }],
   },
+  // makeOfferWithNative(address nftContract, uint256 tokenId, uint256 expiry) payable returns (uint256 offerId)
+  {
+    name: 'makeOfferWithNative',
+    type: 'function',
+    stateMutability: 'payable',
+    inputs: [
+      { name: 'nftContract', type: 'address' },
+      { name: 'tokenId', type: 'uint256' },
+      { name: 'expiry', type: 'uint256' },
+    ],
+    outputs: [{ name: 'offerId', type: 'uint256' }],
+  },
   // bid(uint256 auctionId, uint256 amount) payable
   {
     name: 'bid',

@@ -968,21 +968,27 @@ function MakeOfferDialog({
   }, [offerError])
 
   const handleSubmit = () => {
-    if (!marketplaceAddress || !offerAmount || !address || !offerPaymentToken) return
+    if (!marketplaceAddress || !offerAmount || !address) return
 
     const amountWei = parsePriceToBigInt((parseFloat(offerAmount) * 1e18).toString())
+    const expiry = BigInt(Math.floor(Date.now() / 1000) + 86400) // 1 day
 
-    if (needsWrap && wmonAddress) {
-      // Wrap MON → WMON first, then approve + offer
-      setStep('wrapping')
-      writeWrap({
-        address: wmonAddress,
-        abi: wmonAbi,
-        functionName: 'deposit',
+    if (needsWrap) {
+      // Single TX: makeOfferWithNative (contract handles wrap + escrow)
+      setStep('offering')
+      writeOffer({
+        address: marketplaceAddress,
+        abi: moltMarketplaceAbi,
+        functionName: 'makeOfferWithNative',
+        args: [
+          listing.nft_contract as `0x${string}`,
+          BigInt(listing.token_id),
+          expiry,
+        ],
         value: amountWei,
       })
-    } else {
-      // Direct ERC-20: approve then offer
+    } else if (offerPaymentToken) {
+      // ERC-20: approve then offer
       setStep('approving')
       writeApprove({
         address: offerPaymentToken,
@@ -1029,29 +1035,21 @@ function MakeOfferDialog({
                 disabled={isPending}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                {needsWrap ? 'WMON' : getTokenLabel(listing.payment_token)}
+                {needsWrap ? 'MON' : getTokenLabel(listing.payment_token)}
               </span>
             </div>
           </div>
-          {needsWrap && wmonAddress && (
+          {needsWrap && (
             <p className="text-xs text-muted-foreground">
-              💡 Your MON will be automatically wrapped to WMON for the offer.
-              3 steps: Wrap → Approve → Offer
-            </p>
-          )}
-          {needsWrap && !wmonAddress && (
-            <p className="text-xs text-yellow-400">
-              ⚠️ WMON is not available on this network. Offers require ERC-20 tokens.
+              💡 Single transaction — your MON is wrapped to WMON and escrowed automatically.
             </p>
           )}
           {isPending && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" />
-              {step === 'wrapping'
-                ? 'Wrapping MON → WMON...'
-                : step === 'approving'
-                  ? 'Approving WMON...'
-                  : 'Submitting offer...'}
+              {step === 'approving'
+                ? 'Approving token...'
+                : 'Submitting offer...'}
             </div>
           )}
         </div>
@@ -1061,7 +1059,7 @@ function MakeOfferDialog({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={isPending || !offerAmount || parseFloat(offerAmount) <= 0 || (needsWrap && !wmonAddress)}
+            disabled={isPending || !offerAmount || parseFloat(offerAmount) <= 0}
           >
             {isPending ? (
               <>
