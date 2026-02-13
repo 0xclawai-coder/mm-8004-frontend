@@ -3,7 +3,20 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-const categories = ['All', 'Legal', 'Design', 'Trading', 'DeFi', 'Arbitrage', 'Other']
+// Based on actual DB categories (top 10 by count)
+const categories = [
+  'All',
+  'DeFi',
+  'Analytics',
+  'Security',
+  'Identity',
+  'Trading',
+  'AI',
+  'Compute',
+  'Gaming',
+  'Social',
+  'DAO',
+]
 
 interface CategoryFilterProps {
   selected: string
@@ -17,12 +30,14 @@ export function CategoryFilter({ selected, onSelect, className }: CategoryFilter
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
         {categories.map((category) => {
         const isActive = selected === category || (category === 'All' && !selected)
+        // API expects lowercase
+        const value = category === 'All' ? '' : category.toLowerCase()
         return (
           <Button
             key={category}
             variant={isActive ? 'default' : 'outline'}
             size="sm"
-            onClick={() => onSelect(category === 'All' ? '' : category)}
+            onClick={() => onSelect(value)}
             className={cn(
               'shrink-0 rounded-full text-xs',
               isActive

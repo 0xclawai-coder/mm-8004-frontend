@@ -49,7 +49,7 @@ import {
 // Constants
 // ============================================================
 
-const CATEGORIES = ['Legal', 'Design', 'Trading', 'DeFi', 'Arbitrage', 'Other'] as const
+const CATEGORIES = ['DeFi', 'Analytics', 'Security', 'Identity', 'Trading', 'AI', 'Compute', 'Gaming', 'Social', 'DAO'] as const
 
 const PROTOCOL_OPTIONS = ['HTTP', 'WebSocket', 'gRPC', 'x402', 'Other'] as const
 
