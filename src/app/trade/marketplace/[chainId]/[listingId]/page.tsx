@@ -49,6 +49,7 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { cn, formatAddress, formatDistanceToNowSmart, formatPrice, getTokenLabel } from '@/lib/utils'
 import TimeCounter from '@/components/ui/time-counter'
 import { useListing } from '@/hooks/useListing'
+import { useQueryClient } from '@tanstack/react-query'
 import { useAgentActivity } from '@/hooks/useAgentActivity'
 import { useOffers } from '@/hooks/useOffers'
 import { HoloCard } from '@/components/agents/HoloCard'
@@ -1092,6 +1093,7 @@ export default function ListingDetailPage({
   // Wallet
   const { address, isConnected } = useAccount()
   const { openConnectModal } = useConnectModal()
+  const queryClient = useQueryClient()
 
   // Fetch listing (includes embedded agent data)
   const { data: listingRaw, isLoading: listingLoading, error: listingError } = useListing(id)
@@ -1243,14 +1245,19 @@ export default function ListingDetailPage({
     })
   }
 
-  // Toast on buy result
+  // Toast on buy result + invalidate cache
   useEffect(() => {
     if (isBuyConfirmed) {
       toast.success('Purchase successful! 🎉', {
         description: 'The agent identity has been transferred to your wallet.',
       })
+      // Refetch listing data after short delay (wait for backend indexer)
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['listing', id] })
+        queryClient.invalidateQueries({ queryKey: ['userAgents'] })
+      }, 2000)
     }
-  }, [isBuyConfirmed])
+  }, [isBuyConfirmed, queryClient, id])
 
   useEffect(() => {
     if (buyError) {

@@ -36,6 +36,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { cn, formatAddress, formatPrice, getTokenLabel, formatDistanceToNowSmart } from '@/lib/utils'
 import { useAuctionDetail } from '@/hooks/useAuctionDetail'
+import { useQueryClient } from '@tanstack/react-query'
 import { HoloCard } from '@/components/agents/HoloCard'
 import {
   NATIVE_TOKEN,
@@ -473,6 +474,7 @@ export default function AuctionDetailPage({
   // Wallet
   const { address, isConnected } = useAccount()
   const { openConnectModal } = useConnectModal()
+  const queryClient = useQueryClient()
 
   const { data, isLoading, error } = useAuctionDetail(id)
   const auction = data?.auction
@@ -568,8 +570,11 @@ export default function AuctionDetailPage({
         description: `Your bid of ${bidAmount} has been recorded.`,
       })
       setBidAmount('')
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['auction', id] })
+      }, 2000)
     }
-  }, [isBidConfirmed, bidAmount])
+  }, [isBidConfirmed, bidAmount, queryClient, id])
 
   useEffect(() => {
     if (bidError) {
@@ -584,8 +589,12 @@ export default function AuctionDetailPage({
       toast.success('Purchase successful! 🎉', {
         description: 'You bought the agent identity at the buy-now price.',
       })
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['auction', id] })
+        queryClient.invalidateQueries({ queryKey: ['userAgents'] })
+      }, 2000)
     }
-  }, [isBuyNowConfirmed])
+  }, [isBuyNowConfirmed, queryClient, id])
 
   useEffect(() => {
     if (buyNowError) {
@@ -634,7 +643,13 @@ export default function AuctionDetailPage({
   }
 
   useEffect(() => {
-    if (isSettleConfirmed) toast.success('Auction settled! 🎉')
+    if (isSettleConfirmed) {
+      toast.success('Auction settled! 🎉')
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['auction', id] })
+        queryClient.invalidateQueries({ queryKey: ['userAgents'] })
+      }, 2000)
+    }
   }, [isSettleConfirmed])
 
   useEffect(() => {
