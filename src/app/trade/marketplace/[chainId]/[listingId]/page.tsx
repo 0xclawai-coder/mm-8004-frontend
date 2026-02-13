@@ -1249,17 +1249,23 @@ export default function ListingDetailPage({
       toast.success('Purchase successful! 🎉', {
         description: 'The agent identity has been transferred to your wallet.',
       })
-      // Show updating toast, wait for indexer, then refresh
-      const updatingToast = setTimeout(() => {
-        const toastId = toast.loading('Updating listing data...')
-        setTimeout(async () => {
-          await queryClient.invalidateQueries({ queryKey: ['listing', id] })
-          await queryClient.invalidateQueries({ queryKey: ['userAgents'] })
+      // Poll backend until data updates (2s interval, 3 retries)
+      const toastId = toast.loading('Syncing with blockchain...')
+      let attempts = 0
+      const poll = setInterval(async () => {
+        attempts++
+        await queryClient.invalidateQueries({ queryKey: ['listing', id] })
+        await queryClient.invalidateQueries({ queryKey: ['userAgents'] })
+        const fresh = queryClient.getQueryData<{ status?: string }>(['listing', id])
+        if (fresh?.status === 'sold' || attempts >= 3) {
+          clearInterval(poll)
           toast.dismiss(toastId)
-          toast.success('Listing updated', { duration: 2000 })
-        }, 1500)
-      }, 500)
-      return () => clearTimeout(updatingToast)
+          if (fresh?.status === 'sold') {
+            toast.success('Listing updated', { duration: 2000 })
+          }
+        }
+      }, 2000)
+      return () => clearInterval(poll)
     }
   }, [isBuyConfirmed, queryClient, id])
 

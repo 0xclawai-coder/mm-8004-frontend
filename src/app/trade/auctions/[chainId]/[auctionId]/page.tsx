@@ -571,15 +571,18 @@ export default function AuctionDetailPage({
         description: `Your bid of ${bidAmount} has been recorded.`,
       })
       setBidAmount('')
-      const t = setTimeout(() => {
-        const toastId = toast.loading('Updating auction data...')
-        setTimeout(async () => {
-          await queryClient.invalidateQueries({ queryKey: ['auction', id] })
+      const toastId = toast.loading('Syncing with blockchain...')
+      let attempts = 0
+      const poll = setInterval(async () => {
+        attempts++
+        await queryClient.invalidateQueries({ queryKey: ['auction', id] })
+        if (attempts >= 3) {
+          clearInterval(poll)
           toast.dismiss(toastId)
           toast.success('Auction updated', { duration: 2000 })
-        }, 1500)
-      }, 500)
-      return () => clearTimeout(t)
+        }
+      }, 2000)
+      return () => clearInterval(poll)
     }
   }, [isBidConfirmed, bidAmount, queryClient, id])
 
@@ -596,16 +599,19 @@ export default function AuctionDetailPage({
       toast.success('Purchase successful! 🎉', {
         description: 'You bought the agent identity at the buy-now price.',
       })
-      const t = setTimeout(() => {
-        const toastId = toast.loading('Updating auction data...')
-        setTimeout(async () => {
-          await queryClient.invalidateQueries({ queryKey: ['auction', id] })
-          await queryClient.invalidateQueries({ queryKey: ['userAgents'] })
+      const toastId = toast.loading('Syncing with blockchain...')
+      let attempts = 0
+      const poll = setInterval(async () => {
+        attempts++
+        await queryClient.invalidateQueries({ queryKey: ['auction', id] })
+        await queryClient.invalidateQueries({ queryKey: ['userAgents'] })
+        if (attempts >= 3) {
+          clearInterval(poll)
           toast.dismiss(toastId)
           toast.success('Auction updated', { duration: 2000 })
-        }, 1500)
-      }, 500)
-      return () => clearTimeout(t)
+        }
+      }, 2000)
+      return () => clearInterval(poll)
     }
   }, [isBuyNowConfirmed, queryClient, id])
 
@@ -658,16 +664,19 @@ export default function AuctionDetailPage({
   useEffect(() => {
     if (isSettleConfirmed) {
       toast.success('Auction settled! 🎉')
-      const t = setTimeout(() => {
-        const toastId = toast.loading('Updating auction data...')
-        setTimeout(async () => {
-          await queryClient.invalidateQueries({ queryKey: ['auction', id] })
-          await queryClient.invalidateQueries({ queryKey: ['userAgents'] })
+      const toastId = toast.loading('Syncing with blockchain...')
+      let attempts = 0
+      const poll = setInterval(async () => {
+        attempts++
+        await queryClient.invalidateQueries({ queryKey: ['auction', id] })
+        await queryClient.invalidateQueries({ queryKey: ['userAgents'] })
+        if (attempts >= 3) {
+          clearInterval(poll)
           toast.dismiss(toastId)
           toast.success('Auction updated', { duration: 2000 })
-        }, 1500)
-      }, 500)
-      return () => clearTimeout(t)
+        }
+      }, 2000)
+      return () => clearInterval(poll)
     }
   }, [isSettleConfirmed])
 
