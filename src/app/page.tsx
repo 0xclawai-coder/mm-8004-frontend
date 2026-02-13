@@ -368,12 +368,15 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right: Hero Image */}
+          {/* Right: Hero Video */}
           <div className="flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[480px] aspect-square">
-              <img
-                src="/hero-agents.jpg"
-                alt="AI Agents"
+            <div className="relative w-full max-w-[480px] aspect-[5/4]">
+              <video
+                src="/hero-video.webm"
+                autoPlay
+                loop
+                muted
+                playsInline
                 className="size-full rounded-2xl object-cover"
               />
             </div>
