@@ -22,6 +22,25 @@ export const CONTRACT_ADDRESSES = {
 
 export const NATIVE_TOKEN = '0x0000000000000000000000000000000000000000' as const
 
+// WMON (Wrapped MON) — needed for offers/auctions that require ERC-20
+export const WMON_ADDRESSES = {
+  143: '0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701' as const,   // Monad Mainnet
+  10143: '0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701' as const, // Monad Testnet
+} as const
+
+export function getWmonAddress(chainId: number): `0x${string}` | undefined {
+  return WMON_ADDRESSES[chainId as keyof typeof WMON_ADDRESSES]
+}
+
+// WMON ABI (WETH9-compatible: deposit/withdraw + ERC-20)
+export const wmonAbi = [
+  { name: 'deposit', type: 'function', stateMutability: 'payable', inputs: [], outputs: [] },
+  { name: 'withdraw', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'wad', type: 'uint256' }], outputs: [] },
+  { name: 'approve', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'guy', type: 'address' }, { name: 'wad', type: 'uint256' }], outputs: [{ name: '', type: 'bool' }] },
+  { name: 'balanceOf', type: 'function', stateMutability: 'view', inputs: [{ name: '', type: 'address' }], outputs: [{ name: '', type: 'uint256' }] },
+  { name: 'allowance', type: 'function', stateMutability: 'view', inputs: [{ name: '', type: 'address' }, { name: '', type: 'address' }], outputs: [{ name: '', type: 'uint256' }] },
+] as const
+
 export const moltMarketplaceAbi = [
   // buy(uint256 listingId) payable
   {

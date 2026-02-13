@@ -58,8 +58,10 @@ import {
   NATIVE_TOKEN,
   moltMarketplaceAbi,
   erc20Abi,
+  wmonAbi,
   parsePriceToBigInt,
   getMoltMarketplaceAddress,
+  getWmonAddress,
   type SupportedChainId,
 } from '@/lib/contracts'
 import type { Activity as ActivityType, AgentDetail, EventCategory, MarketplaceOffer } from '@/types'
@@ -868,11 +870,27 @@ function MakeOfferDialog({
   chainId: number
 }) {
   const [offerAmount, setOfferAmount] = useState('')
+  const [step, setStep] = useState<'input' | 'wrapping' | 'approving' | 'offering' | 'done'>('input')
   const { address } = useAccount()
 
   const marketplaceAddress = getMoltMarketplaceAddress(chainId)
+  const wmonAddress = getWmonAddress(chainId)
+  const needsWrap = isNativeToken(listing.payment_token)
+  // For offers on native-token listings, use WMON as payment token
+  const offerPaymentToken = needsWrap ? wmonAddress : listing.payment_token as `0x${string}`
 
-  // Step 1: Approve ERC-20 (if needed)
+  // Step 1: Wrap MON → WMON (only for native token listings)
+  const {
+    data: wrapTxHash,
+    writeContract: writeWrap,
+    isPending: isWrapPending,
+    reset: resetWrap,
+  } = useWriteContract()
+
+  const { isLoading: isWrapConfirming, isSuccess: isWrapConfirmed } =
+    useWaitForTransactionReceipt({ hash: wrapTxHash })
+
+  // Step 2: Approve ERC-20 (WMON or other token)
   const {
     data: approveTxHash,
     writeContract: writeApprove,
@@ -883,7 +901,7 @@ function MakeOfferDialog({
   const { isLoading: isApproveConfirming, isSuccess: isApproveConfirmed } =
     useWaitForTransactionReceipt({ hash: approveTxHash })
 
-  // Step 2: Make offer
+  // Step 3: Make offer
   const {
     data: offerTxHash,
     writeContract: writeOffer,
@@ -895,9 +913,24 @@ function MakeOfferDialog({
   const { isLoading: isOfferConfirming, isSuccess: isOfferConfirmed } =
     useWaitForTransactionReceipt({ hash: offerTxHash })
 
-  // Auto-submit offer after approve confirms
+  // After wrap confirms → approve
   useEffect(() => {
-    if (isApproveConfirmed && marketplaceAddress && offerAmount) {
+    if (isWrapConfirmed && marketplaceAddress && offerPaymentToken && offerAmount) {
+      setStep('approving')
+      const amountWei = parsePriceToBigInt((parseFloat(offerAmount) * 1e18).toString())
+      writeApprove({
+        address: offerPaymentToken,
+        abi: erc20Abi,
+        functionName: 'approve',
+        args: [marketplaceAddress, amountWei],
+      })
+    }
+  }, [isWrapConfirmed, marketplaceAddress, offerPaymentToken, offerAmount, writeApprove])
+
+  // After approve confirms → make offer
+  useEffect(() => {
+    if (isApproveConfirmed && marketplaceAddress && offerAmount && offerPaymentToken) {
+      setStep('offering')
       const amountWei = parsePriceToBigInt((parseFloat(offerAmount) * 1e18).toString())
       const expiry = BigInt(Math.floor(Date.now() / 1000) + 86400) // 1 day
 
@@ -908,19 +941,20 @@ function MakeOfferDialog({
         args: [
           listing.nft_contract as `0x${string}`,
           BigInt(listing.token_id),
-          listing.payment_token as `0x${string}`,
+          offerPaymentToken,
           amountWei,
           expiry,
         ],
       })
     }
-  }, [isApproveConfirmed, marketplaceAddress, offerAmount, listing, writeOffer])
+  }, [isApproveConfirmed, marketplaceAddress, offerAmount, listing, offerPaymentToken, writeOffer])
 
   // Toast on success/error
   useEffect(() => {
     if (isOfferConfirmed) {
+      setStep('done')
       toast.success('Offer submitted!', {
-        description: `Your offer of ${offerAmount} has been placed.`,
+        description: `Your offer of ${offerAmount} WMON has been placed.`,
       })
       onOpenChange(false)
     }
@@ -935,32 +969,40 @@ function MakeOfferDialog({
   }, [offerError])
 
   const handleSubmit = () => {
-    if (!marketplaceAddress || !offerAmount || !address) return
+    if (!marketplaceAddress || !offerAmount || !address || !offerPaymentToken) return
 
     const amountWei = parsePriceToBigInt((parseFloat(offerAmount) * 1e18).toString())
 
-    if (isNativeToken(listing.payment_token)) {
-      // Native token offers not supported by contract
-      toast.error('Offers must use ERC-20 tokens')
-      return
+    if (needsWrap && wmonAddress) {
+      // Wrap MON → WMON first, then approve + offer
+      setStep('wrapping')
+      writeWrap({
+        address: wmonAddress,
+        abi: wmonAbi,
+        functionName: 'deposit',
+        value: amountWei,
+      })
+    } else {
+      // Direct ERC-20: approve then offer
+      setStep('approving')
+      writeApprove({
+        address: offerPaymentToken,
+        abi: erc20Abi,
+        functionName: 'approve',
+        args: [marketplaceAddress, amountWei],
+      })
     }
-
-    // Approve first
-    writeApprove({
-      address: listing.payment_token as `0x${string}`,
-      abi: erc20Abi,
-      functionName: 'approve',
-      args: [marketplaceAddress, amountWei],
-    })
   }
 
-  const isPending = isApprovePending || isApproveConfirming || isOfferPending || isOfferConfirming
+  const isPending = isWrapPending || isWrapConfirming || isApprovePending || isApproveConfirming || isOfferPending || isOfferConfirming
 
   const handleClose = (open: boolean) => {
     if (!open) {
+      resetWrap()
       resetApprove()
       resetOffer()
       setOfferAmount('')
+      setStep('input')
     }
     onOpenChange(open)
   }
@@ -988,21 +1030,24 @@ function MakeOfferDialog({
                 disabled={isPending}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                {getTokenLabel(listing.payment_token)}
+                {needsWrap ? 'WMON' : getTokenLabel(listing.payment_token)}
               </span>
             </div>
           </div>
-          {isNativeToken(listing.payment_token) && (
-            <p className="text-xs text-yellow-400">
-              ⚠️ Offers must use ERC-20 tokens. Native token offers are not supported.
+          {needsWrap && (
+            <p className="text-xs text-muted-foreground">
+              💡 Your MON will be automatically wrapped to WMON for the offer.
+              3 steps: Wrap → Approve → Offer
             </p>
           )}
           {isPending && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" />
-              {isApprovePending || isApproveConfirming
-                ? 'Approving token...'
-                : 'Submitting offer...'}
+              {step === 'wrapping'
+                ? 'Wrapping MON → WMON...'
+                : step === 'approving'
+                  ? 'Approving WMON...'
+                  : 'Submitting offer...'}
             </div>
           )}
         </div>
@@ -1012,7 +1057,7 @@ function MakeOfferDialog({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={isPending || !offerAmount || parseFloat(offerAmount) <= 0 || isNativeToken(listing.payment_token)}
+            disabled={isPending || !offerAmount || parseFloat(offerAmount) <= 0 || (needsWrap && !wmonAddress)}
           >
             {isPending ? (
               <>
