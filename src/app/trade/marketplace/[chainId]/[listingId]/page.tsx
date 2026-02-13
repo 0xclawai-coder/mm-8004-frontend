@@ -1343,7 +1343,7 @@ export default function ListingDetailPage({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-widest text-primary">
-                MOLT DEAL ROOM
+                MOLTIS DEAL ROOM
               </span>
               {listing ? (
                 <>

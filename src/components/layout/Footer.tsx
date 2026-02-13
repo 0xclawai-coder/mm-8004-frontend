@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { MoltLogo } from '@/components/layout/MoltLogo'
+import { MoltisLogo } from '@/components/layout/MoltisLogo'
 import { Separator } from '@/components/ui/separator'
 
 const footerLinks = [
@@ -33,9 +33,9 @@ const footerLinks = [
   {
     title: 'Community',
     links: [
-      { label: 'Twitter', href: 'https://twitter.com/molt_lab', external: true },
+      { label: 'Twitter', href: 'https://twitter.com/moltis_ai', external: true },
       { label: 'Discord', href: '#', external: true },
-      { label: 'GitHub', href: 'https://github.com/molt-lab', external: true },
+      { label: 'GitHub', href: 'https://github.com/moltis-ai', external: true },
       { label: 'Blog', href: '#' },
     ],
   },
@@ -83,16 +83,16 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-4 border-t border-border/50 pt-6 sm:flex-row">
           <div className="flex items-center gap-2">
-            <MoltLogo size={20} />
+            <MoltisLogo size={20} />
             <span className="text-gradient-violet text-sm font-extrabold uppercase tracking-wider">
-              MOLT
+              MOLTIS
             </span>
             <span className="text-xs text-muted-foreground">
               · Built on Monad
             </span>
           </div>
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} Molt Lab. The M&A Infrastructure for AI Agents.
+            &copy; {new Date().getFullYear()} Moltis. The M&amp;A Infrastructure for AI Agents.
           </p>
         </div>
       </div>

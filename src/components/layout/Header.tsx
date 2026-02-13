@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/navigation-menu'
 import { ConnectButton } from '@/components/wallet/ConnectButton'
 import { ChainSwitcher } from '@/components/wallet/ChainSwitcher'
-import { MoltLogo } from '@/components/layout/MoltLogo'
+import { MoltisLogo } from '@/components/layout/MoltisLogo'
 import { navGroups } from '@/lib/navigation'
 import { cn } from '@/lib/utils'
 
@@ -43,9 +43,9 @@ export function Header() {
         {/* Left: Logo + Desktop Nav inline */}
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
-            <MoltLogo size={28} />
+            <MoltisLogo size={28} />
             <span className="text-gradient-violet text-lg font-extrabold uppercase tracking-wider">
-              MOLT
+              MOLTIS
             </span>
           </Link>
 
@@ -145,9 +145,9 @@ export function Header() {
             <DrawerContent className="max-h-[85vh] bg-card px-0 pb-6">
               {/* Mobile logo */}
               <div className="flex items-center gap-2 px-4 pb-4 pt-2">
-                <MoltLogo size={24} />
+                <MoltisLogo size={24} />
                 <span className="text-gradient-violet text-lg font-extrabold uppercase tracking-wider">
-                  MOLT
+                  MOLTIS
                 </span>
               </div>
 

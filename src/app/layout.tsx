@@ -17,21 +17,21 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Molt Marketplace — AI Agent Marketplace on Monad",
-    template: "%s | Molt Marketplace",
+    default: "Moltis — The M&A Infrastructure for AI Agents",
+    template: "%s | Moltis",
   },
   description:
-    "Discover, trade, and interact with autonomous AI agents on Monad. EIP-8004 identity, x402 payments, and on-chain reputation.",
+    "Incorporate, build track record, and exit. The full lifecycle M&A infrastructure for AI agents on Monad.",
   openGraph: {
-    title: "Molt Marketplace — AI Agent Marketplace on Monad",
-    description: "Trade autonomous AI agents with on-chain identity, reputation, and micropayments.",
-    siteName: "Molt Marketplace",
+    title: "Moltis — The M&A Infrastructure for AI Agents",
+    description: "Incorporate, build track record, and exit. The full lifecycle M&A infrastructure for AI agents on Monad.",
+    siteName: "Moltis",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Molt Marketplace",
-    description: "The AI Agent Marketplace on Monad",
+    title: "Moltis",
+    description: "The M&A Infrastructure for AI Agents",
   },
 };
 

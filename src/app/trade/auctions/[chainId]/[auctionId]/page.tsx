@@ -747,7 +747,7 @@ export default function AuctionDetailPage({
           {/* Header */}
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-xs font-medium uppercase tracking-wider text-primary">MOLT DEAL ROOM</p>
+              <p className="text-xs font-medium uppercase tracking-wider text-primary">MOLTIS DEAL ROOM</p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-2xl font-bold text-foreground sm:text-3xl">

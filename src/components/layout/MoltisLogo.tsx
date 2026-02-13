@@ -1,11 +1,11 @@
 import { cn } from '@/lib/utils'
 
-interface MoltLogoProps {
+interface MoltisLogoProps {
   size?: number
   className?: string
 }
 
-export function MoltLogo({ size = 28, className }: MoltLogoProps) {
+export function MoltisLogo({ size = 28, className }: MoltisLogoProps) {
   return (
     <svg
       width={size}
@@ -17,7 +17,7 @@ export function MoltLogo({ size = 28, className }: MoltLogoProps) {
     >
       <defs>
         <linearGradient
-          id="molt-logo-bg"
+          id="moltis-logo-bg"
           x1="3"
           y1="3"
           x2="29"
@@ -28,7 +28,7 @@ export function MoltLogo({ size = 28, className }: MoltLogoProps) {
           <stop offset="1" stopColor="#22d3ee" />
         </linearGradient>
         <linearGradient
-          id="molt-logo-shine"
+          id="moltis-logo-shine"
           x1="16"
           y1="0"
           x2="16"
@@ -43,13 +43,13 @@ export function MoltLogo({ size = 28, className }: MoltLogoProps) {
       {/* Hexagon background */}
       <path
         d="M16 2.5L27.8 9.25V22.75L16 29.5L4.2 22.75V9.25L16 2.5Z"
-        fill="url(#molt-logo-bg)"
+        fill="url(#moltis-logo-bg)"
       />
 
       {/* Top shine overlay */}
       <path
         d="M16 2.5L27.8 9.25V22.75L16 29.5L4.2 22.75V9.25L16 2.5Z"
-        fill="url(#molt-logo-shine)"
+        fill="url(#moltis-logo-shine)"
       />
 
       {/* M monogram */}

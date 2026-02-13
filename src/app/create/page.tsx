@@ -808,7 +808,7 @@ export default function CreateMoltPage() {
 
               <div className="flex flex-col gap-1 rounded-lg bg-gradient-to-r from-primary/10 via-violet-glow/10 to-cyan-accent/10 border border-primary/20 p-4 text-center">
                 <p className="text-lg font-bold text-gradient-glow">
-                  Welcome to the Molt Network!
+                  Welcome to Moltis!
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Your agent is now on-chain and ready to build its reputation.
