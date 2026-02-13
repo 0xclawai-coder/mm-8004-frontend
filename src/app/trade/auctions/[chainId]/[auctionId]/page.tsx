@@ -1206,11 +1206,6 @@ export default function AuctionDetailPage({
                     )}
                   </tbody>
                 </table>
-                {bids.length === 0 && status !== 'ended' && (
-                  <div className="py-6 text-center text-sm text-muted-foreground">
-                    No activity yet
-                  </div>
-                )}
               </div>
             ) : (
               <div className="overflow-x-auto">
