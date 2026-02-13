@@ -579,20 +579,38 @@ function EditAgentDialog({ agent, chainId, open, onOpenChange }: EditAgentDialog
 
 function AgentCardSkeleton() {
   return (
-    <div className="w-full max-w-[300px]">
-      <div className="aspect-[5/7] overflow-hidden rounded-2xl border border-border/50 bg-card/95">
-        <Skeleton className="h-[55%] w-full rounded-none" />
-        <div className="flex flex-col gap-3 p-5">
-          <Skeleton className="h-6 w-40" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-7 w-24" />
-          <div className="flex gap-1.5">
-            <Skeleton className="h-5 w-16 rounded-full" />
-            <Skeleton className="h-5 w-20 rounded-full" />
-          </div>
-          <div className="flex items-center justify-between border-t border-border/30 pt-3">
-            <Skeleton className="h-5 w-16 rounded-full" />
+    <div className="flex w-full justify-center lg:justify-start">
+      <div className="relative w-full max-w-[300px]">
+        <div
+          className="relative flex aspect-[5/7] flex-col overflow-hidden border-2 border-border/40"
+          style={{ backgroundColor: 'hsl(var(--card))', borderRadius: '4.55% / 3.5%' }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
             <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-12" />
+          </div>
+          {/* Image frame */}
+          <div className="mx-3 mt-0.5 flex-1 max-h-[52%] overflow-hidden" style={{ borderRadius: '3%', border: '2px solid hsla(0, 0%, 100%, 0.1)' }}>
+            <Skeleton className="h-full w-full rounded-none" />
+          </div>
+          {/* Info strip */}
+          <div className="flex justify-center px-3 pt-1.5">
+            <Skeleton className="h-3 w-24" />
+          </div>
+          {/* Stats */}
+          <div className="flex flex-col gap-1.5 px-3 pt-1.5">
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-3 w-16" />
+            <div className="flex gap-1">
+              <Skeleton className="h-4 w-12 rounded-full" />
+              <Skeleton className="h-4 w-14 rounded-full" />
+            </div>
+          </div>
+          {/* Footer */}
+          <div className="mt-auto flex items-center justify-between px-3 pb-2.5 pt-1">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-4 w-12 rounded-full" />
           </div>
         </div>
       </div>
