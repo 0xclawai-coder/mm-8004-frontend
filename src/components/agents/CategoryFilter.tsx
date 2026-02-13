@@ -3,20 +3,23 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-// Based on actual DB categories (top 10 by count)
-const categories = [
-  'All',
-  'DeFi',
-  'Analytics',
-  'Security',
-  'Identity',
-  'Trading',
-  'AI',
-  'Compute',
-  'Gaming',
-  'Social',
-  'DAO',
-]
+// Top categories from DB. "Others" covers: oracle, bridge, storage, privacy, etc.
+const MAIN_CATEGORIES = ['defi', 'analytics', 'security', 'identity', 'trading', 'ai', 'compute', 'gaming', 'social', 'dao']
+
+const DISPLAY_LABELS: Record<string, string> = {
+  defi: 'DeFi',
+  analytics: 'Analytics',
+  security: 'Security',
+  identity: 'Identity',
+  trading: 'Trading',
+  ai: 'AI',
+  compute: 'Compute',
+  gaming: 'Gaming',
+  social: 'Social',
+  dao: 'DAO',
+}
+
+const categories = ['All', ...MAIN_CATEGORIES, 'others']
 
 interface CategoryFilterProps {
   selected: string
@@ -30,14 +33,13 @@ export function CategoryFilter({ selected, onSelect, className }: CategoryFilter
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
         {categories.map((category) => {
         const isActive = selected === category || (category === 'All' && !selected)
-        // API expects lowercase
-        const value = category === 'All' ? '' : category.toLowerCase()
+        const label = category === 'All' ? 'All' : category === 'others' ? 'Others' : (DISPLAY_LABELS[category] ?? category)
         return (
           <Button
             key={category}
             variant={isActive ? 'default' : 'outline'}
             size="sm"
-            onClick={() => onSelect(value)}
+            onClick={() => onSelect(category === 'All' ? '' : category)}
             className={cn(
               'shrink-0 rounded-full text-xs',
               isActive
@@ -45,13 +47,14 @@ export function CategoryFilter({ selected, onSelect, className }: CategoryFilter
                 : 'border-border/50 bg-transparent text-muted-foreground hover:border-primary/30 hover:text-foreground'
             )}
           >
-            {category}
+            {label}
           </Button>
         )
       })}
       </div>
-      {/* Scroll fade indicator */}
       <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent sm:hidden" />
     </div>
   )
 }
+
+export { MAIN_CATEGORIES }
