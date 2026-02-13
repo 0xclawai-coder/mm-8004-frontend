@@ -570,9 +570,15 @@ export default function AuctionDetailPage({
         description: `Your bid of ${bidAmount} has been recorded.`,
       })
       setBidAmount('')
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['auction', id] })
-      }, 2000)
+      const t = setTimeout(() => {
+        const toastId = toast.loading('Updating auction data...')
+        setTimeout(async () => {
+          await queryClient.invalidateQueries({ queryKey: ['auction', id] })
+          toast.dismiss(toastId)
+          toast.success('Auction updated', { duration: 2000 })
+        }, 1500)
+      }, 500)
+      return () => clearTimeout(t)
     }
   }, [isBidConfirmed, bidAmount, queryClient, id])
 
@@ -589,10 +595,16 @@ export default function AuctionDetailPage({
       toast.success('Purchase successful! 🎉', {
         description: 'You bought the agent identity at the buy-now price.',
       })
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['auction', id] })
-        queryClient.invalidateQueries({ queryKey: ['userAgents'] })
-      }, 2000)
+      const t = setTimeout(() => {
+        const toastId = toast.loading('Updating auction data...')
+        setTimeout(async () => {
+          await queryClient.invalidateQueries({ queryKey: ['auction', id] })
+          await queryClient.invalidateQueries({ queryKey: ['userAgents'] })
+          toast.dismiss(toastId)
+          toast.success('Auction updated', { duration: 2000 })
+        }, 1500)
+      }, 500)
+      return () => clearTimeout(t)
     }
   }, [isBuyNowConfirmed, queryClient, id])
 
@@ -645,10 +657,16 @@ export default function AuctionDetailPage({
   useEffect(() => {
     if (isSettleConfirmed) {
       toast.success('Auction settled! 🎉')
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['auction', id] })
-        queryClient.invalidateQueries({ queryKey: ['userAgents'] })
-      }, 2000)
+      const t = setTimeout(() => {
+        const toastId = toast.loading('Updating auction data...')
+        setTimeout(async () => {
+          await queryClient.invalidateQueries({ queryKey: ['auction', id] })
+          await queryClient.invalidateQueries({ queryKey: ['userAgents'] })
+          toast.dismiss(toastId)
+          toast.success('Auction updated', { duration: 2000 })
+        }, 1500)
+      }, 500)
+      return () => clearTimeout(t)
     }
   }, [isSettleConfirmed])
 

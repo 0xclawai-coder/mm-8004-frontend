@@ -1251,11 +1251,17 @@ export default function ListingDetailPage({
       toast.success('Purchase successful! 🎉', {
         description: 'The agent identity has been transferred to your wallet.',
       })
-      // Refetch listing data after short delay (wait for backend indexer)
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['listing', id] })
-        queryClient.invalidateQueries({ queryKey: ['userAgents'] })
-      }, 2000)
+      // Show updating toast, wait for indexer, then refresh
+      const updatingToast = setTimeout(() => {
+        const toastId = toast.loading('Updating listing data...')
+        setTimeout(async () => {
+          await queryClient.invalidateQueries({ queryKey: ['listing', id] })
+          await queryClient.invalidateQueries({ queryKey: ['userAgents'] })
+          toast.dismiss(toastId)
+          toast.success('Listing updated', { duration: 2000 })
+        }, 1500)
+      }, 500)
+      return () => clearTimeout(updatingToast)
     }
   }, [isBuyConfirmed, queryClient, id])
 
