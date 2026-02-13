@@ -37,6 +37,7 @@ import { Input } from '@/components/ui/input'
 import { cn, formatAddress, formatPrice, getTokenLabel, formatDistanceToNowSmart } from '@/lib/utils'
 import { useAuctionDetail } from '@/hooks/useAuctionDetail'
 import { useQueryClient } from '@tanstack/react-query'
+import { LiveTime } from '@/components/ui/live-time'
 import { HoloCard } from '@/components/agents/HoloCard'
 import {
   NATIVE_TOKEN,
@@ -242,7 +243,7 @@ function BidHistoryTable({ bids, chainId, token }: { bids: AuctionBid[]; chainId
                 </span>
               </td>
               <td className="py-2.5 text-right text-xs text-muted-foreground">
-                {formatDistanceToNowSmart(new Date(bid.block_timestamp), { addSuffix: true })}
+                <LiveTime date={bid.block_timestamp} />
               </td>
               <td className="py-2.5 text-right">
                 <a
@@ -697,7 +698,7 @@ export default function AuctionDetailPage({
       {/* Two-column layout: Left = HoloCard only, Right = everything */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_1fr]">
         {/* ============ LEFT COLUMN — HoloCard only (sticky) ============ */}
-        <div className="flex justify-center lg:sticky lg:top-8 lg:self-start lg:justify-start">
+        <div className="flex justify-center lg:sticky lg:top-[72px] lg:self-start lg:justify-start">
           {auction ? (
             <HoloCard
               image={agent?.image ?? auction.agent_image}
@@ -1125,7 +1126,7 @@ export default function AuctionDetailPage({
                         </a>
                       </td>
                       <td className="py-2.5 text-right text-xs text-muted-foreground">
-                        {formatDistanceToNowSmart(new Date(auction.block_timestamp), { addSuffix: true })}
+                        <LiveTime date={auction.block_timestamp} />
                       </td>
                     </tr>
 
@@ -1151,7 +1152,7 @@ export default function AuctionDetailPage({
                           </a>
                         </td>
                         <td className="py-2.5 text-right text-xs text-muted-foreground">
-                          {formatDistanceToNowSmart(new Date(bid.block_timestamp), { addSuffix: true })}
+                          <LiveTime date={bid.block_timestamp} />
                         </td>
                       </tr>
                     ))}
@@ -1178,7 +1179,7 @@ export default function AuctionDetailPage({
                           </a>
                         </td>
                         <td className="py-2.5 text-right text-xs text-muted-foreground">
-                          {formatDistanceToNowSmart(new Date(auction.updated_at), { addSuffix: true })}
+                          <LiveTime date={auction.updated_at} />
                         </td>
                       </tr>
                     )}

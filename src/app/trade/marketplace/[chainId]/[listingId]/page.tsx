@@ -50,6 +50,7 @@ import { cn, formatAddress, formatDistanceToNowSmart, formatPrice, getTokenLabel
 import TimeCounter from '@/components/ui/time-counter'
 import { useListing } from '@/hooks/useListing'
 import { useQueryClient } from '@tanstack/react-query'
+import { LiveTime } from '@/components/ui/live-time'
 import { useAgentActivity } from '@/hooks/useAgentActivity'
 import { useOffers } from '@/hooks/useOffers'
 import { HoloCard } from '@/components/agents/HoloCard'
@@ -805,10 +806,7 @@ function ItemActivitySection({ agentId }: { agentId: string }) {
                   {from}
                 </span>
                 <span className="w-20 text-right text-xs text-muted-foreground">
-                  {formatDistanceToNowSmart(
-                    new Date(activity.block_timestamp),
-                    { addSuffix: true },
-                  )}
+                  <LiveTime date={activity.block_timestamp} />
                 </span>
                 <a
                   href={getTxUrl(activity.chain_id, activity.tx_hash)}
@@ -1294,7 +1292,7 @@ export default function ListingDetailPage({
       {/* Main two-column layout: Left = HoloCard only, Right = everything else */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_1fr]">
         {/* ====================== LEFT COLUMN — HoloCard only ====================== */}
-        <div className="flex justify-center lg:sticky lg:top-8 lg:self-start lg:justify-start">
+        <div className="flex justify-center lg:sticky lg:top-[72px] lg:self-start lg:justify-start">
           {listing ? (
             <HoloCard
               image={agent?.image ?? listing.agent_image}
