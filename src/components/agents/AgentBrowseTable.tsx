@@ -81,7 +81,7 @@ export function AgentBrowseTable() {
   const [limit, setLimit] = useState(10);
   const [sort, setSort] = useState<SortOrder>("recent");
   const [search, setSearch] = useState("");
-  const [chainId, setChainId] = useState<number | undefined>(143);
+  const [chainId, setChainId] = useState<number | undefined>(undefined);
   const [category, setCategory] = useState("");
 
   const { data, isLoading } = useAgents({
