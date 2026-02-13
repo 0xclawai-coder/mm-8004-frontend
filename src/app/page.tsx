@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
+import { AgentImage } from '@/components/ui/agent-image'
 import {
   ArrowRight,
   Cpu,
@@ -162,21 +162,14 @@ function RecentListings() {
                 className="group block"
               >
                 <Card className="overflow-hidden border-border/50 bg-card/80 py-0 transition-all duration-300 group-hover:scale-[1.03] group-hover:border-primary/30 group-hover:glow-violet">
-                  {listing.agent_image ? (
-                    <div className="relative aspect-square w-full">
-                      <Image
-                        src={listing.agent_image}
-                        alt={listing.agent_name ?? ''}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex aspect-square w-full items-center justify-center bg-gradient-to-br from-primary/20 via-violet-500/10 to-cyan-500/10">
-                      <Cpu className="size-10 text-primary/30" />
-                    </div>
-                  )}
+                  <div className="relative aspect-square w-full">
+                    <AgentImage
+                      src={listing.agent_image}
+                      alt={listing.agent_name || `Agent #${listing.token_id}`}
+                      fallbackText={listing.agent_name}
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                    />
+                  </div>
                   <div className="flex flex-col gap-0.5 p-3">
                     <p className="truncate text-sm font-semibold text-foreground">
                       {listing.agent_name || `Agent #${listing.token_id}`}

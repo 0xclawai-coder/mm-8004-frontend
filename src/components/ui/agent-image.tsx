@@ -5,12 +5,12 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
 interface AgentImageProps {
-  src?: string | null
+  src?: string | null | undefined
   alt: string
   fill?: boolean
   className?: string
   sizes?: string
-  fallbackText?: string
+  fallbackText?: string | null
 }
 
 /**
