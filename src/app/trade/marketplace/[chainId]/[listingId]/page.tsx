@@ -660,7 +660,7 @@ function getActivityEventDetails(activity: ActivityType): { from: string; detail
   }
 }
 
-type ActivityFilterType = 'all' | 'identity' | 'reputation'
+type ActivityFilterType = 'all' | 'identity' | 'reputation' | 'verification'
 
 function ItemActivitySection({ agentId }: { agentId: string }) {
   const [filter, setFilter] = useState<ActivityFilterType>('all')
@@ -681,6 +681,7 @@ function ItemActivitySection({ agentId }: { agentId: string }) {
     { value: 'all', label: 'ALL' },
     { value: 'identity', label: 'IDENTITY' },
     { value: 'reputation', label: 'REPUTATION' },
+    { value: 'verification', label: 'VERIFICATION' },
   ]
 
   return (
@@ -717,6 +718,22 @@ function ItemActivitySection({ agentId }: { agentId: string }) {
       </div>
 
       {/* Activity table */}
+      {filter === 'verification' ? (
+        <div className="rounded-xl border border-border/30 bg-card/40 overflow-hidden">
+          <div className="flex flex-col items-center gap-3 px-4 py-12 text-center">
+            <span className="text-2xl">🚧</span>
+            <p className="text-sm font-medium text-foreground">Verification — Coming Soon</p>
+            <p className="text-xs text-muted-foreground max-w-sm">
+              Monad has not yet deployed the EIP-8004 verification contract.
+              Verification events will appear here once the contract is live.
+            </p>
+            <span className="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-2.5 py-0.5 text-[10px] font-medium text-yellow-400">
+              TBD
+            </span>
+          </div>
+        </div>
+      ) : (
+      <>
       <div className="rounded-xl border border-border/30 bg-card/40 overflow-hidden">
         <div className="flex items-center gap-3 px-4 py-2 border-b border-border/20 text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
           <span className="w-6" />
@@ -818,6 +835,8 @@ function ItemActivitySection({ agentId }: { agentId: string }) {
             </button>
           </div>
         </div>
+      )}
+      </>
       )}
     </div>
   )
