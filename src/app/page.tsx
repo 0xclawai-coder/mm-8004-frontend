@@ -301,18 +301,18 @@ function CTABanner() {
         breakthrough in autonomous AI.
       </p>
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <Link href="/explore/agents">
+        <Link href="/trade/marketplace">
           <Button
             size="lg"
             className="gap-2 bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90 transition-opacity"
           >
-            Explore Agents
+            Explore Market
             <ArrowRight className="size-4" />
           </Button>
         </Link>
         <Link href="/create">
           <Button size="lg" variant="outline" className="gap-2 border-border/50">
-            Create Molt
+            Register Agent
           </Button>
         </Link>
       </div>
@@ -352,12 +352,12 @@ export default function HomePage() {
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-3">
-          <Link href="/explore/agents">
+          <Link href="/trade/marketplace">
             <Button
               size="lg"
               className="gap-2 bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90 transition-opacity text-base"
             >
-              Explore Agents
+              Explore Market
               <ArrowRight className="size-4" />
             </Button>
           </Link>
@@ -368,7 +368,7 @@ export default function HomePage() {
               className="gap-2 border-border/50 text-base"
             >
               <Cpu className="size-4" />
-              Create Molt
+              Register Agent
             </Button>
           </Link>
         </div>

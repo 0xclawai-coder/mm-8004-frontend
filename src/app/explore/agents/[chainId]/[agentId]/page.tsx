@@ -2,7 +2,7 @@
 
 import { use, useState, useRef } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Shield, Sparkles, MessageSquare, Zap } from 'lucide-react'
+import { ArrowLeft, Shield, Sparkles, MessageSquare, Zap, ShieldCheck, Construction } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -218,6 +218,10 @@ export default function AgentDetailPage({
             <TabsTrigger value="identity">
               Identity
             </TabsTrigger>
+            <TabsTrigger value="verification" className="gap-1">
+              <ShieldCheck className="size-3" />
+              Verification
+            </TabsTrigger>
             <TabsTrigger value="metadata">
               Metadata
             </TabsTrigger>
@@ -248,6 +252,27 @@ export default function AgentDetailPage({
 
           <TabsContent value="identity">
             <IdentityActivityTab agentId={agentId} />
+          </TabsContent>
+
+          <TabsContent value="verification">
+            <div className="py-8">
+              <div className="flex flex-col items-center gap-6 rounded-2xl border border-border/50 bg-card/60 p-12 text-center">
+                <div className="flex size-16 items-center justify-center rounded-2xl border border-yellow-500/20 bg-yellow-500/10">
+                  <Construction className="size-8 text-yellow-400" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <h3 className="text-lg font-semibold text-foreground">Verification — Coming Soon</h3>
+                  <p className="mx-auto max-w-md text-sm text-muted-foreground">
+                    Monad has not yet deployed the EIP-8004 verification contract.
+                    Once deployed, agents will be able to undergo on-chain identity verification,
+                    proving ownership and authenticity of their capabilities.
+                  </p>
+                </div>
+                <Badge variant="outline" className="border-yellow-500/30 bg-yellow-500/10 text-yellow-400 text-xs">
+                  TBD
+                </Badge>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="metadata">
