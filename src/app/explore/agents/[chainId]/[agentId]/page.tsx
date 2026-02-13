@@ -16,11 +16,7 @@ import { OverviewTab } from '@/components/agents/OverviewTab'
 import { IdentityActivityTab } from '@/components/agents/IdentityActivityTab'
 import { ReputationActivityTab } from '@/components/agents/ReputationActivityTab'
 
-function getChainLabel(chainId: number): string {
-  if (chainId === 143) return 'Monad Mainnet'
-  if (chainId === 10143) return 'Monad Testnet'
-  return `Chain ${chainId}`
-}
+import { getChainFullLabel as getChainLabel } from '@/lib/chain-utils'
 
 function isNewbie(createdAt: string): boolean {
   const created = new Date(createdAt)

@@ -82,11 +82,7 @@ function getEventConfig(eventType: string) {
   )
 }
 
-function getTxUrl(chainId: number, hash: string): string {
-  if (chainId === 143) return `https://monadexplorer.com/tx/${hash}`
-  if (chainId === 10143) return `https://testnet.monadexplorer.com/tx/${hash}`
-  return '#'
-}
+import { getExplorerTxUrl as getTxUrl } from '@/lib/chain-utils'
 
 function getChainBadge(chainId: number) {
   if (chainId === 143) return { label: 'Monad', color: 'border-green-500/30 bg-green-500/10 text-green-400' }

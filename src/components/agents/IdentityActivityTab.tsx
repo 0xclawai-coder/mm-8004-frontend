@@ -11,11 +11,7 @@ interface IdentityActivityTabProps {
   agentId: string
 }
 
-function getExplorerUrl(chainId: number, txHash: string): string {
-  if (chainId === 143) return `https://monadexplorer.com/tx/${txHash}`
-  if (chainId === 10143) return `https://testnet.monadexplorer.com/tx/${txHash}`
-  return `#`
-}
+import { getExplorerTxUrl as getExplorerUrl } from '@/lib/chain-utils'
 
 function getEventIcon(eventType: EventType) {
   switch (eventType) {

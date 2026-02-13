@@ -63,34 +63,8 @@ import {
   type SupportedChainId,
 } from '@/lib/contracts'
 import type { Activity as ActivityType, AgentDetail, EventCategory, MarketplaceOffer } from '@/types'
-
-// ============================================================
-// Helpers
-// ============================================================
-
-function getChainLabel(chainId: number): string {
-  if (chainId === 143) return 'Monad Mainnet'
-  if (chainId === 10143) return 'Monad Testnet'
-  return `Chain ${chainId}`
-}
-
-function getChainShortLabel(chainId: number): string {
-  if (chainId === 143) return 'Monad'
-  if (chainId === 10143) return 'Testnet'
-  return `Chain ${chainId}`
-}
-
-function getExplorerUrl(chainId: number, address: string): string {
-  if (chainId === 143) return `https://monadexplorer.com/address/${address}`
-  if (chainId === 10143) return `https://testnet.monadexplorer.com/address/${address}`
-  return '#'
-}
-
-function getTxUrl(chainId: number, hash: string): string {
-  if (chainId === 143) return `https://monadexplorer.com/tx/${hash}`
-  if (chainId === 10143) return `https://testnet.monadexplorer.com/tx/${hash}`
-  return '#'
-}
+import { getChainFullLabel as getChainLabel, getChainLabel as getChainShortLabel, getExplorerAddressUrl as getExplorerUrl, getExplorerTxUrl as getTxUrl } from '@/lib/chain-utils'
+import { useContractAction } from '@/hooks/useContractAction'
 
 function getStatusColor(status: string) {
   switch (status) {
@@ -1152,12 +1126,10 @@ export default function ListingDetailPage({
 
   // ── Cancel Listing ──
   const {
-    data: cancelTxHash,
     writeContract: writeCancelListing,
     isPending: isCancelPending,
-  } = useWriteContract()
-  const { isLoading: isCancelConfirming, isSuccess: isCancelConfirmed } =
-    useWaitForTransactionReceipt({ hash: cancelTxHash })
+    isConfirming: isCancelConfirming,
+  } = useContractAction({ successMessage: 'Listing cancelled successfully' })
 
   const handleCancelListing = () => {
     if (!listing || !marketplaceAddress) return
@@ -1173,13 +1145,14 @@ export default function ListingDetailPage({
   const [updatePriceOpen, setUpdatePriceOpen] = useState(false)
   const [newPrice, setNewPrice] = useState('')
   const {
-    data: updatePriceTxHash,
     writeContract: writeUpdatePrice,
     isPending: isUpdatePricePending,
+    isConfirming: isUpdatePriceConfirming,
     reset: resetUpdatePrice,
-  } = useWriteContract()
-  const { isLoading: isUpdatePriceConfirming, isSuccess: isUpdatePriceConfirmed } =
-    useWaitForTransactionReceipt({ hash: updatePriceTxHash })
+  } = useContractAction({
+    successMessage: 'Price updated!',
+    onSuccess: () => { setUpdatePriceOpen(false); setNewPrice('') },
+  })
 
   const handleUpdatePrice = () => {
     if (!listing || !marketplaceAddress || !newPrice) return
@@ -1193,12 +1166,10 @@ export default function ListingDetailPage({
 
   // ── Accept Offer ──
   const {
-    data: acceptOfferTxHash,
     writeContract: writeAcceptOffer,
     isPending: isAcceptOfferPending,
-  } = useWriteContract()
-  const { isLoading: isAcceptOfferConfirming, isSuccess: isAcceptOfferConfirmed } =
-    useWaitForTransactionReceipt({ hash: acceptOfferTxHash })
+    isConfirming: isAcceptOfferConfirming,
+  } = useContractAction({ successMessage: 'Offer accepted! 🎉' })
 
   const handleAcceptOffer = (offerId: number) => {
     if (!marketplaceAddress) return
@@ -1212,12 +1183,10 @@ export default function ListingDetailPage({
 
   // ── Cancel Offer ──
   const {
-    data: cancelOfferTxHash,
     writeContract: writeCancelOffer,
     isPending: isCancelOfferPending,
-  } = useWriteContract()
-  const { isLoading: isCancelOfferConfirming, isSuccess: isCancelOfferConfirmed } =
-    useWaitForTransactionReceipt({ hash: cancelOfferTxHash })
+    isConfirming: isCancelOfferConfirming,
+  } = useContractAction({ successMessage: 'Offer cancelled' })
 
   const handleCancelOffer = (offerId: number) => {
     if (!marketplaceAddress) return
@@ -1245,26 +1214,6 @@ export default function ListingDetailPage({
       })
     }
   }, [buyError])
-
-  useEffect(() => {
-    if (isCancelConfirmed) toast.success('Listing cancelled successfully')
-  }, [isCancelConfirmed])
-
-  useEffect(() => {
-    if (isUpdatePriceConfirmed) {
-      toast.success('Price updated!')
-      setUpdatePriceOpen(false)
-      setNewPrice('')
-    }
-  }, [isUpdatePriceConfirmed])
-
-  useEffect(() => {
-    if (isAcceptOfferConfirmed) toast.success('Offer accepted! 🎉')
-  }, [isAcceptOfferConfirmed])
-
-  useEffect(() => {
-    if (isCancelOfferConfirmed) toast.success('Offer cancelled')
-  }, [isCancelOfferConfirmed])
 
   if (listingError && !listingLoading) {
     return <ErrorState id={id} />

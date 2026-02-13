@@ -19,11 +19,7 @@ function getScoreColor(score: number): string {
   return 'text-red-400'
 }
 
-function getChainLabel(chainId: number): string {
-  if (chainId === 143) return 'Monad'
-  if (chainId === 10143) return 'Testnet'
-  return `Chain ${chainId}`
-}
+import { getChainLabel } from '@/lib/chain-utils'
 
 export function AgentCard({ agent }: AgentCardProps) {
   const agentPath = `/explore/agents/${agent.chain_id}/${agent.agent_id}`

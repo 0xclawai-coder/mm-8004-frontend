@@ -55,15 +55,11 @@ function getStatusColor(status: string) {
   }
 }
 
+import { getChainLabel } from '@/lib/chain-utils'
+
 // ============================================================
 // Columns
 // ============================================================
-
-function getChainLabel(chainId: number): string {
-  if (chainId === 143) return 'Monad'
-  if (chainId === 10143) return 'Testnet'
-  return `Chain ${chainId}`
-}
 
 const columns: ColumnDef<MarketplaceListing, unknown>[] = [
   {

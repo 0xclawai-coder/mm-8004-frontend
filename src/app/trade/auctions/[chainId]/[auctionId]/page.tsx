@@ -46,19 +46,14 @@ import {
 } from '@/lib/contracts'
 import type { AuctionBid, MarketplaceAuction, AgentDetail } from '@/types'
 
+import { getChainFullLabel as getChainLabel, getExplorerUrl as getExplorerUrlBase } from '@/lib/chain-utils'
+
 // ============================================================
 // Helpers
 // ============================================================
 
 function getExplorerUrl(chainId: number, hash: string, type: 'address' | 'tx' = 'address'): string {
-  const base = chainId === 143 ? 'https://monadexplorer.com' : 'https://testnet.monadexplorer.com'
-  return `${base}/${type}/${hash}`
-}
-
-function getChainLabel(chainId: number): string {
-  if (chainId === 143) return 'Monad Mainnet'
-  if (chainId === 10143) return 'Monad Testnet'
-  return `Chain ${chainId}`
+  return getExplorerUrlBase(chainId, type, hash)
 }
 
 function getAuctionStatus(auction: MarketplaceAuction): 'upcoming' | 'live' | 'ended' {

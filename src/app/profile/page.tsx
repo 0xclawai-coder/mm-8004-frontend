@@ -74,21 +74,7 @@ const erc721EnumerableAbi = [
   },
 ] as const
 
-// ============================================================
-// Helper: chain label / explorer
-// ============================================================
-
-function getChainLabel(chainId: number): string {
-  if (chainId === 143) return 'Monad'
-  if (chainId === 10143) return 'Testnet'
-  return `Chain ${chainId}`
-}
-
-function getExplorerTxUrl(chainId: number, txHash: string): string {
-  if (chainId === 143) return `https://monadexplorer.com/tx/${txHash}`
-  if (chainId === 10143) return `https://testnet.monadexplorer.com/tx/${txHash}`
-  return '#'
-}
+import { getChainLabel, getExplorerTxUrl } from '@/lib/chain-utils'
 
 // ============================================================
 // Hook: fetch user's agents (try API first, then on-chain)

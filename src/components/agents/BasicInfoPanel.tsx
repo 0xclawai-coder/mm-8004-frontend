@@ -11,17 +11,7 @@ interface BasicInfoPanelProps {
   agent: AgentDetail
 }
 
-function getExplorerUrl(chainId: number, address: string): string {
-  if (chainId === 143) return `https://monadexplorer.com/address/${address}`
-  if (chainId === 10143) return `https://testnet.monadexplorer.com/address/${address}`
-  return `#`
-}
-
-function getChainLabel(chainId: number): string {
-  if (chainId === 143) return 'Monad Mainnet'
-  if (chainId === 10143) return 'Monad Testnet'
-  return `Chain ${chainId}`
-}
+import { getChainFullLabel as getChainLabel, getExplorerAddressUrl as getExplorerUrl } from '@/lib/chain-utils'
 
 function truncateAddress(address: string): string {
   if (!address || address.length < 12) return address || ''
