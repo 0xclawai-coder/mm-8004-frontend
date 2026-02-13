@@ -193,7 +193,7 @@ export function HoloCard(props: HoloCardProps) {
         />
 
         {/* Card body */}
-        <div className="relative flex min-h-[320px] flex-col overflow-hidden rounded-2xl border border-border/50 bg-card/95 backdrop-blur-sm">
+        <div className="relative flex aspect-[5/7] flex-col overflow-hidden rounded-2xl border border-border/50 bg-card/95 backdrop-blur-sm">
           {/* Holographic shimmer overlay */}
           <div
             className={cn(
@@ -240,7 +240,7 @@ export function HoloCard(props: HoloCardProps) {
           />
 
           {/* Image Section */}
-          <div className="relative h-40 w-full shrink-0 overflow-hidden bg-gradient-to-b from-primary/20 to-transparent">
+          <div className="relative h-[55%] w-full shrink-0 overflow-hidden bg-gradient-to-b from-primary/20 to-transparent">
             {image ? (
               <Image
                 src={image}
