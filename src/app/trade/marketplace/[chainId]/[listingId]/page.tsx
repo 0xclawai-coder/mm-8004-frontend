@@ -1033,10 +1033,15 @@ function MakeOfferDialog({
               </span>
             </div>
           </div>
-          {needsWrap && (
+          {needsWrap && wmonAddress && (
             <p className="text-xs text-muted-foreground">
               💡 Your MON will be automatically wrapped to WMON for the offer.
               3 steps: Wrap → Approve → Offer
+            </p>
+          )}
+          {needsWrap && !wmonAddress && (
+            <p className="text-xs text-yellow-400">
+              ⚠️ WMON is not available on this network. Offers require ERC-20 tokens.
             </p>
           )}
           {isPending && (
