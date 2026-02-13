@@ -320,10 +320,7 @@ export default function HomePage() {
   return (
     <div className="space-y-10">
       {/* Hero */}
-      <section className="relative overflow-hidden py-10 sm:py-16 lg:py-20">
-        {/* Decorative blobs */}
-        <div className="pointer-events-none absolute -left-32 -top-32 size-64 rounded-full bg-primary/10 blur-[100px]" />
-        <div className="pointer-events-none absolute -right-32 bottom-0 size-64 rounded-full bg-cyan-accent/10 blur-[100px]" />
+      <section className="relative py-10 sm:py-16 lg:py-20">
 
         <div className="relative grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
           {/* Left: Text */}
@@ -377,10 +374,8 @@ export default function HomePage() {
               <img
                 src="/hero-agents.jpg"
                 alt="AI Agents"
-                className="size-full rounded-2xl object-cover shadow-2xl shadow-primary/10"
+                className="size-full rounded-2xl object-cover"
               />
-              {/* Subtle glow behind image */}
-              <div className="pointer-events-none absolute inset-0 -z-10 translate-x-2 translate-y-2 rounded-2xl bg-gradient-to-br from-primary/20 to-violet-500/10 blur-2xl" />
             </div>
           </div>
         </div>

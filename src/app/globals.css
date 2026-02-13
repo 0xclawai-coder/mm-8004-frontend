@@ -100,7 +100,7 @@ body {
   }
 
   .bg-gradient-radial {
-    background: radial-gradient(ellipse at top, oklch(0.20 0.06 285 / 0.5) 0%, transparent 60%);
+    background: radial-gradient(ellipse at top, oklch(0.18 0.04 285 / 0.25) 0%, transparent 50%);
   }
 }
 
