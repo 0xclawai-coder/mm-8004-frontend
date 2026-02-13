@@ -59,6 +59,202 @@ export const moltMarketplaceAbi = [
   // buyNow — settles auction immediately at buyNowPrice (called via bid internally, but exposed here for direct buy-now)
   // The contract uses bid() with amount >= buyNowPrice to trigger _settleBuyNow,
   // so we use bid() for buy-now as well.
+
+  // list(address nftContract, uint256 tokenId, address paymentToken, uint256 price, uint256 expiry) returns (uint256)
+  {
+    name: 'list',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'nftContract', type: 'address' },
+      { name: 'tokenId', type: 'uint256' },
+      { name: 'paymentToken', type: 'address' },
+      { name: 'price', type: 'uint256' },
+      { name: 'expiry', type: 'uint256' },
+    ],
+    outputs: [{ name: 'listingId', type: 'uint256' }],
+  },
+  // cancelListing(uint256 listingId)
+  {
+    name: 'cancelListing',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'listingId', type: 'uint256' }],
+    outputs: [],
+  },
+  // updateListingPrice(uint256 listingId, uint256 newPrice)
+  {
+    name: 'updateListingPrice',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'listingId', type: 'uint256' },
+      { name: 'newPrice', type: 'uint256' },
+    ],
+    outputs: [],
+  },
+  // acceptOffer(uint256 offerId)
+  {
+    name: 'acceptOffer',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'offerId', type: 'uint256' }],
+    outputs: [],
+  },
+  // cancelOffer(uint256 offerId)
+  {
+    name: 'cancelOffer',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'offerId', type: 'uint256' }],
+    outputs: [],
+  },
+  // createAuction
+  {
+    name: 'createAuction',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'nftContract', type: 'address' },
+      { name: 'tokenId', type: 'uint256' },
+      { name: 'paymentToken', type: 'address' },
+      { name: 'startingPrice', type: 'uint256' },
+      { name: 'buyNowPrice', type: 'uint256' },
+      { name: 'minBidIncrement', type: 'uint256' },
+      { name: 'duration', type: 'uint256' },
+    ],
+    outputs: [{ name: 'auctionId', type: 'uint256' }],
+  },
+  // settleAuction(uint256 auctionId)
+  {
+    name: 'settleAuction',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'auctionId', type: 'uint256' }],
+    outputs: [],
+  },
+  // cancelAuction(uint256 auctionId)
+  {
+    name: 'cancelAuction',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'auctionId', type: 'uint256' }],
+    outputs: [],
+  },
+  // createDutchAuction
+  {
+    name: 'createDutchAuction',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'nftContract', type: 'address' },
+      { name: 'tokenId', type: 'uint256' },
+      { name: 'paymentToken', type: 'address' },
+      { name: 'startPrice', type: 'uint256' },
+      { name: 'endPrice', type: 'uint256' },
+      { name: 'duration', type: 'uint256' },
+    ],
+    outputs: [{ name: 'auctionId', type: 'uint256' }],
+  },
+  // buyDutchAuction(uint256 auctionId) payable
+  {
+    name: 'buyDutchAuction',
+    type: 'function',
+    stateMutability: 'payable',
+    inputs: [{ name: 'auctionId', type: 'uint256' }],
+    outputs: [],
+  },
+  // cancelDutchAuction(uint256 auctionId)
+  {
+    name: 'cancelDutchAuction',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'auctionId', type: 'uint256' }],
+    outputs: [],
+  },
+  // createBundleListing
+  {
+    name: 'createBundleListing',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'nftContracts', type: 'address[]' },
+      { name: 'tokenIds', type: 'uint256[]' },
+      { name: 'paymentToken', type: 'address' },
+      { name: 'price', type: 'uint256' },
+      { name: 'expiry', type: 'uint256' },
+    ],
+    outputs: [{ name: 'bundleId', type: 'uint256' }],
+  },
+  // buyBundle(uint256 bundleId) payable
+  {
+    name: 'buyBundle',
+    type: 'function',
+    stateMutability: 'payable',
+    inputs: [{ name: 'bundleId', type: 'uint256' }],
+    outputs: [],
+  },
+  // cancelBundleListing(uint256 bundleId)
+  {
+    name: 'cancelBundleListing',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'bundleId', type: 'uint256' }],
+    outputs: [],
+  },
+  // makeCollectionOffer
+  {
+    name: 'makeCollectionOffer',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'nftContract', type: 'address' },
+      { name: 'paymentToken', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+      { name: 'expiry', type: 'uint256' },
+    ],
+    outputs: [{ name: 'offerId', type: 'uint256' }],
+  },
+  // acceptCollectionOffer(uint256 offerId, uint256 tokenId)
+  {
+    name: 'acceptCollectionOffer',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'offerId', type: 'uint256' },
+      { name: 'tokenId', type: 'uint256' },
+    ],
+    outputs: [],
+  },
+  // cancelCollectionOffer(uint256 offerId)
+  {
+    name: 'cancelCollectionOffer',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: 'offerId', type: 'uint256' }],
+    outputs: [],
+  },
+] as const
+
+// ERC-721 approve ABI (for listing flow — approve marketplace to transfer NFT)
+export const erc721ApproveAbi = [
+  {
+    name: 'approve',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'to', type: 'address' },
+      { name: 'tokenId', type: 'uint256' },
+    ],
+    outputs: [],
+  },
+  {
+    name: 'getApproved',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [{ name: 'tokenId', type: 'uint256' }],
+    outputs: [{ name: '', type: 'address' }],
+  },
 ] as const
 
 // ERC-20 approve ABI (for offer flow)

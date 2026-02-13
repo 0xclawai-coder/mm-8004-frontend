@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useState, useMemo, useEffect } from 'react'
+import { use, useState, useCallback, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -52,6 +52,7 @@ import { useListing } from '@/hooks/useListing'
 import { useAgentActivity } from '@/hooks/useAgentActivity'
 import { useOffers } from '@/hooks/useOffers'
 import { HoloCard } from '@/components/agents/HoloCard'
+import { parseEther } from 'viem'
 import {
   CONTRACT_ADDRESSES,
   NATIVE_TOKEN,
@@ -406,10 +407,22 @@ function TopOffersTable({
   offers,
   listingPrice,
   isLoading,
+  currentAddress,
+  isSeller,
+  onAcceptOffer,
+  onCancelOffer,
+  isAccepting,
+  isCancelling,
 }: {
   offers: MarketplaceOffer[]
   listingPrice: string
   isLoading: boolean
+  currentAddress?: string
+  isSeller?: boolean
+  onAcceptOffer?: (offerId: number) => void
+  onCancelOffer?: (offerId: number) => void
+  isAccepting?: boolean
+  isCancelling?: boolean
 }) {
   const listingPriceNum = parseFloat(listingPrice) / 1e18
 
@@ -446,12 +459,14 @@ function TopOffersTable({
               <span className="flex-1">Amount</span>
               <span className="w-16 text-right">Floor %</span>
               <span className="w-28 text-right">From</span>
+              {(isSeller || currentAddress) && <span className="w-20 text-right">Action</span>}
             </div>
             {/* Rows */}
             <div className="divide-y divide-border/20">
               {offers.map((offer) => {
                 const offerPriceNum = parseFloat(offer.amount) / 1e18
                 const floorPct = listingPriceNum > 0 ? ((offerPriceNum / listingPriceNum) * 100).toFixed(0) : '—'
+                const isMyOffer = currentAddress && offer.offerer.toLowerCase() === currentAddress.toLowerCase()
                 return (
                   <div key={offer.id} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/20 transition-colors">
                     <Badge variant="outline" className="w-16 justify-center text-[10px] border-cyan-500/30 bg-cyan-500/10 text-cyan-400">
@@ -464,6 +479,28 @@ function TopOffersTable({
                     <span className="w-28 text-right font-mono text-xs text-muted-foreground">
                       {formatAddress(offer.offerer)}
                     </span>
+                    {(isSeller || currentAddress) && (
+                      <span className="w-20 text-right">
+                        {isSeller && onAcceptOffer && (
+                          <button
+                            onClick={() => onAcceptOffer(offer.offer_id)}
+                            disabled={isAccepting}
+                            className="text-[10px] font-semibold text-green-400 hover:text-green-300 disabled:opacity-50"
+                          >
+                            Accept
+                          </button>
+                        )}
+                        {isMyOffer && onCancelOffer && (
+                          <button
+                            onClick={() => onCancelOffer(offer.offer_id)}
+                            disabled={isCancelling}
+                            className="text-[10px] font-semibold text-red-400 hover:text-red-300 disabled:opacity-50"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </span>
+                    )}
                   </div>
                 )
               })}
@@ -1113,6 +1150,85 @@ export default function ListingDetailPage({
     setOfferDialogOpen(true)
   }
 
+  // ── Cancel Listing ──
+  const {
+    data: cancelTxHash,
+    writeContract: writeCancelListing,
+    isPending: isCancelPending,
+  } = useWriteContract()
+  const { isLoading: isCancelConfirming, isSuccess: isCancelConfirmed } =
+    useWaitForTransactionReceipt({ hash: cancelTxHash })
+
+  const handleCancelListing = () => {
+    if (!listing || !marketplaceAddress) return
+    writeCancelListing({
+      address: marketplaceAddress,
+      abi: moltMarketplaceAbi,
+      functionName: 'cancelListing',
+      args: [BigInt(listing.listing_id)],
+    })
+  }
+
+  // ── Update Listing Price ──
+  const [updatePriceOpen, setUpdatePriceOpen] = useState(false)
+  const [newPrice, setNewPrice] = useState('')
+  const {
+    data: updatePriceTxHash,
+    writeContract: writeUpdatePrice,
+    isPending: isUpdatePricePending,
+    reset: resetUpdatePrice,
+  } = useWriteContract()
+  const { isLoading: isUpdatePriceConfirming, isSuccess: isUpdatePriceConfirmed } =
+    useWaitForTransactionReceipt({ hash: updatePriceTxHash })
+
+  const handleUpdatePrice = () => {
+    if (!listing || !marketplaceAddress || !newPrice) return
+    writeUpdatePrice({
+      address: marketplaceAddress,
+      abi: moltMarketplaceAbi,
+      functionName: 'updateListingPrice',
+      args: [BigInt(listing.listing_id), parseEther(newPrice)],
+    })
+  }
+
+  // ── Accept Offer ──
+  const {
+    data: acceptOfferTxHash,
+    writeContract: writeAcceptOffer,
+    isPending: isAcceptOfferPending,
+  } = useWriteContract()
+  const { isLoading: isAcceptOfferConfirming, isSuccess: isAcceptOfferConfirmed } =
+    useWaitForTransactionReceipt({ hash: acceptOfferTxHash })
+
+  const handleAcceptOffer = (offerId: number) => {
+    if (!marketplaceAddress) return
+    writeAcceptOffer({
+      address: marketplaceAddress,
+      abi: moltMarketplaceAbi,
+      functionName: 'acceptOffer',
+      args: [BigInt(offerId)],
+    })
+  }
+
+  // ── Cancel Offer ──
+  const {
+    data: cancelOfferTxHash,
+    writeContract: writeCancelOffer,
+    isPending: isCancelOfferPending,
+  } = useWriteContract()
+  const { isLoading: isCancelOfferConfirming, isSuccess: isCancelOfferConfirmed } =
+    useWaitForTransactionReceipt({ hash: cancelOfferTxHash })
+
+  const handleCancelOffer = (offerId: number) => {
+    if (!marketplaceAddress) return
+    writeCancelOffer({
+      address: marketplaceAddress,
+      abi: moltMarketplaceAbi,
+      functionName: 'cancelOffer',
+      args: [BigInt(offerId)],
+    })
+  }
+
   // Toast on buy result
   useEffect(() => {
     if (isBuyConfirmed) {
@@ -1129,6 +1245,26 @@ export default function ListingDetailPage({
       })
     }
   }, [buyError])
+
+  useEffect(() => {
+    if (isCancelConfirmed) toast.success('Listing cancelled successfully')
+  }, [isCancelConfirmed])
+
+  useEffect(() => {
+    if (isUpdatePriceConfirmed) {
+      toast.success('Price updated!')
+      setUpdatePriceOpen(false)
+      setNewPrice('')
+    }
+  }, [isUpdatePriceConfirmed])
+
+  useEffect(() => {
+    if (isAcceptOfferConfirmed) toast.success('Offer accepted! 🎉')
+  }, [isAcceptOfferConfirmed])
+
+  useEffect(() => {
+    if (isCancelOfferConfirmed) toast.success('Offer cancelled')
+  }, [isCancelOfferConfirmed])
 
   if (listingError && !listingLoading) {
     return <ErrorState id={id} />
@@ -1332,10 +1468,34 @@ export default function ListingDetailPage({
                         Connect Wallet to Buy
                       </Button>
                     ) : isSeller ? (
-                      <Button size="lg" className="flex-1 gap-2 text-base font-semibold" disabled>
-                        <ShoppingCart className="size-5" />
-                        Your Listing
-                      </Button>
+                      <>
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="flex-1 gap-2 text-base font-semibold border-border/50"
+                          onClick={() => setUpdatePriceOpen(true)}
+                          disabled={isCancelPending || isCancelConfirming}
+                        >
+                          <DollarSign className="size-5" />
+                          Update Price
+                        </Button>
+                        <Button
+                          size="lg"
+                          variant="destructive"
+                          className="flex-1 gap-2 text-base font-semibold"
+                          onClick={handleCancelListing}
+                          disabled={isCancelPending || isCancelConfirming}
+                        >
+                          {isCancelPending || isCancelConfirming ? (
+                            <>
+                              <Loader2 className="size-5 animate-spin" />
+                              {isCancelPending ? 'Confirm…' : 'Cancelling…'}
+                            </>
+                          ) : (
+                            'Cancel Listing'
+                          )}
+                        </Button>
+                      </>
                     ) : (
                       <>
                         <Button
@@ -1478,6 +1638,12 @@ export default function ListingDetailPage({
               offers={offers}
               listingPrice={listing.price}
               isLoading={offersLoading}
+              currentAddress={address}
+              isSeller={isSeller}
+              onAcceptOffer={handleAcceptOffer}
+              onCancelOffer={handleCancelOffer}
+              isAccepting={isAcceptOfferPending || isAcceptOfferConfirming}
+              isCancelling={isCancelOfferPending || isCancelOfferConfirming}
             />
           ) : (
             <div className="space-y-3">
@@ -1519,6 +1685,38 @@ export default function ListingDetailPage({
           chainId={chainId}
         />
       )}
+
+      {/* Update Price Dialog */}
+      <Dialog open={updatePriceOpen} onOpenChange={(o) => { if (!o) { setUpdatePriceOpen(false); setNewPrice(''); resetUpdatePrice() } }}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Update Listing Price</DialogTitle>
+            <DialogDescription>Set a new price for your listing</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="New price in MON"
+              value={newPrice}
+              onChange={(e) => setNewPrice(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setUpdatePriceOpen(false); setNewPrice(''); resetUpdatePrice() }}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUpdatePrice}
+              disabled={isUpdatePricePending || isUpdatePriceConfirming || !newPrice || parseFloat(newPrice) <= 0}
+              className="bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90"
+            >
+              {isUpdatePricePending || isUpdatePriceConfirming ? 'Confirming…' : 'Update Price'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

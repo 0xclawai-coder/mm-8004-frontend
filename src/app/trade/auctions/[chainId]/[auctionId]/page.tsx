@@ -600,6 +600,52 @@ export default function AuctionDetailPage({
     }
   }, [buyNowError])
 
+  // ── Settle Auction ──
+  const {
+    data: settleTxHash,
+    writeContract: writeSettle,
+    isPending: isSettlePending,
+  } = useWriteContract()
+  const { isLoading: isSettleConfirming, isSuccess: isSettleConfirmed } =
+    useWaitForTransactionReceipt({ hash: settleTxHash })
+
+  const handleSettleAuction = () => {
+    if (!auction || !marketplaceAddress) return
+    writeSettle({
+      address: marketplaceAddress,
+      abi: moltMarketplaceAbi,
+      functionName: 'settleAuction',
+      args: [BigInt(auction.auction_id)],
+    })
+  }
+
+  // ── Cancel Auction ──
+  const {
+    data: cancelTxHash,
+    writeContract: writeCancel,
+    isPending: isCancelPending,
+  } = useWriteContract()
+  const { isLoading: isCancelConfirming, isSuccess: isCancelConfirmed } =
+    useWaitForTransactionReceipt({ hash: cancelTxHash })
+
+  const handleCancelAuction = () => {
+    if (!auction || !marketplaceAddress) return
+    writeCancel({
+      address: marketplaceAddress,
+      abi: moltMarketplaceAbi,
+      functionName: 'cancelAuction',
+      args: [BigInt(auction.auction_id)],
+    })
+  }
+
+  useEffect(() => {
+    if (isSettleConfirmed) toast.success('Auction settled! 🎉')
+  }, [isSettleConfirmed])
+
+  useEffect(() => {
+    if (isCancelConfirmed) toast.success('Auction cancelled')
+  }, [isCancelConfirmed])
+
   if (error && !isLoading) return <ErrorState id={id} />
 
   const status = auction ? getAuctionStatus(auction) : 'upcoming'
@@ -755,9 +801,40 @@ export default function AuctionDetailPage({
                         Connect Wallet to Bid
                       </Button>
                     ) : isSeller ? (
-                      <div className="flex items-center gap-2 rounded-lg bg-muted/30 border border-border/50 p-3">
-                        <Gavel className="size-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">You are the seller — cannot bid</span>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 rounded-lg bg-muted/30 border border-border/50 p-3">
+                          <Gavel className="size-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">You are the seller</span>
+                        </div>
+                        <div className="flex gap-2">
+                          {auction && getAuctionStatus(auction) === 'ended' && hasBids && (
+                            <Button
+                              className="flex-1 gap-2"
+                              onClick={handleSettleAuction}
+                              disabled={isSettlePending || isSettleConfirming}
+                            >
+                              {isSettlePending || isSettleConfirming ? (
+                                <><Loader2 className="size-4 animate-spin" />{isSettlePending ? 'Confirm…' : 'Settling…'}</>
+                              ) : (
+                                'Settle Auction'
+                              )}
+                            </Button>
+                          )}
+                          {!hasBids && (
+                            <Button
+                              variant="destructive"
+                              className="flex-1 gap-2"
+                              onClick={handleCancelAuction}
+                              disabled={isCancelPending || isCancelConfirming}
+                            >
+                              {isCancelPending || isCancelConfirming ? (
+                                <><Loader2 className="size-4 animate-spin" />{isCancelPending ? 'Confirm…' : 'Cancelling…'}</>
+                              ) : (
+                                'Cancel Auction'
+                              )}
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     ) : (
                       <>
@@ -847,6 +924,46 @@ export default function AuctionDetailPage({
                       Starts {new Date(auction.start_time * 1000).toLocaleString()}
                     </p>
                   </div>
+                )}
+
+                {/* Settle Auction — show when ended and has bids */}
+                {status === 'ended' && hasBids && !auction.winner && (
+                  <Button
+                    className="w-full gap-2"
+                    onClick={handleSettleAuction}
+                    disabled={isSettlePending || isSettleConfirming}
+                  >
+                    {isSettlePending || isSettleConfirming ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin" />
+                        {isSettlePending ? 'Confirm in Wallet…' : 'Settling…'}
+                      </>
+                    ) : (
+                      <>
+                        <Gavel className="size-4" />
+                        Settle Auction
+                      </>
+                    )}
+                  </Button>
+                )}
+
+                {/* Cancel Auction — show if seller and no bids */}
+                {isSeller && !hasBids && status !== 'ended' && (
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2 border-red-500/30 text-red-400 hover:bg-red-500/10"
+                    onClick={handleCancelAuction}
+                    disabled={isCancelPending || isCancelConfirming}
+                  >
+                    {isCancelPending || isCancelConfirming ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin" />
+                        {isCancelPending ? 'Confirm…' : 'Cancelling…'}
+                      </>
+                    ) : (
+                      'Cancel Auction'
+                    )}
+                  </Button>
                 )}
 
                 {/* Stats grid */}

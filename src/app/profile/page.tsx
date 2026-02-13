@@ -11,7 +11,7 @@ import {
   useChainId,
 } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { toHex } from 'viem'
+import { toHex, parseEther } from 'viem'
 import {
   Wallet,
   Edit3,
@@ -20,6 +20,7 @@ import {
   XCircle,
   User,
   Plus,
+  Tag,
 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
@@ -42,6 +43,9 @@ import { cn, formatAddress } from '@/lib/utils'
 import {
   CONTRACT_ADDRESSES,
   identityRegistryAbi,
+  moltMarketplaceAbi,
+  erc721ApproveAbi,
+  NATIVE_TOKEN,
   type SupportedChainId,
 } from '@/lib/contracts'
 import type { Agent } from '@/types'
@@ -158,6 +162,224 @@ function useUserAgents(address: string | undefined, chainId: number) {
     isLoading: apiQuery.isLoading,
     isError: apiQuery.isError && tokenCount === 0,
   }
+}
+
+// ============================================================
+// List for Sale Dialog
+// ============================================================
+
+const DURATION_OPTIONS = [
+  { label: '1 Day', seconds: 86400 },
+  { label: '3 Days', seconds: 259200 },
+  { label: '7 Days', seconds: 604800 },
+  { label: '30 Days', seconds: 2592000 },
+] as const
+
+interface ListForSaleDialogProps {
+  agent: Agent
+  chainId: number
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+function ListForSaleDialog({ agent, chainId, open, onOpenChange }: ListForSaleDialogProps) {
+  const [price, setPrice] = useState('')
+  const [duration, setDuration] = useState(604800) // default 7 days
+  const [step, setStep] = useState<'approve' | 'list' | 'done'>('approve')
+
+  const identityAddr = CONTRACT_ADDRESSES[chainId as SupportedChainId]?.identityRegistry
+  const marketplaceAddr = CONTRACT_ADDRESSES[chainId as SupportedChainId]?.moltMarketplace
+
+  // Check if already approved
+  const { data: approvedAddr, refetch: refetchApproval } = useReadContract({
+    address: identityAddr,
+    abi: erc721ApproveAbi,
+    functionName: 'getApproved',
+    args: [BigInt(agent.agent_id)],
+    query: { enabled: !!identityAddr && open },
+  })
+
+  const isApproved = approvedAddr?.toString().toLowerCase() === marketplaceAddr?.toLowerCase()
+
+  // Approve TX
+  const {
+    data: approveTxHash,
+    writeContract: writeApprove,
+    isPending: isApprovePending,
+    error: approveError,
+    reset: resetApprove,
+  } = useWriteContract()
+
+  const { isLoading: isApproveConfirming, isSuccess: isApproveConfirmed } =
+    useWaitForTransactionReceipt({ hash: approveTxHash })
+
+  // Auto-advance to list step after approval
+  useMemo(() => {
+    if (isApproveConfirmed || isApproved) setStep('list')
+  }, [isApproveConfirmed, isApproved])
+
+  // List TX
+  const {
+    data: listTxHash,
+    writeContract: writeList,
+    isPending: isListPending,
+    error: listError,
+    reset: resetList,
+  } = useWriteContract()
+
+  const { isLoading: isListConfirming, isSuccess: isListConfirmed } =
+    useWaitForTransactionReceipt({ hash: listTxHash })
+
+  useMemo(() => {
+    if (isListConfirmed) setStep('done')
+  }, [isListConfirmed])
+
+  const handleApprove = useCallback(() => {
+    if (!identityAddr || !marketplaceAddr) return
+    writeApprove({
+      address: identityAddr,
+      abi: erc721ApproveAbi,
+      functionName: 'approve',
+      args: [marketplaceAddr, BigInt(agent.agent_id)],
+    })
+  }, [identityAddr, marketplaceAddr, agent.agent_id, writeApprove])
+
+  const handleList = useCallback(() => {
+    if (!identityAddr || !marketplaceAddr || !price) return
+    const expiry = BigInt(Math.floor(Date.now() / 1000) + duration)
+    writeList({
+      address: marketplaceAddr,
+      abi: moltMarketplaceAbi,
+      functionName: 'list',
+      args: [identityAddr, BigInt(agent.agent_id), NATIVE_TOKEN, parseEther(price), expiry],
+    })
+  }, [identityAddr, marketplaceAddr, agent.agent_id, price, duration, writeList])
+
+  const handleClose = useCallback(() => {
+    resetApprove()
+    resetList()
+    setPrice('')
+    setDuration(604800)
+    setStep('approve')
+    onOpenChange(false)
+  }, [resetApprove, resetList, onOpenChange])
+
+  const errorMessage = (approveError || listError)?.message?.slice(0, 200)
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => { if (!o) handleClose() }}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>List for Sale</DialogTitle>
+          <DialogDescription>
+            List <span className="font-semibold">{agent.name || `Agent #${agent.agent_id}`}</span> on the marketplace
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          {/* Price input */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Price (MON)</label>
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="0.00"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              disabled={step === 'done'}
+            />
+          </div>
+
+          {/* Duration */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Duration</label>
+            <div className="flex gap-2">
+              {DURATION_OPTIONS.map((opt) => (
+                <button
+                  key={opt.seconds}
+                  type="button"
+                  onClick={() => setDuration(opt.seconds)}
+                  className={cn(
+                    'flex-1 rounded-lg border px-3 py-2 text-xs font-medium transition-colors',
+                    duration === opt.seconds
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border/50 text-muted-foreground hover:border-primary/50'
+                  )}
+                  disabled={step === 'done'}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Steps indicator */}
+          <div className="flex items-center gap-3 text-xs">
+            <div className={cn('flex items-center gap-1.5', step === 'approve' ? 'text-primary' : 'text-muted-foreground')}>
+              <div className={cn('size-5 rounded-full flex items-center justify-center text-[10px] font-bold', step === 'approve' ? 'bg-primary text-primary-foreground' : isApproved || isApproveConfirmed ? 'bg-green-500 text-white' : 'bg-muted text-muted-foreground')}>
+                {isApproved || isApproveConfirmed ? '✓' : '1'}
+              </div>
+              Approve
+            </div>
+            <div className="h-px flex-1 bg-border/50" />
+            <div className={cn('flex items-center gap-1.5', step === 'list' ? 'text-primary' : step === 'done' ? 'text-green-500' : 'text-muted-foreground')}>
+              <div className={cn('size-5 rounded-full flex items-center justify-center text-[10px] font-bold', step === 'list' ? 'bg-primary text-primary-foreground' : step === 'done' ? 'bg-green-500 text-white' : 'bg-muted text-muted-foreground')}>
+                {step === 'done' ? '✓' : '2'}
+              </div>
+              List
+            </div>
+          </div>
+
+          {/* TX status */}
+          {step === 'done' && listTxHash && (
+            <div className="flex items-center gap-2 rounded-lg bg-green-500/10 border border-green-500/20 p-3">
+              <CheckCircle2 className="size-4 text-green-400 shrink-0" />
+              <div className="min-w-0 space-y-1">
+                <p className="text-sm font-medium text-green-400">Listed Successfully!</p>
+                <a
+                  href={getExplorerTxUrl(chainId, listTxHash)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-xs font-mono text-primary hover:underline break-all"
+                >
+                  {listTxHash.slice(0, 20)}...
+                  <ExternalLink className="size-3 shrink-0" />
+                </a>
+              </div>
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="flex items-center gap-2 rounded-lg bg-destructive/10 border border-destructive/20 p-3">
+              <XCircle className="size-4 text-destructive shrink-0" />
+              <p className="text-xs text-destructive break-all">{errorMessage}</p>
+            </div>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={handleClose}>
+            {step === 'done' ? 'Done' : 'Cancel'}
+          </Button>
+          {step !== 'done' && (
+            <Button
+              onClick={step === 'approve' && !isApproved ? handleApprove : handleList}
+              disabled={
+                (step === 'approve' && (isApprovePending || isApproveConfirming)) ||
+                (step === 'list' && (isListPending || isListConfirming || !price || parseFloat(price) <= 0))
+              }
+              className="bg-gradient-to-r from-primary to-violet-glow text-primary-foreground hover:opacity-90"
+            >
+              {isApprovePending || isListPending ? 'Confirm in wallet...' :
+               isApproveConfirming || isListConfirming ? 'Confirming...' :
+               step === 'approve' && !isApproved ? 'Approve Marketplace' : 'List for Sale'}
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
 }
 
 // ============================================================
@@ -434,6 +656,7 @@ export default function ProfilePage() {
   const { address, isConnected } = useAccount()
   const chainId = useChainId()
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null)
+  const [sellingAgent, setSellingAgent] = useState<Agent | null>(null)
 
   const { agents, isLoading } = useUserAgents(address, chainId)
 
@@ -506,25 +729,52 @@ export default function ProfilePage() {
                     owner={agent.owner}
                   />
                 </Link>
-                {/* Edit button overlay */}
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    setEditingAgent(agent)
-                  }}
-                  className="absolute right-3 top-3 z-30 gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity bg-card/90 backdrop-blur-sm border-border/50"
-                >
-                  <Edit3 className="size-3" />
-                  Edit
-                </Button>
+                {/* Action button overlays */}
+                <div className="absolute right-3 top-3 z-30 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      setSellingAgent(agent)
+                    }}
+                    className="gap-1.5 bg-card/90 backdrop-blur-sm border-border/50"
+                  >
+                    <Tag className="size-3" />
+                    Sell
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      setEditingAgent(agent)
+                    }}
+                    className="gap-1.5 bg-card/90 backdrop-blur-sm border-border/50"
+                  >
+                    <Edit3 className="size-3" />
+                    Edit
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
         )}
       </section>
+
+      {/* List for Sale Dialog */}
+      {sellingAgent && (
+        <ListForSaleDialog
+          agent={sellingAgent}
+          chainId={chainId}
+          open={!!sellingAgent}
+          onOpenChange={(open) => {
+            if (!open) setSellingAgent(null)
+          }}
+        />
+      )}
 
       {/* Edit Dialog */}
       {editingAgent && (
