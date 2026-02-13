@@ -580,8 +580,8 @@ function EditAgentDialog({ agent, chainId, open, onOpenChange }: EditAgentDialog
 function AgentCardSkeleton() {
   return (
     <div className="w-full max-w-[300px]">
-      <div className="overflow-hidden rounded-2xl border border-border/50 bg-card/95">
-        <Skeleton className="h-40 w-full rounded-none" />
+      <div className="aspect-[5/7] overflow-hidden rounded-2xl border border-border/50 bg-card/95">
+        <Skeleton className="h-[55%] w-full rounded-none" />
         <div className="flex flex-col gap-3 p-5">
           <Skeleton className="h-6 w-40" />
           <Skeleton className="h-4 w-full" />
