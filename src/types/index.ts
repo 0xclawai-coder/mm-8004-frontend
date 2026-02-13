@@ -84,8 +84,15 @@ export type EventType =
   | 'NewFeedback'
   | 'FeedbackRevoked'
   | 'ResponseAppended'
+  | 'marketplace:Listed'
+  | 'marketplace:Bought'
+  | 'marketplace:OfferMade'
+  | 'marketplace:AuctionCreated'
+  | 'marketplace:DutchAuctionCreated'
+  | 'marketplace:BidPlaced'
+  | 'marketplace:AuctionSettled'
 
-export type EventCategory = 'identity' | 'reputation' | 'labor'
+export type EventCategory = 'identity' | 'reputation' | 'marketplace' | 'labor'
 
 export interface Activity {
   id: number

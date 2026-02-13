@@ -64,12 +64,48 @@ const EVENT_TYPE_CONFIG: Record<
     color: 'border-cyan-500/30 bg-cyan-500/10 text-cyan-400',
     icon: '💬',
   },
+  'marketplace:Listed': {
+    label: 'Listed for Acquisition',
+    color: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
+    icon: '🏷️',
+  },
+  'marketplace:Bought': {
+    label: 'Acquired',
+    color: 'border-purple-500/30 bg-purple-500/10 text-purple-400',
+    icon: '🤝',
+  },
+  'marketplace:OfferMade': {
+    label: 'Offer Submitted',
+    color: 'border-orange-500/30 bg-orange-500/10 text-orange-400',
+    icon: '📨',
+  },
+  'marketplace:AuctionCreated': {
+    label: 'Live Round Started',
+    color: 'border-pink-500/30 bg-pink-500/10 text-pink-400',
+    icon: '🔨',
+  },
+  'marketplace:DutchAuctionCreated': {
+    label: 'Dutch Round Started',
+    color: 'border-pink-500/30 bg-pink-500/10 text-pink-400',
+    icon: '📉',
+  },
+  'marketplace:BidPlaced': {
+    label: 'Offer Placed',
+    color: 'border-amber-500/30 bg-amber-500/10 text-amber-400',
+    icon: '💰',
+  },
+  'marketplace:AuctionSettled': {
+    label: 'Round Settled',
+    color: 'border-teal-500/30 bg-teal-500/10 text-teal-400',
+    icon: '✅',
+  },
 }
 
-const FILTER_OPTIONS: { value: EventCategory | 'all'; label: string }[] = [
+const FILTER_OPTIONS: { value: EventCategory | 'all' | 'marketplace'; label: string }[] = [
   { value: 'all', label: 'All Events' },
   { value: 'identity', label: 'Identity' },
-  { value: 'reputation', label: 'Reputation' },
+  { value: 'reputation', label: 'Track Record' },
+  { value: 'marketplace', label: 'Deals' },
 ]
 
 function getEventConfig(eventType: string) {
@@ -112,6 +148,31 @@ function getEventDetails(activity: GlobalActivityType): string {
       return 'URI changed'
     case 'ResponseAppended':
       return data.feedback_id ? `feedback #${data.feedback_id}` : ''
+    case 'marketplace:Listed':
+      return data.price ? `${data.price} ${data.payment_token === '0x0000000000000000000000000000000000000000' ? 'MON' : 'ERC-20'}` : ''
+    case 'marketplace:Bought':
+      return [
+        data.price && `for ${data.price} MON`,
+        data.buyer && `by ${formatAddress(data.buyer as string)}`,
+      ].filter(Boolean).join(' · ')
+    case 'marketplace:OfferMade':
+      return [
+        data.amount && `${data.amount} WMON`,
+        data.offerer && `from ${formatAddress(data.offerer as string)}`,
+      ].filter(Boolean).join(' · ')
+    case 'marketplace:AuctionCreated':
+    case 'marketplace:DutchAuctionCreated':
+      return data.starting_price ? `floor ${data.starting_price} MON` : ''
+    case 'marketplace:BidPlaced':
+      return [
+        data.amount && `${data.amount} MON`,
+        data.bidder && `by ${formatAddress(data.bidder as string)}`,
+      ].filter(Boolean).join(' · ')
+    case 'marketplace:AuctionSettled':
+      return [
+        data.final_price && `for ${data.final_price} MON`,
+        data.winner && `to ${formatAddress(data.winner as string)}`,
+      ].filter(Boolean).join(' · ')
     default:
       return ''
   }
@@ -255,7 +316,7 @@ function ActivityRowSkeleton() {
 
 export default function ActivityPage() {
   const { data: stats, isLoading: statsLoading } = useStats()
-  const [filter, setFilter] = useState<EventCategory | 'all'>('all')
+  const [filter, setFilter] = useState<EventCategory | 'all' | 'marketplace'>('all')
   const [page, setPage] = useState(1)
   const limit = 20
 
@@ -272,8 +333,8 @@ export default function ActivityPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Recent Activity"
-        subtitle="Global on-chain events across all agents"
+        title="Activity Feed"
+        subtitle="On-chain events across all entities — incorporations, track records, and deals"
       />
 
       {/* Stats Grid */}
@@ -283,30 +344,30 @@ export default function ActivityPage() {
         ) : (
           <>
             <StatCard
-              label="Total Agents"
+              label="Incorporated Entities"
               value={stats?.total_agents ?? 0}
               icon={<Users className="size-5" />}
               accent="bg-primary/10 text-primary"
             />
             <StatCard
-              label="Total Feedbacks"
+              label="Track Records"
               value={stats?.total_feedbacks ?? 0}
               icon={<MessageSquare className="size-5" />}
               accent="bg-cyan-500/10 text-cyan-400"
             />
             <StatCard
-              label="24h Registrations"
+              label="24h Incorporations"
               value={stats?.recent_registrations_24h ?? 0}
               icon={<UserPlus className="size-5" />}
               accent="bg-green-500/10 text-green-400"
-              subtext="New agents last 24h"
+              subtext="New entities last 24h"
             />
             <StatCard
-              label="24h Feedbacks"
+              label="24h Track Records"
               value={stats?.recent_feedbacks_24h ?? 0}
               icon={<MessagesSquare className="size-5" />}
               accent="bg-yellow-500/10 text-yellow-400"
-              subtext="Feedbacks last 24h"
+              subtext="Track records last 24h"
             />
           </>
         )}
@@ -337,7 +398,7 @@ export default function ActivityPage() {
                 <div className="min-w-0">
                   <p className="text-xs text-muted-foreground">{label}</p>
                   <p className="text-sm font-semibold text-foreground">
-                    {count} agents
+                    {count} entities
                   </p>
                 </div>
               </div>
@@ -390,7 +451,7 @@ export default function ActivityPage() {
           <div className="flex items-center gap-3 px-4 py-2 border-b border-border/20 text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
             <span className="w-7" />
             <span className="w-28 text-center">Event</span>
-            <span className="w-36">Agent</span>
+            <span className="w-36">Entity</span>
             <span className="flex-1">Details</span>
             <span className="w-16 hidden sm:block text-center">Chain</span>
             <span className="w-16 text-right">Time</span>
