@@ -1704,12 +1704,7 @@ export default function ListingDetailPage({
               </h3>
               <div className="rounded-xl border border-border/30 bg-card/40 p-4 space-y-3">
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <Skeleton className="h-4 w-16" />
-                    <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-4 w-12" />
-                    <Skeleton className="h-4 w-24" />
-                  </div>
+                  <Skeleton key={i} className="h-4 w-full" />
                 ))}
               </div>
             </div>

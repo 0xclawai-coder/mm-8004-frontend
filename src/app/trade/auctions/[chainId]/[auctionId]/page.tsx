@@ -1075,16 +1075,27 @@ export default function AuctionDetailPage({
             {auction ? (
               <BidHistoryTable bids={bids} chainId={chainId} token={token} />
             ) : (
-              <div className="space-y-3">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="flex items-center justify-between py-2">
-                    <Skeleton className="h-4 w-8" />
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-4 w-16" />
-                    <Skeleton className="h-3 w-3" />
-                  </div>
-                ))}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border/30">
+                      <th className="pb-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">#</th>
+                      <th className="pb-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Acquirer</th>
+                      <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount</th>
+                      <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Time</th>
+                      <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Tx</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <tr key={i}>
+                        <td colSpan={5} className="py-3">
+                          <Skeleton className="h-4 w-full" />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
@@ -1202,15 +1213,26 @@ export default function AuctionDetailPage({
                 )}
               </div>
             ) : (
-              <div className="space-y-3">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="flex items-center justify-between py-2">
-                    <Skeleton className="h-5 w-16 rounded-full" />
-                    <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-4 w-16" />
-                  </div>
-                ))}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border/30">
+                      <th className="pb-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Event</th>
+                      <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Price</th>
+                      <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">From</th>
+                      <th className="pb-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <tr key={i}>
+                        <td colSpan={4} className="py-3">
+                          <Skeleton className="h-4 w-full" />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
