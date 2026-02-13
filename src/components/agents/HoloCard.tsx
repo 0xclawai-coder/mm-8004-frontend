@@ -45,22 +45,37 @@ function isNewbie(createdAt: string): boolean {
   return diffDays <= 7;
 }
 
-/** Get subtle background tint based on first category (Pokemon-type style) */
-function getCategoryTint(categories: string[] | null | undefined): {
-  bg: string;
-  borderAccent: string;
-} {
+/** Clamp value between min and max */
+function clamp(val: number, min = 0, max = 100): number {
+  return Math.min(max, Math.max(min, val));
+}
+
+/** Map value from one range to another */
+function adjust(
+  val: number,
+  fromMin: number,
+  fromMax: number,
+  toMin: number,
+  toMax: number
+): number {
+  return toMin + ((val - fromMin) / (fromMax - fromMin)) * (toMax - toMin);
+}
+
+/** Get glow color based on first category (like Pokemon type → card glow) */
+function getCategoryGlow(
+  categories: string[] | null | undefined
+): { glow: string; tint: string } {
   const cat = categories?.[0]?.toLowerCase();
-  if (!cat) return { bg: "from-slate-500/5 to-slate-600/5", borderAccent: "" };
+  if (!cat) return { glow: "hsl(187, 85%, 60%)", tint: "" };
   if (cat.includes("ai") || cat.includes("intelligence"))
-    return { bg: "from-blue-500/8 to-blue-600/5", borderAccent: "shadow-blue-500/20" };
+    return { glow: "hsl(210, 100%, 65%)", tint: "from-blue-500/6 to-transparent" };
   if (cat.includes("defi") || cat.includes("finance"))
-    return { bg: "from-emerald-500/8 to-emerald-600/5", borderAccent: "shadow-emerald-500/20" };
+    return { glow: "hsl(150, 80%, 55%)", tint: "from-emerald-500/6 to-transparent" };
   if (cat.includes("identity") || cat.includes("security"))
-    return { bg: "from-purple-500/8 to-purple-600/5", borderAccent: "shadow-purple-500/20" };
+    return { glow: "hsl(280, 70%, 60%)", tint: "from-purple-500/6 to-transparent" };
   if (cat.includes("oracle") || cat.includes("data"))
-    return { bg: "from-orange-500/8 to-orange-600/5", borderAccent: "shadow-orange-500/20" };
-  return { bg: "from-slate-500/5 to-slate-600/5", borderAccent: "" };
+    return { glow: "hsl(30, 90%, 60%)", tint: "from-orange-500/6 to-transparent" };
+  return { glow: "hsl(187, 85%, 60%)", tint: "" };
 }
 
 // ============================================================
@@ -70,7 +85,7 @@ function getCategoryTint(categories: string[] | null | undefined): {
 export function HoloCard(props: HoloCardProps) {
   const { agent } = props;
 
-  // Resolve fields: explicit props win over agent-derived values
+  // Resolve fields
   const image = props.image !== undefined ? props.image : agent?.image ?? null;
   const name =
     props.name ?? agent?.name ?? (agent ? `Agent #${agent.agent_id}` : undefined);
@@ -87,7 +102,7 @@ export function HoloCard(props: HoloCardProps) {
   const categories = agent?.categories;
   const agentId = agent?.agent_id;
 
-  // Tags: explicit tags take priority, otherwise auto-derive from agent
+  // Tags
   let tags = props.tags;
   if (!tags && agent) {
     tags = [];
@@ -115,19 +130,26 @@ export function HoloCard(props: HoloCardProps) {
   }
 
   const isHighScore = (score ?? 0) > 80;
-  const categoryTint = useMemo(() => getCategoryTint(categories), [categories]);
+  const categoryStyle = useMemo(() => getCategoryGlow(categories), [categories]);
 
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+  const [bgPos, setBgPos] = useState({ x: 50, y: 50 });
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (!cardRef.current) return;
       const rect = cardRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
-      setMousePos({ x, y });
+      const absX = e.clientX - rect.left;
+      const absY = e.clientY - rect.top;
+      const pctX = clamp((absX / rect.width) * 100);
+      const pctY = clamp((absY / rect.height) * 100);
+      setMousePos({ x: pctX, y: pctY });
+      setBgPos({
+        x: adjust(pctX, 0, 100, 37, 63),
+        y: adjust(pctY, 0, 100, 33, 67),
+      });
     },
     []
   );
@@ -135,26 +157,39 @@ export function HoloCard(props: HoloCardProps) {
   const handleMouseEnter = useCallback(() => setIsHovering(true), []);
   const handleMouseLeave = useCallback(() => {
     setIsHovering(false);
-    setMousePos({ x: 0.5, y: 0.5 });
+    setMousePos({ x: 50, y: 50 });
+    setBgPos({ x: 50, y: 50 });
   }, []);
 
-  // 3D tilt: ±10 degrees max
-  const rotateX = isHovering
-    ? Math.max(-10, Math.min(10, (mousePos.y - 0.5) * -20))
-    : 0;
-  const rotateY = isHovering
-    ? Math.max(-10, Math.min(10, (mousePos.x - 0.5) * 20))
-    : 0;
+  // 3D tilt (±10 degrees), matching pokemon-cards-css: rotateY(-(centerX/3.5)) rotateX(centerY/3.5)
+  const centerX = mousePos.x - 50;
+  const centerY = mousePos.y - 50;
+  const rotateX = isHovering ? clamp(centerY / 5, -10, 10) : 0;
+  const rotateY = isHovering ? clamp(-centerX / 5, -10, 10) : 0;
 
-  // Holo effect angles
-  const mouseXPct = mousePos.x * 100;
-  const mouseYPct = mousePos.y * 100;
-  const angle = mousePos.x * 360;
+  // Pointer distance from center (0..1) — used for brightness/opacity
+  const pointerFromCenter = isHovering
+    ? clamp(Math.sqrt(centerX * centerX + centerY * centerY) / 50, 0, 1)
+    : 0;
+  const pointerFromTop = mousePos.y / 100;
+  const pointerFromLeft = mousePos.x / 100;
+
+  const cardOpacity = isHovering ? 1 : 0;
+
+  // Sunpillar rainbow colors (from pokemon-cards-css)
+  const sunpillars = {
+    1: "hsl(2, 100%, 73%)",
+    2: "hsl(53, 100%, 69%)",
+    3: "hsl(93, 100%, 69%)",
+    4: "hsl(176, 100%, 76%)",
+    5: "hsl(228, 100%, 74%)",
+    6: "hsl(283, 100%, 73%)",
+  };
 
   return (
     <div
       className="flex w-full justify-center lg:justify-start"
-      style={{ perspective: "800px" }}
+      style={{ perspective: "600px" }}
     >
       <div
         ref={cardRef}
@@ -165,129 +200,197 @@ export function HoloCard(props: HoloCardProps) {
         )}
         style={{
           transformStyle: "preserve-3d",
-          transform: `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+          transform: `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`,
           transition: isHovering
             ? "transform 0.1s ease-out"
             : "transform 0.5s ease-out",
+          // Dynamic glow shadow (like pokemon-cards-css .card__rotator:focus)
+          boxShadow: isHovering
+            ? `0 0 3px -1px white,
+               0 0 3px 1px hsl(47, 100%, 78%),
+               0 0 12px 2px ${categoryStyle.glow},
+               0px 10px 20px -5px rgba(0,0,0,0.5),
+               0 0 40px -30px ${categoryStyle.glow},
+               0 0 50px -20px ${categoryStyle.glow}`
+            : `0px 10px 20px -5px rgba(0,0,0,0.3),
+               0 2px 15px -5px rgba(0,0,0,0.2)`,
+          borderRadius: "4.55% / 3.5%",
+          transitionProperty: isHovering
+            ? "transform"
+            : "transform, box-shadow",
         }}
         onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* === Glow border effect === */}
-        <div
-          className={cn(
-            "absolute -inset-[3px] rounded-xl transition-opacity duration-300",
-            isHovering ? "opacity-100" : "opacity-0",
-            isHighScore && "opacity-50"
-          )}
-          style={{
-            background: isHighScore
-              ? `radial-gradient(circle at ${mouseXPct}% ${mouseYPct}%, rgba(251,191,36,0.7), rgba(245,158,11,0.4), transparent 70%)`
-              : `radial-gradient(circle at ${mouseXPct}% ${mouseYPct}%, rgba(139,92,246,0.6), rgba(99,102,241,0.3), transparent 70%)`,
-            filter: "blur(2px)",
-          }}
-        />
-
         {/* === Card body === */}
         <div
           className={cn(
-            "relative flex aspect-[5/7] flex-col overflow-hidden rounded-xl",
+            "relative flex aspect-[5/7] flex-col overflow-hidden",
             "border-2",
-            isHighScore
-              ? "border-amber-500/50"
-              : "border-border/50",
-            `bg-gradient-to-b ${categoryTint.bg}`
+            isHighScore ? "border-amber-400/60" : "border-border/40",
+            categoryStyle.tint && `bg-gradient-to-b ${categoryStyle.tint}`
           )}
           style={{
             backgroundColor: "hsl(var(--card))",
+            borderRadius: "4.55% / 3.5%",
+            outline: "1px solid transparent", // anti-alias trick from pokemon-cards-css
           }}
         >
-          {/* ======= HOLO LAYER 1: Rainbow shimmer ======= */}
+          {/* ======================================================
+              SHINE LAYER — Multi-gradient holographic effect
+              Inspired by pokemon-cards-css regular-holo .card__shine
+          ====================================================== */}
           <div
-            className={cn(
-              "pointer-events-none absolute inset-0 z-10 rounded-xl transition-opacity duration-300",
-              isHovering ? "opacity-40" : "opacity-0"
-            )}
+            className="pointer-events-none absolute inset-0 z-10"
             style={{
-              background: `repeating-linear-gradient(
-                ${angle}deg,
-                rgba(255,0,0,0.1) 0%,
-                rgba(255,127,0,0.1) 10%,
-                rgba(255,255,0,0.1) 20%,
-                rgba(0,255,0,0.1) 30%,
-                rgba(0,127,255,0.1) 40%,
-                rgba(127,0,255,0.1) 50%,
-                rgba(255,0,127,0.1) 60%,
-                rgba(255,0,0,0.1) 70%
-              )`,
-              mixBlendMode: "color-dodge",
-            }}
-          />
-
-          {/* ======= HOLO LAYER 2: Sparkle/grain texture ======= */}
-          <div
-            className={cn(
-              "pointer-events-none absolute inset-0 z-10 rounded-xl transition-opacity duration-300",
-              isHovering ? "opacity-30" : "opacity-0"
-            )}
-            style={{
+              borderRadius: "inherit",
+              // Rainbow repeating gradient + scanlines overlay
               backgroundImage: `
-                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 1%),
-                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.12) 0%, transparent 1%),
-                radial-gradient(circle at 40% 70%, rgba(255,255,255,0.1) 0%, transparent 1%),
-                radial-gradient(circle at 65% 55%, rgba(255,255,255,0.14) 0%, transparent 1%),
-                radial-gradient(circle at 10% 80%, rgba(255,255,255,0.08) 0%, transparent 1%),
-                radial-gradient(circle at 90% 70%, rgba(255,255,255,0.11) 0%, transparent 1%)
+                repeating-linear-gradient(
+                  133deg,
+                  ${sunpillars[1]}, ${sunpillars[2]}, ${sunpillars[3]},
+                  ${sunpillars[4]}, ${sunpillars[5]}, ${sunpillars[6]},
+                  ${sunpillars[1]}, ${sunpillars[2]}, ${sunpillars[3]},
+                  ${sunpillars[4]}, ${sunpillars[5]}, ${sunpillars[6]},
+                  ${sunpillars[1]}
+                ),
+                repeating-linear-gradient(
+                  90deg,
+                  rgba(0,0,0,1) 0px, rgba(0,0,0,1) 1px,
+                  rgba(100,100,100,1) 1px, rgba(100,100,100,1) 2px
+                )
               `,
-              backgroundSize: "50px 50px, 60px 60px, 45px 45px, 55px 55px, 40px 40px, 65px 65px",
-              mixBlendMode: "overlay",
-            }}
-          />
-
-          {/* ======= HOLO LAYER 3: Light reflection spot ======= */}
-          <div
-            className={cn(
-              "pointer-events-none absolute inset-0 z-10 rounded-xl transition-opacity duration-300",
-              isHovering ? "opacity-60" : "opacity-0"
-            )}
-            style={{
-              background: `radial-gradient(
-                circle at ${mouseXPct}% ${mouseYPct}%,
-                rgba(255,255,255,0.3) 0%,
-                rgba(255,255,255,0.1) 20%,
-                transparent 50%
-              )`,
-              mixBlendMode: "overlay",
-            }}
-          />
-
-          {/* ======= HOLO LAYER 4: Conic iridescence ======= */}
-          <div
-            className={cn(
-              "pointer-events-none absolute inset-0 z-10 rounded-xl transition-opacity duration-300",
-              isHovering ? "opacity-20" : "opacity-0"
-            )}
-            style={{
-              background: `conic-gradient(
-                from ${angle}deg at ${mouseXPct}% ${mouseYPct}%,
-                oklch(0.75 0.2 0) 0deg,
-                oklch(0.75 0.2 60) 60deg,
-                oklch(0.75 0.2 120) 120deg,
-                oklch(0.75 0.2 180) 180deg,
-                oklch(0.75 0.2 240) 240deg,
-                oklch(0.75 0.2 300) 300deg,
-                oklch(0.75 0.2 360) 360deg
-              )`,
+              // Parallax background position tied to pointer (pokemon-cards-css style)
+              backgroundPosition: `
+                calc(((50% - ${bgPos.x}%) * 2.6) + 50%) calc(((50% - ${bgPos.y}%) * 3.5) + 50%),
+                center center
+              `,
+              backgroundSize: "400% 400%, cover",
+              backgroundBlendMode: "overlay",
+              // Critical filter chain from pokemon-cards-css
+              filter: "brightness(1.1) contrast(1.1) saturate(1.2)",
               mixBlendMode: "color-dodge",
+              opacity: cardOpacity,
+              transition: "opacity 0.3s ease",
+            }}
+          />
+
+          {/* ======================================================
+              SHINE:before — Horizontal bar overlay for depth
+              (pokemon-cards-css regular-holo .card__shine:before)
+          ====================================================== */}
+          <div
+            className="pointer-events-none absolute inset-0 z-10"
+            style={{
+              borderRadius: "inherit",
+              backgroundImage: `
+                repeating-linear-gradient(
+                  90deg,
+                  hsla(0,0%,0%,1) 6%,
+                  hsla(0,0%,70%,1) 9%,
+                  hsla(0,0%,0%,1) 10.5%,
+                  hsla(0,0%,70%,1) 12%,
+                  hsla(0,0%,0%,1) 15%,
+                  hsla(0,0%,0%,1) 42%
+                ),
+                repeating-linear-gradient(
+                  90deg,
+                  hsla(0,0%,0%,1) 6%,
+                  hsla(0,0%,70%,1) 9%,
+                  hsla(0,0%,0%,1) 10.5%,
+                  hsla(0,0%,70%,1) 12%,
+                  hsla(0,0%,0%,1) 15%,
+                  hsla(0,0%,0%,1) 30%
+                )
+              `,
+              backgroundPosition: `
+                calc((((50% - ${bgPos.x}%) * 1.65) + 50%) + (${bgPos.y}% * 0.005)) ${bgPos.x}%,
+                calc((((50% - ${bgPos.x}%) * -0.9) + 50%) - (${bgPos.y}% * 0.0075)) ${bgPos.y}%
+              `,
+              backgroundSize: "200% 200%, 200% 200%",
+              backgroundBlendMode: "screen",
+              filter: "brightness(1.15) contrast(1.1)",
+              mixBlendMode: "hard-light",
+              opacity: cardOpacity,
+              transition: "opacity 0.3s ease",
+            }}
+          />
+
+          {/* ======================================================
+              SHINE:after — Radial luminosity mask
+              (pokemon-cards-css regular-holo .card__shine:after)
+          ====================================================== */}
+          <div
+            className="pointer-events-none absolute inset-0 z-10"
+            style={{
+              borderRadius: "inherit",
+              backgroundImage: `
+                radial-gradient(
+                  farthest-corner circle at ${mousePos.x}% ${mousePos.y}%,
+                  hsla(0, 0%, 90%, 0.8) 0%,
+                  hsla(0, 0%, 78%, 0.1) 25%,
+                  hsl(0, 0%, 0%) 90%
+                )
+              `,
+              mixBlendMode: "luminosity",
+              filter: "brightness(0.6) contrast(4)",
+              opacity: cardOpacity,
+              transition: "opacity 0.3s ease",
+            }}
+          />
+
+          {/* ======================================================
+              GLARE LAYER — Main light reflection
+              (pokemon-cards-css .card__glare)
+          ====================================================== */}
+          <div
+            className="pointer-events-none absolute inset-0 z-10"
+            style={{
+              borderRadius: "inherit",
+              backgroundImage: `
+                radial-gradient(
+                  farthest-corner circle at ${mousePos.x}% ${mousePos.y}%,
+                  hsla(0, 0%, 100%, 0.8) 10%,
+                  hsla(0, 0%, 100%, 0.65) 20%,
+                  hsla(0, 0%, 0%, 0.5) 90%
+                )
+              `,
+              mixBlendMode: "overlay",
+              filter: "brightness(0.8) contrast(1.5)",
+              opacity: cardOpacity * 0.8,
+              transition: "opacity 0.3s ease",
+            }}
+          />
+
+          {/* ======================================================
+              GLARE:after — Secondary glare (color highlight)
+              (pokemon-cards-css regular-holo .card__glare:after)
+          ====================================================== */}
+          <div
+            className="pointer-events-none absolute inset-0 z-10"
+            style={{
+              borderRadius: "inherit",
+              backgroundImage: `
+                radial-gradient(
+                  farthest-corner circle at ${mousePos.x}% ${mousePos.y}%,
+                  hsl(180, 100%, 95%) 5%,
+                  hsla(0, 0%, 39%, 0.25) 55%,
+                  hsla(0, 0%, 0%, 0.36) 110%
+                )
+              `,
+              mixBlendMode: "overlay",
+              filter: "brightness(0.6) contrast(3)",
+              opacity: cardOpacity * clamp(1 - pointerFromTop * 0.75, 0, 1),
+              transition: "opacity 0.3s ease",
             }}
           />
 
           {/* ==========================================
-              CARD LAYOUT — Pokemon Style
+              CARD CONTENT — Pokemon Style Layout
           ========================================== */}
 
-          {/* 1. HEADER BAR — Name + Score */}
+          {/* 1. HEADER BAR — Name (left) + Score/HP (right) */}
           <div className="relative z-20 flex items-center justify-between px-3 pt-2.5 pb-1">
             {name != null ? (
               <h3 className="truncate text-sm font-bold text-foreground leading-tight">
@@ -308,19 +411,18 @@ export function HoloCard(props: HoloCardProps) {
             )}
           </div>
 
-          {/* 2. IMAGE FRAME — ~50% of card */}
-          <div className="relative z-20 mx-3 mt-0.5 flex-1 max-h-[52%] overflow-hidden rounded-md border-2 border-border/30">
-            {/* Inner glow on hover */}
-            <div
-              className={cn(
-                "pointer-events-none absolute inset-0 z-10 rounded-md transition-opacity duration-300",
-                isHovering ? "opacity-100" : "opacity-0"
-              )}
-              style={{
-                boxShadow:
-                  "inset 0 0 20px rgba(139,92,246,0.2), inset 0 0 40px rgba(99,102,241,0.1)",
-              }}
-            />
+          {/* 2. IMAGE FRAME — ~50% of card with inner border */}
+          <div
+            className="relative z-20 mx-3 mt-0.5 flex-1 max-h-[52%] overflow-hidden"
+            style={{
+              borderRadius: "3%",
+              border: "2px solid hsla(0, 0%, 100%, 0.1)",
+              boxShadow: isHovering
+                ? `inset 0 0 20px 2px ${categoryStyle.glow}33`
+                : "none",
+              transition: "box-shadow 0.3s ease",
+            }}
+          >
             {image ? (
               <Image
                 src={image}
@@ -340,7 +442,7 @@ export function HoloCard(props: HoloCardProps) {
             )}
           </div>
 
-          {/* 3. INFO STRIP — Agent ID · Chain Name */}
+          {/* 3. INFO STRIP — Agent #ID · Chain */}
           <div className="relative z-20 flex items-center justify-center gap-1.5 px-3 pt-1.5">
             {agentId != null && chainId != null ? (
               <span className="text-[10px] text-muted-foreground leading-none">
@@ -361,7 +463,7 @@ export function HoloCard(props: HoloCardProps) {
 
           {/* 4. STATS / DESCRIPTION AREA */}
           <div className="relative z-20 flex flex-col gap-1.5 px-3 pt-1.5">
-            {/* Description (1-2 lines) */}
+            {/* Description */}
             {description ? (
               <p className="line-clamp-2 text-[10px] leading-relaxed text-muted-foreground">
                 {description}
@@ -370,14 +472,14 @@ export function HoloCard(props: HoloCardProps) {
               <Skeleton className="h-5 w-full" />
             ) : null}
 
-            {/* Feedback count */}
+            {/* Feedback */}
             <div className="flex items-center gap-1">
               <span className="text-[10px] text-muted-foreground">
                 {feedbackCount} feedback{feedbackCount !== 1 ? "s" : ""}
               </span>
             </div>
 
-            {/* Category tags + derived tags */}
+            {/* Category + derived tags */}
             <div className="flex flex-wrap gap-1">
               {categories?.map((cat) => (
                 <Badge
@@ -388,20 +490,19 @@ export function HoloCard(props: HoloCardProps) {
                   {cat}
                 </Badge>
               ))}
-              {tags &&
-                tags.map((tag) => (
-                  <Badge
-                    key={tag.label}
-                    variant="outline"
-                    className={cn(
-                      "gap-0.5 px-1.5 py-0 text-[9px] leading-4",
-                      tag.className
-                    )}
-                  >
-                    {tag.icon}
-                    {tag.label}
-                  </Badge>
-                ))}
+              {tags?.map((tag) => (
+                <Badge
+                  key={tag.label}
+                  variant="outline"
+                  className={cn(
+                    "gap-0.5 px-1.5 py-0 text-[9px] leading-4",
+                    tag.className
+                  )}
+                >
+                  {tag.icon}
+                  {tag.label}
+                </Badge>
+              ))}
               {!categories?.length && !tags?.length && name == null && (
                 <>
                   <Skeleton className="h-4 w-12 rounded-full" />
