@@ -164,8 +164,8 @@ export function HoloCard(props: HoloCardProps) {
   // 3D tilt (±10 degrees), matching pokemon-cards-css: rotateY(-(centerX/3.5)) rotateX(centerY/3.5)
   const centerX = mousePos.x - 50;
   const centerY = mousePos.y - 50;
-  const rotateX = isHovering ? clamp(centerY / 5, -10, 10) : 0;
-  const rotateY = isHovering ? clamp(-centerX / 5, -10, 10) : 0;
+  const rotateX = isHovering ? clamp(centerY / 10, -5, 5) : 0;
+  const rotateY = isHovering ? clamp(-centerX / 10, -5, 5) : 0;
 
   // Pointer distance from center (0..1) — used for brightness/opacity
   const pointerFromCenter = isHovering
@@ -204,16 +204,11 @@ export function HoloCard(props: HoloCardProps) {
           transition: isHovering
             ? "transform 0.1s ease-out"
             : "transform 0.5s ease-out",
-          // Dynamic glow shadow (like pokemon-cards-css .card__rotator:focus)
+          // Subtle glow on hover
           boxShadow: isHovering
-            ? `0 0 3px -1px white,
-               0 0 3px 1px hsl(47, 100%, 78%),
-               0 0 12px 2px ${categoryStyle.glow},
-               0px 10px 20px -5px rgba(0,0,0,0.5),
-               0 0 40px -30px ${categoryStyle.glow},
-               0 0 50px -20px ${categoryStyle.glow}`
-            : `0px 10px 20px -5px rgba(0,0,0,0.3),
-               0 2px 15px -5px rgba(0,0,0,0.2)`,
+            ? `0 0 8px 1px ${categoryStyle.glow}40,
+               0px 8px 16px -4px rgba(0,0,0,0.4)`
+            : `0px 4px 12px -4px rgba(0,0,0,0.25)`,
           borderRadius: "4.55% / 3.5%",
           transitionProperty: isHovering
             ? "transform"
@@ -238,88 +233,31 @@ export function HoloCard(props: HoloCardProps) {
           }}
         >
           {/* ======================================================
-              SHINE LAYER — Multi-gradient holographic effect
-              Inspired by pokemon-cards-css regular-holo .card__shine
+              SHINE — Subtle rainbow shimmer (toned down)
           ====================================================== */}
           <div
             className="pointer-events-none absolute inset-0 z-10"
             style={{
               borderRadius: "inherit",
-              // Rainbow repeating gradient + scanlines overlay
               backgroundImage: `
                 repeating-linear-gradient(
                   133deg,
                   ${sunpillars[1]}, ${sunpillars[2]}, ${sunpillars[3]},
                   ${sunpillars[4]}, ${sunpillars[5]}, ${sunpillars[6]},
-                  ${sunpillars[1]}, ${sunpillars[2]}, ${sunpillars[3]},
-                  ${sunpillars[4]}, ${sunpillars[5]}, ${sunpillars[6]},
                   ${sunpillars[1]}
-                ),
-                repeating-linear-gradient(
-                  90deg,
-                  rgba(0,0,0,1) 0px, rgba(0,0,0,1) 1px,
-                  rgba(100,100,100,1) 1px, rgba(100,100,100,1) 2px
                 )
               `,
-              // Parallax background position tied to pointer (pokemon-cards-css style)
-              backgroundPosition: `
-                calc(((50% - ${bgPos.x}%) * 2.6) + 50%) calc(((50% - ${bgPos.y}%) * 3.5) + 50%),
-                center center
-              `,
-              backgroundSize: "400% 400%, cover",
-              backgroundBlendMode: "overlay",
-              // Critical filter chain from pokemon-cards-css
-              filter: "brightness(1.1) contrast(1.1) saturate(1.2)",
+              backgroundPosition: `calc(((50% - ${bgPos.x}%) * 1.5) + 50%) calc(((50% - ${bgPos.y}%) * 2) + 50%)`,
+              backgroundSize: "300% 300%",
+              filter: "brightness(0.9) saturate(0.8)",
               mixBlendMode: "color-dodge",
-              opacity: cardOpacity,
-              transition: "opacity 0.3s ease",
+              opacity: cardOpacity * 0.35,
+              transition: "opacity 0.4s ease",
             }}
           />
 
           {/* ======================================================
-              SHINE:before — Horizontal bar overlay for depth
-              (pokemon-cards-css regular-holo .card__shine:before)
-          ====================================================== */}
-          <div
-            className="pointer-events-none absolute inset-0 z-10"
-            style={{
-              borderRadius: "inherit",
-              backgroundImage: `
-                repeating-linear-gradient(
-                  90deg,
-                  hsla(0,0%,0%,1) 6%,
-                  hsla(0,0%,70%,1) 9%,
-                  hsla(0,0%,0%,1) 10.5%,
-                  hsla(0,0%,70%,1) 12%,
-                  hsla(0,0%,0%,1) 15%,
-                  hsla(0,0%,0%,1) 42%
-                ),
-                repeating-linear-gradient(
-                  90deg,
-                  hsla(0,0%,0%,1) 6%,
-                  hsla(0,0%,70%,1) 9%,
-                  hsla(0,0%,0%,1) 10.5%,
-                  hsla(0,0%,70%,1) 12%,
-                  hsla(0,0%,0%,1) 15%,
-                  hsla(0,0%,0%,1) 30%
-                )
-              `,
-              backgroundPosition: `
-                calc((((50% - ${bgPos.x}%) * 1.65) + 50%) + (${bgPos.y}% * 0.005)) ${bgPos.x}%,
-                calc((((50% - ${bgPos.x}%) * -0.9) + 50%) - (${bgPos.y}% * 0.0075)) ${bgPos.y}%
-              `,
-              backgroundSize: "200% 200%, 200% 200%",
-              backgroundBlendMode: "screen",
-              filter: "brightness(1.15) contrast(1.1)",
-              mixBlendMode: "hard-light",
-              opacity: cardOpacity,
-              transition: "opacity 0.3s ease",
-            }}
-          />
-
-          {/* ======================================================
-              SHINE:after — Radial luminosity mask
-              (pokemon-cards-css regular-holo .card__shine:after)
+              GLARE — Soft light spot following mouse
           ====================================================== */}
           <div
             className="pointer-events-none absolute inset-0 z-10"
@@ -328,61 +266,14 @@ export function HoloCard(props: HoloCardProps) {
               backgroundImage: `
                 radial-gradient(
                   farthest-corner circle at ${mousePos.x}% ${mousePos.y}%,
-                  hsla(0, 0%, 90%, 0.8) 0%,
-                  hsla(0, 0%, 78%, 0.1) 25%,
-                  hsl(0, 0%, 0%) 90%
-                )
-              `,
-              mixBlendMode: "luminosity",
-              filter: "brightness(0.6) contrast(4)",
-              opacity: cardOpacity,
-              transition: "opacity 0.3s ease",
-            }}
-          />
-
-          {/* ======================================================
-              GLARE LAYER — Main light reflection
-              (pokemon-cards-css .card__glare)
-          ====================================================== */}
-          <div
-            className="pointer-events-none absolute inset-0 z-10"
-            style={{
-              borderRadius: "inherit",
-              backgroundImage: `
-                radial-gradient(
-                  farthest-corner circle at ${mousePos.x}% ${mousePos.y}%,
-                  hsla(0, 0%, 100%, 0.8) 10%,
-                  hsla(0, 0%, 100%, 0.65) 20%,
-                  hsla(0, 0%, 0%, 0.5) 90%
+                  hsla(0, 0%, 100%, 0.25) 0%,
+                  hsla(0, 0%, 100%, 0.1) 30%,
+                  transparent 70%
                 )
               `,
               mixBlendMode: "overlay",
-              filter: "brightness(0.8) contrast(1.5)",
-              opacity: cardOpacity * 0.8,
-              transition: "opacity 0.3s ease",
-            }}
-          />
-
-          {/* ======================================================
-              GLARE:after — Secondary glare (color highlight)
-              (pokemon-cards-css regular-holo .card__glare:after)
-          ====================================================== */}
-          <div
-            className="pointer-events-none absolute inset-0 z-10"
-            style={{
-              borderRadius: "inherit",
-              backgroundImage: `
-                radial-gradient(
-                  farthest-corner circle at ${mousePos.x}% ${mousePos.y}%,
-                  hsl(180, 100%, 95%) 5%,
-                  hsla(0, 0%, 39%, 0.25) 55%,
-                  hsla(0, 0%, 0%, 0.36) 110%
-                )
-              `,
-              mixBlendMode: "overlay",
-              filter: "brightness(0.6) contrast(3)",
-              opacity: cardOpacity * clamp(1 - pointerFromTop * 0.75, 0, 1),
-              transition: "opacity 0.3s ease",
+              opacity: cardOpacity * 0.6,
+              transition: "opacity 0.4s ease",
             }}
           />
 
