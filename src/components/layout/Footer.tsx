@@ -84,7 +84,7 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 border-t border-border/50 pt-6 sm:flex-row">
           <div className="flex items-center gap-2">
             <MoltisLogo size={20} />
-            <span className="text-gradient-violet text-sm font-extrabold uppercase tracking-wider">
+            <span className="text-white text-sm font-extrabold uppercase tracking-wider">
               MOLTIS
             </span>
             <span className="text-xs text-muted-foreground">

@@ -44,7 +44,7 @@ export function Header() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
             <MoltisLogo size={28} />
-            <span className="text-gradient-violet text-lg font-extrabold uppercase tracking-wider">
+            <span className="text-white text-lg font-extrabold uppercase tracking-wider">
               MOLTIS
             </span>
           </Link>
@@ -146,7 +146,7 @@ export function Header() {
               {/* Mobile logo */}
               <div className="flex items-center gap-2 px-4 pb-4 pt-2">
                 <MoltisLogo size={24} />
-                <span className="text-gradient-violet text-lg font-extrabold uppercase tracking-wider">
+                <span className="text-white text-lg font-extrabold uppercase tracking-wider">
                   MOLTIS
                 </span>
               </div>
