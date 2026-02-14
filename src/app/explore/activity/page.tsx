@@ -21,6 +21,7 @@ import { PageHeader } from '@/components/layout/PageHeader'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { ChainFilter } from '@/components/agents/ChainFilter'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn, formatAddress, formatDistanceToNowSmart } from '@/lib/utils'
@@ -328,11 +329,13 @@ function ActivityRowSkeleton() {
 export default function ActivityPage() {
   const { data: stats, isLoading: statsLoading } = useStats()
   const [filter, setFilter] = useState<EventCategory | 'all' | 'marketplace'>('all')
+  const [chainId, setChainId] = useState<number | undefined>(undefined)
   const [page, setPage] = useState(1)
   const limit = 20
 
   const { data: activityData, isLoading: activityLoading } = useGlobalActivity({
     event_type: filter === 'all' ? undefined : filter,
+    chain_id: chainId,
     page,
     limit,
   })
@@ -438,6 +441,9 @@ export default function ActivityPage() {
             )}
           </div>
         </div>
+
+        {/* Chain filter */}
+        <ChainFilter selected={chainId} onSelect={(id) => { setChainId(id); setPage(1) }} />
 
         {/* Filter pills */}
         <div className="flex flex-wrap items-center gap-1.5">

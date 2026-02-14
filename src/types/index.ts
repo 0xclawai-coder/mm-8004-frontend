@@ -422,6 +422,7 @@ export interface AgentFilters {
 
 export interface ActivityFilters {
   event_type?: EventCategory
+  chain_id?: number
   page?: number
   limit?: number
 }

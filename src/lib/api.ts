@@ -101,6 +101,7 @@ export function getGlobalActivity(
   const params: Record<string, string | undefined> = {}
   if (filters) {
     if (filters.event_type) params.event_type = filters.event_type
+    if (filters.chain_id !== undefined) params.chain_id = String(filters.chain_id)
     if (filters.page !== undefined) params.page = String(filters.page)
     if (filters.limit !== undefined) params.limit = String(filters.limit)
   }
