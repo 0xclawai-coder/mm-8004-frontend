@@ -193,11 +193,13 @@ function AuctionCardSkeleton() {
 export default function AuctionsPage() {
   const [chainId, setChainId] = useState<number | undefined>(undefined)
   const [sort, setSort] = useState<AuctionSortOrder>('ending_soon')
+  const [statusFilter, setStatusFilter] = useState<string>('Active')
   const [page, setPage] = useState(1)
   const limit = 24
 
   const { data, isLoading } = useAuctions({
     chain_id: chainId,
+    status: statusFilter || undefined,
     sort,
     page,
     limit,
@@ -246,6 +248,22 @@ export default function AuctionsPage() {
               <SelectItem value="recent">Newest</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        <div className="flex items-center gap-1.5">
+          {['Active', 'Ended', ''].map((s) => (
+            <button
+              key={s}
+              onClick={() => { setStatusFilter(s); setPage(1) }}
+              className={cn(
+                'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+                statusFilter === s
+                  ? 'border-violet-500/50 bg-violet-500/10 text-violet-300'
+                  : 'border-border/50 bg-card/80 text-muted-foreground hover:text-foreground'
+              )}
+            >
+              {s || 'All'}
+            </button>
+          ))}
         </div>
         <div className="-mx-1 overflow-x-auto px-1 pb-1">
           <ChainFilter
