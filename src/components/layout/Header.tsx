@@ -43,7 +43,7 @@ export function Header() {
         {/* Left: Logo + Desktop Nav inline */}
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
-            <MoltisLogo size={28} />
+            <MoltisLogo size={34} />
             <span className="text-white text-lg font-extrabold uppercase tracking-wider">
               MOLTIS
             </span>
