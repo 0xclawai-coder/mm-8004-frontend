@@ -169,34 +169,48 @@ export default function BundlesPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Bundles" subtitle="Buy and sell agent identity bundles" />
+      <PageHeader title="Portfolio Deals" subtitle="Acquire multiple agent identities in a single transaction" />
 
-      {/* Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          {isLoading ? <Skeleton className="h-4 w-24" /> : <span>{total} Bundles</span>}
+      {/* Coming Soon Overlay */}
+      <div className="relative">
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-2xl bg-background/60 backdrop-blur-sm">
+          <div className="rounded-full border border-primary/30 bg-primary/10 px-5 py-2 text-sm font-semibold text-primary">
+            Coming Soon
+          </div>
+          <p className="max-w-xs text-center text-sm text-muted-foreground">
+            Portfolio deals allow acquiring multiple agent identities in a single M&A transaction.
+          </p>
         </div>
-        <ChainFilter selected={chainId} onSelect={(v) => { setChainId(v); setPage(1) }} />
+
+        <div className="pointer-events-none select-none opacity-50">
+          {/* Filters */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              {isLoading ? <Skeleton className="h-4 w-24" /> : <span>{total} Bundles</span>}
+            </div>
+            <ChainFilter selected={chainId} onSelect={(v) => { setChainId(v); setPage(1) }} />
+          </div>
+
+          {/* Grid */}
+          {isLoading ? (
+            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              {Array.from({ length: 6 }).map((_, i) => <BundleCardSkeleton key={i} />)}
+            </div>
+          ) : bundles.length === 0 ? (
+            <EmptyState
+              icon={Package}
+              title="No Bundles Listed"
+              description="Bundle listings will appear here once sellers create multi-identity packages."
+            />
+          ) : (
+            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              {bundles.map((bundle) => (
+                <BundleCard key={`${bundle.chain_id}-${bundle.bundle_id}`} bundle={bundle} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-
-      {/* Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {Array.from({ length: 6 }).map((_, i) => <BundleCardSkeleton key={i} />)}
-        </div>
-      ) : bundles.length === 0 ? (
-        <EmptyState
-          icon={Package}
-          title="No Bundles Listed"
-          description="Bundle listings will appear here once sellers create multi-identity packages."
-        />
-      ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {bundles.map((bundle) => (
-            <BundleCard key={`${bundle.chain_id}-${bundle.bundle_id}`} bundle={bundle} />
-          ))}
-        </div>
-      )}
 
       {/* Pagination */}
       <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
