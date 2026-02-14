@@ -17,7 +17,8 @@ const chains = [
 
 export function ChainFilter({ selected, onSelect, className }: ChainFilterProps) {
   return (
-    <div className={cn('flex gap-2', className)}>
+    <div className={cn('-mx-1 overflow-x-auto px-1 pb-1', className)}>
+      <div className="flex w-max gap-1.5 sm:gap-2">
       {chains.map((chain) => {
         const isActive = selected === chain.id
         return (
@@ -27,7 +28,7 @@ export function ChainFilter({ selected, onSelect, className }: ChainFilterProps)
             size="sm"
             onClick={() => onSelect(chain.id)}
             className={cn(
-              'shrink-0 rounded-full text-xs',
+              'shrink-0 rounded-full px-2.5 text-xs sm:px-3',
               isActive
                 ? 'bg-primary text-primary-foreground'
                 : 'border-border/50 bg-transparent text-muted-foreground hover:border-primary/30 hover:text-foreground'
@@ -41,11 +42,12 @@ export function ChainFilter({ selected, onSelect, className }: ChainFilterProps)
             )}
             {chain.label}
             {chain.id !== undefined && (
-              <span className="text-muted-foreground">({chain.id})</span>
+              <span className="hidden text-muted-foreground sm:inline">({chain.id})</span>
             )}
           </Button>
         )
       })}
+      </div>
     </div>
   )
 }

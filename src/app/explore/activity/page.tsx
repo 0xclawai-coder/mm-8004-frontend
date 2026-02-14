@@ -446,7 +446,8 @@ export default function ActivityPage() {
         <ChainFilter selected={chainId} onSelect={(id) => { setChainId(id); setPage(1) }} />
 
         {/* Filter pills */}
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="-mx-1 overflow-x-auto px-1 pb-1">
+        <div className="flex w-max items-center gap-1.5">
           <Filter className="size-3.5 text-muted-foreground" />
           {FILTER_OPTIONS.map((opt) => (
             <button
@@ -465,6 +466,7 @@ export default function ActivityPage() {
               {opt.label}
             </button>
           ))}
+        </div>
         </div>
 
         {/* Activity Table */}
