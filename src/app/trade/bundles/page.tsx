@@ -213,11 +213,14 @@ export default function BundlesPage() {
           <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1 || isLoading} className="h-8 gap-1 border-border/50 bg-card/80 px-3 text-xs">
             <ChevronLeft className="size-3.5" /> Prev
           </Button>
+          <span className="hidden items-center gap-1 sm:flex">
           {pageNumbers.map((p) => (
             <Button key={p} variant={p === page ? 'default' : 'outline'} size="sm" onClick={() => setPage(p)} disabled={isLoading} className={cn('size-8 p-0 text-xs', p !== page && 'border-border/50 bg-card/80')}>
               {p}
             </Button>
           ))}
+          </span>
+          <span className="text-xs text-muted-foreground sm:hidden">{page}/{totalPages}</span>
           <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page >= totalPages || isLoading} className="h-8 gap-1 border-border/50 bg-card/80 px-3 text-xs">
             Next <ChevronRight className="size-3.5" />
           </Button>

@@ -516,6 +516,7 @@ export default function MarketplacePage() {
             <ChevronLeft className="size-3.5" />
             Prev
           </Button>
+          <span className="hidden items-center gap-1 sm:flex">
           {isLoading && pageNumbers.length === 0 ? (
             <Skeleton className="h-8 w-8 rounded-md" />
           ) : (
@@ -536,6 +537,8 @@ export default function MarketplacePage() {
               </Button>
             ))
           )}
+          </span>
+          <span className="text-xs text-muted-foreground sm:hidden">{page}/{totalPages}</span>
           <Button
             variant="outline"
             size="sm"
