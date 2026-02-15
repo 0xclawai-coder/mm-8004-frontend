@@ -189,11 +189,11 @@ export function ReputationActivityTab({ agentId }: ReputationActivityTabProps) {
               <div className="flex items-center gap-2">
                 <Skeleton className="size-8 shrink-0 rounded-full" />
                 <div className="space-y-1">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-3 w-28" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-3 w-full" />
                 </div>
               </div>
-              <Skeleton className="h-3 w-28 shrink-0" />
+              <Skeleton className="h-3 w-full shrink-0" />
             </div>
             {/* Score + Tags */}
             <div className="flex items-center gap-3">
@@ -202,11 +202,11 @@ export function ReputationActivityTab({ agentId }: ReputationActivityTabProps) {
                   <Skeleton key={j} className="size-3 rounded-sm" />
                 ))}
               </div>
-              <Skeleton className="h-4 w-8" />
+              <Skeleton className="h-4 w-full" />
               <Skeleton className="h-5 w-14 rounded-full" />
             </div>
             {/* Tx hash */}
-            <Skeleton className="h-3 w-36" />
+            <Skeleton className="h-3 w-full" />
           </div>
         ))}
       </div>

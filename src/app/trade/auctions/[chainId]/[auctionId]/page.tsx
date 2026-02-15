@@ -726,10 +726,10 @@ export default function AuctionDetailPage({
               {/* Content — matches HoloCard: score + stars + tags + chain */}
               <div className="flex flex-col gap-3 p-5">
                 <div className="flex items-center justify-between">
-                  <Skeleton className="h-7 w-24" />
-                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-7 w-full" />
+                  <Skeleton className="h-3 w-full" />
                 </div>
-                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-full" />
                 <div className="flex gap-1.5">
                   <Skeleton className="h-5 w-16 rounded-full" />
                   <Skeleton className="h-5 w-20 rounded-full" />
@@ -751,7 +751,7 @@ export default function AuctionDetailPage({
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-                {auction ? (auction.agent_name || `Agent #${auction.token_id}`) : <Skeleton className="inline-block h-8 w-48" />}
+                {auction ? (auction.agent_name || `Agent #${auction.token_id}`) : <Skeleton className="inline-block h-8 w-full" />}
               </h1>
               {auction ? (
                 <>
@@ -787,7 +787,7 @@ export default function AuctionDetailPage({
               </p>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Sold by <Skeleton className="inline-block h-3 w-24 align-middle" />
+                Sold by <Skeleton className="inline-block h-3 w-full align-middle" />
               </p>
             )}
           </div>
@@ -1040,11 +1040,11 @@ export default function AuctionDetailPage({
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                   <div className="flex flex-col gap-1">
                     <p className="text-xs text-muted-foreground">Floor Valuation</p>
-                    <Skeleton className="h-9 w-48" />
+                    <Skeleton className="h-9 w-full" />
                   </div>
                   <div className="flex flex-col gap-1 items-end">
                     <p className="text-xs text-muted-foreground">Ends In</p>
-                    <Skeleton className="h-8 w-40" />
+                    <Skeleton className="h-8 w-full" />
                   </div>
                 </div>
                 {/* Skeleton for CTA */}
@@ -1054,7 +1054,7 @@ export default function AuctionDetailPage({
                   {['Floor', 'Reserve', 'Acquire Now', 'Offers'].map((label) => (
                     <div key={label} className="flex flex-col gap-1 rounded-lg border border-border/30 bg-muted/20 p-3 text-center">
                       <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</p>
-                      <Skeleton className="mx-auto h-5 w-16" />
+                      <Skeleton className="mx-auto h-5 w-full" />
                     </div>
                   ))}
                 </div>

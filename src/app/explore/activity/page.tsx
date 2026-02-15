@@ -232,7 +232,7 @@ function StatCardLoading({ label, icon, accent, subtext }: { label: string; icon
         </div>
         <div className="min-w-0">
           <p className="text-xs text-muted-foreground">{label}</p>
-          <Skeleton className="mt-1 h-6 w-16" />
+          <Skeleton className="mt-1 h-6 w-full" />
           {subtext && (
             <p className="text-[10px] text-muted-foreground">{subtext}</p>
           )}
@@ -316,13 +316,13 @@ function ActivityRowSkeleton() {
       {/* Event badge — matches w-28 */}
       <Skeleton className="h-5 w-28 shrink-0 rounded-full" />
       {/* Agent name — matches w-36 */}
-      <Skeleton className="h-4 w-36 shrink-0" />
+      <Skeleton className="h-4 w-full shrink-0" />
       {/* Details — flex-1, fill remaining space */}
       <Skeleton className="h-4 w-full flex-1" />
       {/* Chain badge — matches w-16 hidden sm:inline-flex */}
       <Skeleton className="h-5 w-16 shrink-0 rounded-full hidden sm:block" />
       {/* Time — matches w-16 text-right */}
-      <Skeleton className="h-4 w-16 shrink-0" />
+      <Skeleton className="h-4 w-full shrink-0" />
       {/* TX icon — matches size-3.5 */}
       <Skeleton className="size-3.5 shrink-0" />
     </div>

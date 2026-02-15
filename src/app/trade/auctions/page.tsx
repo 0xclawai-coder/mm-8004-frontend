@@ -164,21 +164,21 @@ function AuctionCardSkeleton() {
         </div>
         {/* Name + bid count */}
         <div className="flex items-start justify-between gap-2">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-3 w-8 shrink-0" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-3 w-full shrink-0" />
         </div>
         {/* Bid + Time */}
         <div className="flex items-end justify-between gap-2">
           <div className="space-y-1">
-            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-3 w-full" />
             <div className="flex items-center gap-1">
-              <Skeleton className="h-4 w-16" />
-              <Skeleton className="h-3 w-8" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-3 w-full" />
             </div>
           </div>
           <div className="space-y-1">
-            <Skeleton className="ml-auto h-3 w-12" />
-            <Skeleton className="ml-auto h-4 w-14" />
+            <Skeleton className="ml-auto h-3 w-full" />
+            <Skeleton className="ml-auto h-4 w-full" />
           </div>
         </div>
       </div>
@@ -233,7 +233,7 @@ export default function AuctionsPage() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             {isLoading ? (
-              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-full" />
             ) : (
               <span>{total} Rounds</span>
             )}
@@ -304,7 +304,7 @@ export default function AuctionsPage() {
       <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
         <div className="text-sm text-muted-foreground">
           {isLoading ? (
-            <Skeleton className="inline-block h-4 w-40" />
+            <Skeleton className="inline-block h-4 w-full" />
           ) : total > 0 ? (
             <>Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}</>
           ) : (

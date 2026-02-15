@@ -288,7 +288,7 @@ export function HoloCard(props: HoloCardProps) {
                 {name}
               </h3>
             ) : (
-              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-full" />
             )}
             {score != null ? (
               <div className="flex shrink-0 items-center gap-1 ml-2">
@@ -298,7 +298,7 @@ export function HoloCard(props: HoloCardProps) {
                 </span>
               </div>
             ) : (
-              <Skeleton className="h-4 w-12" />
+              <Skeleton className="h-4 w-full" />
             )}
           </div>
 
@@ -341,7 +341,7 @@ export function HoloCard(props: HoloCardProps) {
                 &nbsp;
               </span>
             ) : (
-              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-3 w-full" />
             )}
           </div>
 
@@ -405,7 +405,7 @@ export function HoloCard(props: HoloCardProps) {
             ) : name != null ? (
               <span />
             ) : (
-              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-3 w-full" />
             )}
             {chainId != null ? (
               <Badge

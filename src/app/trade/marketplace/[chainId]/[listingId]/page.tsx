@@ -415,10 +415,10 @@ function TopOffersTable({
           <div className="divide-y divide-border/20">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="flex items-center justify-between px-4 py-3">
-                <Skeleton className="h-4 w-16" />
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-4 w-12" />
-                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
               </div>
             ))}
           </div>
@@ -767,8 +767,8 @@ function ItemActivitySection({ agentId }: { agentId: string }) {
               <Skeleton className="size-5 rounded" />
               <Skeleton className="h-5 w-24 rounded-full" />
               <Skeleton className="h-4 flex-1 max-w-[200px]" />
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
               <Skeleton className="size-3.5" />
             </div>
           ))
@@ -1321,10 +1321,10 @@ export default function ListingDetailPage({
               {/* Content — matches HoloCard: score + stars + tags + chain */}
               <div className="flex flex-col gap-3 p-5">
                 <div className="flex items-center justify-between">
-                  <Skeleton className="h-7 w-24" />
-                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-7 w-full" />
+                  <Skeleton className="h-3 w-full" />
                 </div>
-                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-full" />
                 <div className="flex gap-1.5">
                   <Skeleton className="h-5 w-16 rounded-full" />
                   <Skeleton className="h-5 w-20 rounded-full" />
@@ -1377,7 +1377,7 @@ export default function ListingDetailPage({
                   <span className="text-lg text-muted-foreground font-normal"> #{listing.token_id}</span>
                 </>
               ) : (
-                <Skeleton className="inline-block h-8 w-64" />
+                <Skeleton className="inline-block h-8 w-full" />
               )}
             </h1>
 
@@ -1388,7 +1388,7 @@ export default function ListingDetailPage({
                 </p>
               )
             ) : (
-              <Skeleton className="h-4 w-96" />
+              <Skeleton className="h-4 w-full" />
             )}
 
             {/* Badges row */}
@@ -1442,7 +1442,7 @@ export default function ListingDetailPage({
               ) : (
                 <>
                   <span>Current Owner</span>
-                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-3 w-full" />
                 </>
               )}
             </div>
@@ -1562,11 +1562,11 @@ export default function ListingDetailPage({
               <>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Clock className="size-3" />
-                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-3 w-full" />
                 </div>
                 <div className="flex flex-col gap-1">
                   <p className="text-sm text-muted-foreground">Asking Price</p>
-                  <Skeleton className="h-9 w-48" />
+                  <Skeleton className="h-9 w-full" />
                 </div>
                 <div className="flex gap-3 pt-2">
                   <Skeleton className="h-11 flex-1 rounded-lg" />
@@ -1608,28 +1608,28 @@ export default function ListingDetailPage({
                     <DollarSign className="size-3" />
                     <span className="text-[10px] uppercase tracking-wider font-medium">Price</span>
                   </div>
-                  <Skeleton className="mx-auto h-5 w-20" />
+                  <Skeleton className="mx-auto h-5 w-full" />
                 </div>
                 <div className="rounded-xl border border-border/30 bg-card/40 p-3 text-center space-y-1">
                   <div className="flex items-center justify-center gap-1.5 text-muted-foreground">
                     <TrendingUp className="size-3" />
                     <span className="text-[10px] uppercase tracking-wider font-medium">Last Sale</span>
                   </div>
-                  <Skeleton className="mx-auto h-5 w-20" />
+                  <Skeleton className="mx-auto h-5 w-full" />
                 </div>
                 <div className="rounded-xl border border-border/30 bg-card/40 p-3 text-center space-y-1">
                   <div className="flex items-center justify-center gap-1.5 text-muted-foreground">
                     <User className="size-3" />
                     <span className="text-[10px] uppercase tracking-wider font-medium">Owner</span>
                   </div>
-                  <Skeleton className="mx-auto h-5 w-20" />
+                  <Skeleton className="mx-auto h-5 w-full" />
                 </div>
                 <div className="rounded-xl border border-border/30 bg-card/40 p-3 text-center space-y-1">
                   <div className="flex items-center justify-center gap-1.5 text-muted-foreground">
                     <HandCoins className="size-3" />
                     <span className="text-[10px] uppercase tracking-wider font-medium">Top Offer</span>
                   </div>
-                  <Skeleton className="mx-auto h-5 w-20" />
+                  <Skeleton className="mx-auto h-5 w-full" />
                 </div>
               </>
             )}
@@ -1648,7 +1648,7 @@ export default function ListingDetailPage({
                 {['Listing ID', 'Status', 'Payment', 'Listed', 'Expiry'].map((label) => (
                   <div key={label} className="flex items-center justify-between gap-2 px-4 py-3">
                     <span className="text-xs text-muted-foreground uppercase tracking-wider">{label}</span>
-                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-full" />
                   </div>
                 ))}
               </div>
@@ -1665,8 +1665,8 @@ export default function ListingDetailPage({
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="rounded-xl border border-border/30 bg-card/40 p-3 space-y-2">
-                    <Skeleton className="h-3 w-16" />
-                    <Skeleton className="h-5 w-20" />
+                    <Skeleton className="h-3 w-full" />
+                    <Skeleton className="h-5 w-full" />
                   </div>
                 ))}
               </div>

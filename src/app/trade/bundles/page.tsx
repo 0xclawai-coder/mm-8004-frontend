@@ -112,25 +112,25 @@ function BundleCardSkeleton() {
       <div className="space-y-3 p-3">
         {/* Row 1: name + badge — flex items-start justify-between gap-2 */}
         <div className="flex items-start justify-between gap-2">
-          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-full" />
           <Skeleton className="h-5 w-14 shrink-0 rounded-full" />
         </div>
         {/* Row 2: price + seller — flex items-end justify-between gap-2 */}
         <div className="flex items-end justify-between gap-2">
           <div className="space-y-1">
-            <Skeleton className="h-3 w-10" />
+            <Skeleton className="h-3 w-full" />
             <div className="flex items-center gap-1">
-              <Skeleton className="h-4 w-16" />
-              <Skeleton className="h-3 w-8" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-3 w-full" />
             </div>
           </div>
           <div className="space-y-1">
-            <Skeleton className="ml-auto h-3 w-10" />
-            <Skeleton className="ml-auto h-3 w-16" />
+            <Skeleton className="ml-auto h-3 w-full" />
+            <Skeleton className="ml-auto h-3 w-full" />
           </div>
         </div>
         {/* Row 3: timestamp */}
-        <Skeleton className="h-3 w-24" />
+        <Skeleton className="h-3 w-full" />
       </div>
     </div>
   )
@@ -186,7 +186,7 @@ export default function BundlesPage() {
           {/* Filters */}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {isLoading ? <Skeleton className="h-4 w-24" /> : <span>{total} Bundles</span>}
+              {isLoading ? <Skeleton className="h-4 w-full" /> : <span>{total} Bundles</span>}
             </div>
             <ChainFilter selected={chainId} onSelect={(v) => { setChainId(v); setPage(1) }} />
           </div>
@@ -216,7 +216,7 @@ export default function BundlesPage() {
       <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
         <div className="text-sm text-muted-foreground">
           {isLoading ? (
-            <Skeleton className="inline-block h-4 w-40" />
+            <Skeleton className="inline-block h-4 w-full" />
           ) : total > 0 ? (
             <>Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}</>
           ) : (

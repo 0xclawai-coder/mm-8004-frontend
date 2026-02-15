@@ -588,8 +588,8 @@ function AgentCardSkeleton() {
         >
           {/* Header */}
           <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-4 w-12" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
           </div>
           {/* Image frame */}
           <div className="mx-3 mt-0.5 flex-1 max-h-[52%] overflow-hidden" style={{ borderRadius: '3%', border: '2px solid hsla(0, 0%, 100%, 0.1)' }}>
@@ -597,12 +597,12 @@ function AgentCardSkeleton() {
           </div>
           {/* Info strip */}
           <div className="flex justify-center px-3 pt-1.5">
-            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-3 w-full" />
           </div>
           {/* Stats */}
           <div className="flex flex-col gap-1.5 px-3 pt-1.5">
             <Skeleton className="h-5 w-full" />
-            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-3 w-full" />
             <div className="flex gap-1">
               <Skeleton className="h-4 w-12 rounded-full" />
               <Skeleton className="h-4 w-14 rounded-full" />
@@ -610,7 +610,7 @@ function AgentCardSkeleton() {
           </div>
           {/* Footer */}
           <div className="mt-auto flex items-center justify-between px-3 pb-2.5 pt-1">
-            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-3 w-full" />
             <Skeleton className="h-4 w-12 rounded-full" />
           </div>
         </div>

@@ -241,11 +241,11 @@ function MobileCardSkeleton({ count }: { count: number }) {
         >
           <Skeleton className="size-14 shrink-0 rounded-lg" />
           <div className="min-w-0 flex-1 space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-3 w-full" />
           </div>
           <div className="shrink-0 space-y-2 text-right">
-            <Skeleton className="ml-auto h-4 w-16" />
+            <Skeleton className="ml-auto h-4 w-full" />
             <Skeleton className="ml-auto h-5 w-14 rounded-full" />
           </div>
         </div>
@@ -498,7 +498,7 @@ export default function MarketplacePage() {
       <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
         <div className="text-sm text-muted-foreground">
           {isLoading ? (
-            <Skeleton className="inline-block h-4 w-40" />
+            <Skeleton className="inline-block h-4 w-full" />
           ) : total > 0 ? (
             <>Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}</>
           ) : (

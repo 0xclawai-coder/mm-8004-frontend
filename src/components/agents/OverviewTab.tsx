@@ -314,11 +314,11 @@ export function OverviewTab({ agent, agentId, chainId, agentNumericId, onSwitchT
                 <div className="flex items-center gap-3">
                   <Skeleton className="size-8 rounded-full" />
                   <div className="flex flex-col gap-1">
-                    <Skeleton className="h-3 w-28" />
+                    <Skeleton className="h-3 w-full" />
                     <Skeleton className="h-3 w-12 rounded-full" />
                   </div>
                 </div>
-                <Skeleton className="h-8 w-16 rounded-lg" />
+                <Skeleton className="h-8 w-full rounded-lg" />
               </div>
             ))
           ) : recentFeedbacks.length > 0 ? (

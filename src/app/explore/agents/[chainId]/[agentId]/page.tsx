@@ -30,7 +30,7 @@ function SkeletonInfoRow({ label }: { label: string }) {
   return (
     <div className="flex items-center justify-between gap-2 py-2">
       <span className="shrink-0 text-xs text-muted-foreground uppercase tracking-wider">{label}</span>
-      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-4 w-full" />
     </div>
   )
 }
@@ -160,7 +160,7 @@ export default function AgentDetailPage({
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-            {agent ? (agent.name || `Agent #${agent.agent_id}`) : <Skeleton className="inline-block h-8 w-48" />}
+            {agent ? (agent.name || `Agent #${agent.agent_id}`) : <Skeleton className="inline-block h-8 w-full" />}
           </h1>
           {badges.map((b) => (
             <Badge key={b.label} variant="outline" className={cn('text-xs gap-1', b.className)}>
@@ -174,7 +174,7 @@ export default function AgentDetailPage({
             {agent.description}
           </p>
         ) : !agent ? (
-          <Skeleton className="h-4 w-96" />
+          <Skeleton className="h-4 w-full" />
         ) : null}
         <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
           {agent ? (
@@ -197,9 +197,9 @@ export default function AgentDetailPage({
             </>
           ) : (
             <>
-              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-3 w-full" />
               <span className="h-3 w-px bg-border/50" />
-              <Skeleton className="h-3 w-32" />
+              <Skeleton className="h-3 w-full" />
             </>
           )}
         </div>
@@ -277,7 +277,7 @@ export default function AgentDetailPage({
                           {card.icon}
                         </div>
                         <div className="flex flex-col gap-0.5">
-                          <Skeleton className="mx-auto h-6 w-12" />
+                          <Skeleton className="mx-auto h-6 w-full" />
                           <p className="text-xs text-muted-foreground">{card.label}</p>
                         </div>
                       </div>
@@ -293,11 +293,11 @@ export default function AgentDetailPage({
                         <div className="flex items-center gap-3">
                           <Skeleton className="size-8 rounded-full" />
                           <div className="flex flex-col gap-1">
-                            <Skeleton className="h-3 w-28" />
+                            <Skeleton className="h-3 w-full" />
                             <Skeleton className="h-3 w-12 rounded-full" />
                           </div>
                         </div>
-                        <Skeleton className="h-8 w-16 rounded-lg" />
+                        <Skeleton className="h-8 w-full rounded-lg" />
                       </div>
                     ))}
                   </div>

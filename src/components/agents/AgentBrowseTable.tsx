@@ -39,7 +39,7 @@ function TableSkeleton({ rows }: { rows: number }) {
           <td className="px-4 py-3">
             <div className="flex items-center gap-3">
               <Skeleton className="size-8 shrink-0 rounded-full" />
-              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-4 w-full" />
             </div>
           </td>
           {/* Chain: Badge */}
@@ -50,16 +50,16 @@ function TableSkeleton({ rows }: { rows: number }) {
           <td className="px-4 py-3">
             <div className="flex items-center gap-1">
               <Skeleton className="size-3.5 rounded" />
-              <Skeleton className="h-4 w-10" />
+              <Skeleton className="h-4 w-full" />
             </div>
           </td>
           {/* Feedback */}
           <td className="hidden px-4 py-3 md:table-cell">
-            <Skeleton className="h-4 w-8" />
+            <Skeleton className="h-4 w-full" />
           </td>
           {/* Owner: mono address */}
           <td className="hidden px-4 py-3 lg:table-cell">
-            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-3 w-full" />
           </td>
           {/* X402: Badge */}
           <td className="hidden px-4 py-3 lg:table-cell">
@@ -67,7 +67,7 @@ function TableSkeleton({ rows }: { rows: number }) {
           </td>
           {/* Created */}
           <td className="hidden px-4 py-3 xl:table-cell">
-            <Skeleton className="h-3 w-14" />
+            <Skeleton className="h-3 w-full" />
           </td>
         </tr>
       ))}
@@ -302,7 +302,7 @@ export function AgentBrowseTable() {
       <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
           {isLoading ? (
-            <Skeleton className="h-4 w-40" />
+            <Skeleton className="h-4 w-full" />
           ) : total > 0 ? (
             <span>
               Showing {start}-{end} of {total} entities

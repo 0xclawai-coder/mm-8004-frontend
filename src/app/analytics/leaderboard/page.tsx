@@ -146,12 +146,12 @@ function WalletSkeleton({ rows }: { rows: number }) {
           <TableCell>
             <div className="flex items-center gap-2">
               <Skeleton className="size-8 shrink-0 rounded-full" />
-              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-4 w-full" />
             </div>
           </TableCell>
-          <TableCell><Skeleton className="ml-auto h-4 w-20" /></TableCell>
-          <TableCell className="hidden sm:table-cell"><Skeleton className="ml-auto h-4 w-10" /></TableCell>
-          <TableCell className="hidden md:table-cell"><Skeleton className="ml-auto h-4 w-16" /></TableCell>
+          <TableCell><Skeleton className="ml-auto h-4 w-full" /></TableCell>
+          <TableCell className="hidden sm:table-cell"><Skeleton className="ml-auto h-4 w-full" /></TableCell>
+          <TableCell className="hidden md:table-cell"><Skeleton className="ml-auto h-4 w-full" /></TableCell>
         </TableRow>
       ))}
     </>
@@ -212,7 +212,7 @@ export default function LeaderboardPage() {
       <section className="space-y-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-sm text-muted-foreground">
-            {isLoading ? <Skeleton className="h-4 w-24" /> : <span>{entries.length} Wallets</span>}
+            {isLoading ? <Skeleton className="h-4 w-full" /> : <span>{entries.length} Wallets</span>}
           </div>
           <ChainFilter selected={chainId} onSelect={setChainId} />
         </div>

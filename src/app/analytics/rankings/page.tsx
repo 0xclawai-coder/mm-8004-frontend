@@ -167,14 +167,14 @@ function RankingSkeleton({ rows }: { rows: number }) {
             <div className="flex items-center gap-3">
               <Skeleton className="size-9 shrink-0 rounded-lg" />
               <div className="space-y-1">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-3 w-full" />
               </div>
             </div>
           </TableCell>
           <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
-          <TableCell><Skeleton className="ml-auto h-4 w-10" /></TableCell>
-          <TableCell className="hidden sm:table-cell"><Skeleton className="ml-auto h-4 w-8" /></TableCell>
+          <TableCell><Skeleton className="ml-auto h-4 w-full" /></TableCell>
+          <TableCell className="hidden sm:table-cell"><Skeleton className="ml-auto h-4 w-full" /></TableCell>
           <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-10 rounded-full" /></TableCell>
           <TableCell className="hidden lg:table-cell"><Skeleton className="ml-auto h-5 w-16 rounded-full" /></TableCell>
         </TableRow>
@@ -216,7 +216,7 @@ export default function RankingsPage() {
       <section className="space-y-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-sm text-muted-foreground">
-            {isLoading ? <Skeleton className="h-4 w-24" /> : <span>{entries.length} Entities</span>}
+            {isLoading ? <Skeleton className="h-4 w-full" /> : <span>{entries.length} Entities</span>}
           </div>
           <ChainFilter selected={chainId} onSelect={setChainId} />
         </div>
