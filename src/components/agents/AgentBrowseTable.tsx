@@ -166,16 +166,16 @@ export function AgentBrowseTable() {
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-border/50 bg-card/40">
-        <table className="w-full table-fixed">
+        <table className="w-full">
           <thead>
             <tr className="border-b border-border/50 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              <th className="w-[200px] px-4 py-3">Name</th>
-              <th className="hidden w-[100px] px-4 py-3 sm:table-cell">Chain</th>
-              <th className="w-[90px] px-4 py-3">Score</th>
+              <th className="px-4 py-3">Name</th>
+              <th className="hidden px-4 py-3 sm:table-cell">Chain</th>
+              <th className="px-4 py-3">Score</th>
               <th className="hidden px-4 py-3 md:table-cell">Feedback</th>
               <th className="hidden px-4 py-3 lg:table-cell">Owner</th>
-              <th className="hidden w-[80px] px-4 py-3 lg:table-cell">X402</th>
-              <th className="hidden w-[120px] px-4 py-3 xl:table-cell">Created</th>
+              <th className="hidden px-4 py-3 lg:table-cell">X402</th>
+              <th className="hidden px-4 py-3 xl:table-cell">Created</th>
             </tr>
           </thead>
           <tbody>
