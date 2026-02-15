@@ -301,7 +301,7 @@ export default function AuctionsPage() {
       <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
         <div className="text-sm text-muted-foreground">
           {isLoading ? (
-            <Skeleton className="inline-block h-4 w-full" />
+            <Skeleton className="inline-block h-4 w-24" />
           ) : total > 0 ? (
             <>Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}</>
           ) : (
