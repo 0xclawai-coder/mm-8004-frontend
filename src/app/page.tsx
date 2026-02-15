@@ -130,7 +130,7 @@ function RecentListings() {
           View Deals <ArrowRight className="size-3.5" />
         </Link>
       </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {(isLoading
           ? Array.from({ length: 6 }).map((_, i) => ({ _skeleton: true, _key: i }))
           : listings.map((listing) => ({ ...listing, _skeleton: false, _key: `${listing.chain_id}-${listing.listing_id}` }))
@@ -153,7 +153,7 @@ function RecentListings() {
                   <Skeleton className="absolute inset-0" />
                 )}
               </div>
-              <div className="flex flex-col gap-0.5 p-3">
+              <div className="flex flex-col gap-0.5 px-2.5 py-2">
                 {listing ? (
                   <p className="truncate text-sm font-semibold text-foreground">
                     {listing.agent_name || `Agent #${listing.token_id}`}
