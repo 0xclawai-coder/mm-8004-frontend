@@ -406,7 +406,7 @@ export default function MarketplacePage() {
       </div>
 
       {/* Table (sm and above) */}
-      <div className="hidden sm:block overflow-hidden rounded-xl border border-border/50 bg-card/40">
+      <div className="hidden sm:block overflow-x-auto rounded-xl border border-border/50 bg-card/40">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

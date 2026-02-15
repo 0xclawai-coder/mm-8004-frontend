@@ -410,7 +410,7 @@ function TopOffersTable({
         <DollarSign className="size-4 text-primary" />
         Top Offers (M&A)
       </h3>
-      <div className="rounded-xl border border-border/30 bg-card/40 overflow-hidden">
+      <div className="rounded-xl border border-border/30 bg-card/40 overflow-x-auto">
         {isLoading ? (
           <div className="divide-y divide-border/20">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -733,7 +733,7 @@ function ItemActivitySection({ agentId }: { agentId: string }) {
 
       {/* Activity table */}
       {filter === 'verification' ? (
-        <div className="rounded-xl border border-border/30 bg-card/40 overflow-hidden">
+        <div className="rounded-xl border border-border/30 bg-card/40 overflow-x-auto">
           <div className="flex flex-col items-center gap-3 px-4 py-12 text-center">
             <span className="text-2xl">🚧</span>
             <p className="text-sm font-medium text-foreground">Verification — Coming Soon</p>
@@ -748,7 +748,7 @@ function ItemActivitySection({ agentId }: { agentId: string }) {
         </div>
       ) : (
       <>
-      <div className="rounded-xl border border-border/30 bg-card/40 overflow-hidden">
+      <div className="rounded-xl border border-border/30 bg-card/40 overflow-x-auto">
         <div className="flex items-center gap-3 px-4 py-2 border-b border-border/20 text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
           <span className="w-6" />
           <span className="w-24">Event</span>
