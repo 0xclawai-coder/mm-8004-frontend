@@ -71,7 +71,7 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className="overflow-x-auto rounded-xl border border-border/50 bg-card/40">
-        <Table>
+        <Table className="table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
@@ -84,6 +84,7 @@ export function DataTable<TData, TValue>({
                     className={cn(
                       header.column.getCanSort() && 'cursor-pointer select-none'
                     )}
+                    style={{ width: `${header.getSize()}px` }}
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     {header.isPlaceholder ? null : (
@@ -126,7 +127,7 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} style={{ width: `${cell.column.getSize()}px` }}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
