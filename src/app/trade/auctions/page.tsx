@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { AgentImage } from '@/components/ui/agent-image'
-import { Gavel, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Gavel, ChevronLeft, ChevronRight, Zap } from 'lucide-react'
 import { EmptyState } from '@/components/ui/empty-state'
 import { useAuctions } from '@/hooks/useAuctions'
 import { PageHeader } from '@/components/layout/PageHeader'
@@ -78,21 +78,19 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
           </Badge>
         )}
 
+        {/* Instant buy overlay — bottom of image */}
+        {parseFloat(auction.buy_now_price) > 0 && !ended && (
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-2">
+            <div className="flex items-center justify-center gap-1 text-[11px] font-medium text-primary">
+              <Zap className="size-3 fill-primary" />
+              <span>{formatPrice(auction.buy_now_price)} {token}</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Info */}
       <div className="flex flex-1 flex-col gap-3 p-3">
-        {/* Buy now price — fixed height slot to keep card heights equal */}
-        <div className="h-5">
-          {parseFloat(auction.buy_now_price) > 0 && !ended && (
-            <Badge
-              variant="outline"
-              className="w-full justify-center border-primary/30 bg-primary/10 text-[10px] text-primary"
-            >
-              Acquire Now {formatPrice(auction.buy_now_price)} {token}
-            </Badge>
-          )}
-        </div>
 
         {/* Name + bid count */}
         <div className="flex items-start justify-between gap-2">
