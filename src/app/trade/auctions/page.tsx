@@ -230,7 +230,7 @@ export default function AuctionsPage() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             {isLoading ? (
-              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-24" />
             ) : (
               <span>{total} Rounds</span>
             )}

@@ -343,7 +343,7 @@ function StatCardLoading({ label, icon, accent, subtext }: { label: string; icon
         </div>
         <div className="min-w-0">
           <p className="text-xs text-muted-foreground">{label}</p>
-          <Skeleton className="mt-1 h-6 w-full" />
+          <Skeleton className="mt-1 h-6 w-20" />
           {subtext && (
             <p className="text-[10px] text-muted-foreground">{subtext}</p>
           )}

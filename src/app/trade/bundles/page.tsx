@@ -183,7 +183,7 @@ export default function BundlesPage() {
           {/* Filters */}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {isLoading ? <Skeleton className="h-4 w-full" /> : <span>{total} Bundles</span>}
+              {isLoading ? <Skeleton className="h-4 w-24" /> : <span>{total} Bundles</span>}
             </div>
             <ChainFilter selected={chainId} onSelect={(v) => { setChainId(v); setPage(1) }} />
           </div>
