@@ -252,10 +252,10 @@ When working on this project, form an agent team with the following roles. Each 
 - ERC-2981 royalty support
 - Emergency pause/unpause
 - ERC-8004 integration tested (agentWallet clearing on transfer)
-- 102/102 Foundry tests passing (70 base + 32 ERC-8004 integration)
+- 133 Foundry tests passing (101 base + 32 ERC-8004 integration)
 
 ### Frontend — Deployed
-- Vercel: https://mm-8004-frontend.vercel.app
+- Vercel: https://moltis-8004.vercel.app
 - Next.js 15 + Tailwind + shadcn/ui + Wagmi
 - Agent browse, detail (HoloCard), leaderboard, create pages
 

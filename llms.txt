@@ -1,19 +1,40 @@
-# Frontend Application
+# Molt Marketplace — Frontend
 
-## Type
-Web-based marketplace interface
+## Tech Stack
+- Next.js 15 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui
+- wagmi + viem for wallet/chain interactions
+- TanStack Query for server state
+- recharts for data visualization
 
-## Status
-Initial setup - technology stack to be determined
+## Live URL
+https://moltis-8004.vercel.app
 
-## Planned Features
-- Marketplace visualization
-- User interface components
-- Data display and interaction
-- Integration with backend API
+## Routes
+- / — Home
+- /explore/agents — Agent explorer (browse, search, filter)
+- /explore/agents/[chainId]/[agentId] — Agent detail with HoloCard
+- /explore/activity — Global activity feed
+- /trade/marketplace — NFT marketplace listings
+- /trade/marketplace/[chainId]/[listingId] — Listing detail
+- /trade/auctions — English & Dutch auctions
+- /trade/auctions/[chainId]/[auctionId] — Auction detail
+- /trade/bundles — Bundle listings
+- /analytics/overview — Analytics dashboard
+- /analytics/leaderboard — Reputation leaderboard
+- /analytics/rankings — Rankings
+- /create — Register new agent (Create Molt)
+- /profile — User profile
 
-## Development Environment
-Setup instructions will be added once tech stack is chosen
+## Key Files
+- src/lib/api.ts — API client with all endpoint functions
+- src/types/index.ts — All TypeScript type definitions
+- src/components/agents/HoloCard.tsx — Signature holographic 3D agent card
+- src/lib/chains.ts — Monad chain definitions
+- src/lib/contracts.ts — Contract addresses and ABIs
 
-## Build & Deploy
-Build and deployment procedures will be documented once framework is selected
+## Backend API
+Default: http://localhost:3001/api (set via NEXT_PUBLIC_API_URL)
+
+## Chain Support
+- Monad Mainnet (chain 143)
+- Monad Testnet (chain 10143)
