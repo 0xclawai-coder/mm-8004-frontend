@@ -24,6 +24,7 @@ interface DataTableProps<TData, TValue> {
   isLoading?: boolean
   skeletonRows?: number
   className?: string
+  onRowClick?: (row: TData) => void
 }
 
 export function DataTable<TData, TValue>({
@@ -34,6 +35,7 @@ export function DataTable<TData, TValue>({
   isLoading,
   skeletonRows = 5,
   className,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
 
@@ -123,7 +125,11 @@ export function DataTable<TData, TValue>({
                 table.getRowModel().rows.map((row) => (
                   <tr
                     key={row.id}
-                    className="border-b border-border/30 transition-colors hover:bg-accent/50"
+                    className={cn(
+                      "border-b border-border/30 transition-colors hover:bg-accent/50",
+                      onRowClick && "cursor-pointer"
+                    )}
+                    onClick={() => onRowClick?.(row.original)}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <td

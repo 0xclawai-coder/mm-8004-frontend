@@ -367,6 +367,7 @@ export default function MarketplacePage() {
           skeletonRows={limit}
           pageSize={999}
           emptyMessage="There are no agents open for acquisition matching your filters yet."
+          onRowClick={(listing) => router.push(`/trade/marketplace/${listing.chain_id}/${listing.listing_id}`)}
         />
       </div>
 

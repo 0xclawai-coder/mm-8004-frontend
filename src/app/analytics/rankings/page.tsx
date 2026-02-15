@@ -194,6 +194,7 @@ export default function RankingsPage() {
           isLoading={isLoading}
           skeletonRows={15}
           pageSize={100}
+          onRowClick={(entry) => window.location.href = `/explore/agents/${entry.chain_id}/${entry.agent_id}`}
           emptyMessage="No entities match your current filter criteria."
         />
       </section>
