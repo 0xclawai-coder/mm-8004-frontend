@@ -82,15 +82,17 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
 
       {/* Info */}
       <div className="flex flex-1 flex-col gap-3 p-3">
-        {/* Buy now price — only show when applicable */}
-        {parseFloat(auction.buy_now_price) > 0 && !ended && (
-          <Badge
-            variant="outline"
-            className="w-full justify-center border-primary/30 bg-primary/10 text-[10px] text-primary"
-          >
-            Acquire Now {formatPrice(auction.buy_now_price)} {token}
-          </Badge>
-        )}
+        {/* Buy now price — fixed height slot to keep card heights equal */}
+        <div className="h-5">
+          {parseFloat(auction.buy_now_price) > 0 && !ended && (
+            <Badge
+              variant="outline"
+              className="w-full justify-center border-primary/30 bg-primary/10 text-[10px] text-primary"
+            >
+              Acquire Now {formatPrice(auction.buy_now_price)} {token}
+            </Badge>
+          )}
+        </div>
 
         {/* Name + bid count */}
         <div className="flex items-start justify-between gap-2">
