@@ -240,7 +240,7 @@ export function AgentBrowseTable() {
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-border/50 bg-card/40">
-        <table className="w-full">
+        <table className="w-full min-w-[700px]">
           <thead>
             <tr className="border-b border-border/50 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
               <th className="px-4 py-3">Name</th>
