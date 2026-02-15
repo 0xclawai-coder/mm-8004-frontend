@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 
 interface DataTableProps<TData, TValue> {
@@ -70,8 +71,9 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="overflow-x-auto rounded-xl border border-border/50 bg-card/40">
-        <Table className="min-w-[700px]">
+      <div className="overflow-hidden rounded-xl border border-border/50 bg-card/40">
+        <ScrollArea className="w-1 flex-1" type="auto">
+        <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
@@ -139,6 +141,8 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+        <ScrollBar orientation="horizontal" className="h-2.5" />
+        </ScrollArea>
       </div>
 
       {/* Pagination */}

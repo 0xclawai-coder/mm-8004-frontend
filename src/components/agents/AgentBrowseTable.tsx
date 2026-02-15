@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn, formatAddress } from "@/lib/utils";
 import TimeCounter from "@/components/ui/time-counter";
 import type { Agent, SortOrder } from "@/types";
@@ -239,8 +240,9 @@ export function AgentBrowseTable() {
         />
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-border/50 bg-card/40">
-        <table className="w-full min-w-[700px]">
+      <div className="overflow-hidden rounded-xl border border-border/50 bg-card/40">
+        <ScrollArea className="w-1 flex-1" type="auto">
+        <table className="w-full">
           <thead>
             <tr className="border-b border-border/50 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
               <th className="px-4 py-3">Name</th>
@@ -274,6 +276,8 @@ export function AgentBrowseTable() {
             )}
           </tbody>
         </table>
+        <ScrollBar orientation="horizontal" className="h-2.5" />
+        </ScrollArea>
       </div>
 
       {/* Pagination — always rendered to prevent layout shift */}
