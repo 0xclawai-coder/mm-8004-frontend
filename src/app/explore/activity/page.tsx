@@ -311,13 +311,20 @@ function ActivityRow({ activity }: { activity: GlobalActivityType }) {
 function ActivityRowSkeleton() {
   return (
     <div className="flex items-center gap-3 px-4 py-3 border-b border-border/10">
-      <Skeleton className="size-7 rounded" />
-      <Skeleton className="h-5 w-28 rounded-full" />
-      <Skeleton className="h-4 w-36" />
-      <Skeleton className="h-4 flex-1 max-w-[200px]" />
-      <Skeleton className="h-5 w-16 rounded-full hidden sm:block" />
-      <Skeleton className="h-4 w-16" />
-      <Skeleton className="size-3.5" />
+      {/* Icon — matches w-7 text-center */}
+      <Skeleton className="size-7 shrink-0 rounded" />
+      {/* Event badge — matches w-28 */}
+      <Skeleton className="h-5 w-28 shrink-0 rounded-full" />
+      {/* Agent name — matches w-36 */}
+      <Skeleton className="h-4 w-36 shrink-0" />
+      {/* Details — flex-1, fill remaining space */}
+      <Skeleton className="h-4 w-full flex-1" />
+      {/* Chain badge — matches w-16 hidden sm:inline-flex */}
+      <Skeleton className="h-5 w-16 shrink-0 rounded-full hidden sm:block" />
+      {/* Time — matches w-16 text-right */}
+      <Skeleton className="h-4 w-16 shrink-0" />
+      {/* TX icon — matches size-3.5 */}
+      <Skeleton className="size-3.5 shrink-0" />
     </div>
   )
 }
