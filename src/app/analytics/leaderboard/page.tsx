@@ -1,12 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  type ColumnDef,
-} from '@tanstack/react-table'
 import { Trophy, Medal, Award, Wallet, TrendingUp } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -14,16 +8,10 @@ import { PageHeader } from '@/components/layout/PageHeader'
 import { ChainFilter } from '@/components/agents/ChainFilter'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { DataTable } from '@/components/ui/data-table'
 import { cn, formatAddress, formatPrice } from '@/lib/utils'
 import { formatDistanceToNowSmart } from '@/lib/utils'
+import type { ColumnDef } from '@tanstack/react-table'
 
 // ============================================================
 // Types
@@ -134,31 +122,6 @@ const columns: ColumnDef<TopWallet, unknown>[] = [
 ]
 
 // ============================================================
-// Skeleton
-// ============================================================
-
-function WalletSkeleton({ rows }: { rows: number }) {
-  return (
-    <>
-      {Array.from({ length: rows }).map((_, i) => (
-        <TableRow key={i}>
-          <TableCell><Skeleton className="size-8 rounded-full" /></TableCell>
-          <TableCell>
-            <div className="flex items-center gap-2">
-              <Skeleton className="size-8 shrink-0 rounded-full" />
-              <Skeleton className="h-4 w-full" />
-            </div>
-          </TableCell>
-          <TableCell><Skeleton className="ml-auto h-4 w-full" /></TableCell>
-          <TableCell className="hidden sm:table-cell"><Skeleton className="ml-auto h-4 w-full" /></TableCell>
-          <TableCell className="hidden md:table-cell"><Skeleton className="ml-auto h-4 w-full" /></TableCell>
-        </TableRow>
-      ))}
-    </>
-  )
-}
-
-// ============================================================
 // Hook: fetch top wallets (falls back to mock)
 // ============================================================
 
@@ -195,12 +158,6 @@ export default function LeaderboardPage() {
 
   const entries = wallets ?? []
 
-  const table = useReactTable({
-    data: entries,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  })
-
   return (
     <div className="space-y-8">
       <PageHeader
@@ -219,53 +176,15 @@ export default function LeaderboardPage() {
       </section>
 
       {/* Table */}
-      <section className="overflow-x-auto rounded-xl border border-border/50 bg-card/40">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="border-b border-border/50 hover:bg-transparent">
-                {headerGroup.headers.map((header) => {
-                  const meta = header.column.columnDef.meta as { className?: string } | undefined
-                  return (
-                    <TableHead key={header.id} className={meta?.className}>
-                      <div className={cn('flex items-center gap-1', meta?.className?.includes('text-right') && 'justify-end')}>
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                      </div>
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <WalletSkeleton rows={20} />
-            ) : entries.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={columns.length}>
-                  <EmptyState
-                    icon={Wallet}
-                    title="No Wallet Data"
-                    description="Wallet trading data will appear here once marketplace activity begins."
-                  />
-                </TableCell>
-              </TableRow>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => {
-                    const meta = cell.column.columnDef.meta as { className?: string } | undefined
-                    return (
-                      <TableCell key={cell.id} className={meta?.className}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    )
-                  })}
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+      <section>
+        <DataTable
+          columns={columns}
+          data={entries}
+          isLoading={isLoading}
+          skeletonRows={20}
+          pageSize={50}
+          emptyMessage="Wallet trading data will appear here once marketplace activity begins."
+        />
       </section>
     </div>
   )

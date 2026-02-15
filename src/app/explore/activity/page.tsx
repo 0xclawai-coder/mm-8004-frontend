@@ -9,23 +9,24 @@ import {
   UserPlus,
   MessagesSquare,
   Radio,
-  Zap,
+  Filter,
   ExternalLink,
   ChevronLeft,
   ChevronRight,
-  Filter,
 } from 'lucide-react'
 import { useStats } from '@/hooks/useStats'
 import { useGlobalActivity } from '@/hooks/useGlobalActivity'
 import { PageHeader } from '@/components/layout/PageHeader'
-import { EmptyState } from '@/components/ui/empty-state'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ChainFilter } from '@/components/agents/ChainFilter'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { DataTable } from '@/components/ui/data-table'
 import { cn, formatAddress, formatDistanceToNowSmart } from '@/lib/utils'
-import type { EventType, EventCategory, GlobalActivity as GlobalActivityType } from '@/types'
+import { getExplorerTxUrl as getTxUrl } from '@/lib/chain-utils'
+import type { ColumnDef } from '@tanstack/react-table'
+import type { EventCategory, GlobalActivity as GlobalActivityType } from '@/types'
 
 // ============================================================
 // Constants
@@ -119,8 +120,6 @@ function getEventConfig(eventType: string) {
   )
 }
 
-import { getExplorerTxUrl as getTxUrl } from '@/lib/chain-utils'
-
 function getChainBadge(chainId: number) {
   if (chainId === 143) return { label: 'Monad', color: 'border-green-500/30 bg-green-500/10 text-green-400' }
   if (chainId === 10143) return { label: 'Testnet', color: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400' }
@@ -181,6 +180,118 @@ function getEventDetails(activity: GlobalActivityType): string {
 }
 
 // ============================================================
+// Columns
+// ============================================================
+
+const activityColumns: ColumnDef<GlobalActivityType, unknown>[] = [
+  {
+    id: 'icon',
+    header: '',
+    cell: ({ row }) => {
+      const config = getEventConfig(row.original.event_type)
+      return <span className="text-base">{config.icon}</span>
+    },
+    enableSorting: false,
+    size: 48,
+  },
+  {
+    id: 'event',
+    header: 'Event',
+    cell: ({ row }) => {
+      const config = getEventConfig(row.original.event_type)
+      return (
+        <Badge
+          variant="outline"
+          className={cn('text-[10px] justify-center', config.color)}
+        >
+          {config.label}
+        </Badge>
+      )
+    },
+    enableSorting: false,
+    size: 160,
+  },
+  {
+    id: 'entity',
+    header: 'Entity',
+    cell: ({ row }) => {
+      const a = row.original
+      const agentName = a.agent_name || `Agent #${a.agent_id}`
+      return (
+        <Link
+          href={`/explore/agents/${a.chain_id}/${a.agent_id}`}
+          className="truncate text-sm font-medium text-foreground hover:text-primary transition-colors"
+        >
+          {agentName}
+        </Link>
+      )
+    },
+    enableSorting: false,
+    size: 160,
+  },
+  {
+    id: 'details',
+    header: 'Details',
+    cell: ({ row }) => (
+      <span className="truncate text-xs text-muted-foreground">
+        {getEventDetails(row.original)}
+      </span>
+    ),
+    enableSorting: false,
+  },
+  {
+    id: 'chain',
+    header: 'Chain',
+    cell: ({ row }) => {
+      const chain = getChainBadge(row.original.chain_id)
+      return (
+        <Badge variant="outline" className={cn('text-[10px]', chain.color)}>
+          {chain.label}
+        </Badge>
+      )
+    },
+    enableSorting: false,
+    size: 90,
+    meta: { className: 'hidden sm:table-cell' },
+  },
+  {
+    id: 'time',
+    header: 'Time',
+    cell: ({ row }) => (
+      <span className="text-xs text-muted-foreground text-right">
+        {formatDistanceToNowSmart(new Date(row.original.block_timestamp), {
+          addSuffix: false,
+        })}
+      </span>
+    ),
+    enableSorting: false,
+    size: 80,
+    meta: { className: 'text-right' },
+  },
+  {
+    id: 'tx',
+    header: 'TX',
+    cell: ({ row }) => {
+      const a = row.original
+      return (
+        <a
+          href={getTxUrl(a.chain_id, a.tx_hash)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-muted-foreground/50 hover:text-primary transition-colors"
+          title={a.tx_hash}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <ExternalLink className="size-3.5" />
+        </a>
+      )
+    },
+    enableSorting: false,
+    size: 48,
+  },
+]
+
+// ============================================================
 // Stat Card
 // ============================================================
 
@@ -239,93 +350,6 @@ function StatCardLoading({ label, icon, accent, subtext }: { label: string; icon
         </div>
       </CardContent>
     </Card>
-  )
-}
-
-// ============================================================
-// Activity Row
-// ============================================================
-
-function ActivityRow({ activity }: { activity: GlobalActivityType }) {
-  const config = getEventConfig(activity.event_type)
-  const chain = getChainBadge(activity.chain_id)
-  const details = getEventDetails(activity)
-  const agentName =
-    activity.agent_name || `Agent #${activity.agent_id}`
-
-  return (
-    <div className="group flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors border-b border-border/10 last:border-b-0">
-      {/* Event type icon */}
-      <span className="text-base shrink-0 w-7 text-center">{config.icon}</span>
-
-      {/* Event badge */}
-      <Badge
-        variant="outline"
-        className={cn('text-[10px] shrink-0 w-28 justify-center', config.color)}
-      >
-        {config.label}
-      </Badge>
-
-      {/* Agent name */}
-      <Link
-        href={`/explore/agents/${activity.chain_id}/${activity.agent_id}`}
-        className="shrink-0 w-36 truncate text-sm font-medium text-foreground hover:text-primary transition-colors"
-      >
-        {agentName}
-      </Link>
-
-      {/* Details */}
-      <span className="flex-1 truncate text-xs text-muted-foreground min-w-0">
-        {details}
-      </span>
-
-      {/* Chain badge */}
-      <Badge
-        variant="outline"
-        className={cn('text-[10px] shrink-0 hidden sm:inline-flex', chain.color)}
-      >
-        {chain.label}
-      </Badge>
-
-      {/* Time */}
-      <span className="shrink-0 w-16 text-right text-xs text-muted-foreground">
-        {formatDistanceToNowSmart(new Date(activity.block_timestamp), {
-          addSuffix: false,
-        })}
-      </span>
-
-      {/* TX Link */}
-      <a
-        href={getTxUrl(activity.chain_id, activity.tx_hash)}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="shrink-0 text-muted-foreground/50 hover:text-primary transition-colors"
-        title={activity.tx_hash}
-      >
-        <ExternalLink className="size-3.5" />
-      </a>
-    </div>
-  )
-}
-
-function ActivityRowSkeleton() {
-  return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-border/10">
-      {/* Icon — matches w-7 text-center */}
-      <Skeleton className="size-7 shrink-0 rounded" />
-      {/* Event badge — matches w-28 */}
-      <Skeleton className="h-5 w-28 shrink-0 rounded-full" />
-      {/* Agent name — matches w-36 */}
-      <Skeleton className="h-4 w-full shrink-0" />
-      {/* Details — flex-1, fill remaining space */}
-      <Skeleton className="h-4 w-full flex-1" />
-      {/* Chain badge — matches w-16 hidden sm:inline-flex */}
-      <Skeleton className="h-5 w-16 shrink-0 rounded-full hidden sm:block" />
-      {/* Time — matches w-16 text-right */}
-      <Skeleton className="h-4 w-full shrink-0" />
-      {/* TX icon — matches size-3.5 */}
-      <Skeleton className="size-3.5 shrink-0" />
-    </div>
   )
 }
 
@@ -402,17 +426,17 @@ export default function ActivityPage() {
       {/* Chain breakdown mini-cards */}
       {!statsLoading && stats?.agents_by_chain && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {Object.entries(stats.agents_by_chain).map(([chainId, count]) => {
+          {Object.entries(stats.agents_by_chain).map(([cId, count]) => {
             const label =
-              chainId === '143'
+              cId === '143'
                 ? 'Monad'
-                : chainId === '10143'
+                : cId === '10143'
                   ? 'Monad Testnet'
-                  : `Chain ${chainId}`
-            const dotColor = chainId === '143' ? 'bg-green-400' : 'bg-yellow-400'
+                  : `Chain ${cId}`
+            const dotColor = cId === '143' ? 'bg-green-400' : 'bg-yellow-400'
             return (
               <div
-                key={chainId}
+                key={cId}
                 className="flex items-center gap-3 rounded-lg border border-border/50 bg-card/40 px-4 py-3"
               >
                 <span
@@ -476,40 +500,21 @@ export default function ActivityPage() {
         </div>
         </div>
 
-        {/* Activity Table */}
-        <div className="rounded-xl border border-border/50 bg-card/40 overflow-x-auto">
-          {/* Header */}
-          <div className="flex items-center gap-3 px-4 py-2 border-b border-border/20 text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-            <span className="w-7" />
-            <span className="w-28 text-center">Event</span>
-            <span className="w-36">Entity</span>
-            <span className="flex-1">Details</span>
-            <span className="w-16 hidden sm:block text-center">Chain</span>
-            <span className="w-16 text-right">Time</span>
-            <span className="w-4">TX</span>
-          </div>
+        {/* Activity Table — server-side pagination, DataTable handles rendering */}
+        <DataTable
+          columns={activityColumns}
+          data={activities}
+          isLoading={activityLoading}
+          skeletonRows={8}
+          pageSize={999}
+          emptyMessage={
+            filter !== 'all'
+              ? 'Try a different filter or check back later.'
+              : 'On-chain events will appear here as they are indexed.'
+          }
+        />
 
-          {/* Rows */}
-          {activityLoading ? (
-            Array.from({ length: 8 }).map((_, i) => (
-              <ActivityRowSkeleton key={i} />
-            ))
-          ) : activities.length === 0 ? (
-            <EmptyState
-              icon={Radio}
-              title="No Activity Found"
-              description={
-                filter !== 'all'
-                  ? 'Try a different filter or check back later.'
-                  : 'On-chain events will appear here as they are indexed.'
-              }
-            />
-          ) : (
-            activities.map((a) => <ActivityRow key={a.id} activity={a} />)
-          )}
-        </div>
-
-        {/* Pagination */}
+        {/* Server-side Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between pt-2">
             <p className="text-xs text-muted-foreground">
