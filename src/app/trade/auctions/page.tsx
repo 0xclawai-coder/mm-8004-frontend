@@ -82,17 +82,15 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
 
       {/* Info */}
       <div className="flex flex-1 flex-col gap-3 p-3">
-        {/* Buy now price — fixed height slot to prevent card height variance */}
-        <div className="h-5">
-          {parseFloat(auction.buy_now_price) > 0 && !ended && (
-            <Badge
-              variant="outline"
-              className="w-full justify-center border-primary/30 bg-primary/10 text-[10px] text-primary"
-            >
-              Acquire Now {formatPrice(auction.buy_now_price)} {token}
-            </Badge>
-          )}
-        </div>
+        {/* Buy now price — only show when applicable */}
+        {parseFloat(auction.buy_now_price) > 0 && !ended && (
+          <Badge
+            variant="outline"
+            className="w-full justify-center border-primary/30 bg-primary/10 text-[10px] text-primary"
+          >
+            Acquire Now {formatPrice(auction.buy_now_price)} {token}
+          </Badge>
+        )}
 
         {/* Name + bid count */}
         <div className="flex items-start justify-between gap-2">
@@ -158,10 +156,6 @@ function AuctionCardSkeleton() {
       <Skeleton className="aspect-square w-full rounded-none" />
       {/* Info */}
       <div className="flex flex-1 flex-col gap-3 p-3">
-        {/* Buy now badge slot */}
-        <div className="h-5">
-          <Skeleton className="h-5 w-3/4 rounded-full" />
-        </div>
         {/* Name + bid count */}
         <div className="flex items-start justify-between gap-2">
           <Skeleton className="h-4 w-28" />
