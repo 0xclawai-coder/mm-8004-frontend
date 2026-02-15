@@ -138,7 +138,7 @@ function RecentListings() {
           const listing = item._skeleton ? null : item
           const card = (
             <Card className={cn(
-              'overflow-hidden border-border/50 bg-card/80 py-0 transition-all duration-300',
+              'gap-0 overflow-hidden border-border/50 bg-card/80 py-0 transition-all duration-300',
               listing && 'group-hover:scale-[1.03] group-hover:border-primary/30 group-hover:glow-violet'
             )}>
               <div className="relative aspect-square w-full">
