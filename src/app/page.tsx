@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import TimeCounter from '@/components/ui/time-counter'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AgentCard } from '@/components/agents/AgentCard'
@@ -171,9 +172,14 @@ function RecentListings() {
                   <Skeleton className="h-3 w-20" />
                 )}
                 {listing ? (
-                  <p className="text-[10px] text-muted-foreground">
-                    {formatAddress(listing.seller)}
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-muted-foreground">
+                      {formatAddress(listing.seller)}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      <TimeCounter targetTime={new Date(listing.block_timestamp)} />
+                    </span>
+                  </div>
                 ) : (
                   <Skeleton className="h-3 w-16" />
                 )}
