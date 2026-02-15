@@ -107,9 +107,9 @@ export function DataTable<TData, TValue>({
             {isLoading ? (
               Array.from({ length: skeletonRows }).map((_, i) => (
                 <TableRow key={`skeleton-${i}`}>
-                  {columns.map((_, j) => (
+                  {columns.map((col, j) => (
                     <TableCell key={`skeleton-${i}-${j}`}>
-                      <Skeleton className="h-4 w-full" />
+                      {(col.meta as any)?.skeleton ?? <Skeleton className="h-4 w-full" />}
                     </TableCell>
                   ))}
                 </TableRow>

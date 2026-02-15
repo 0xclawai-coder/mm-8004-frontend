@@ -74,6 +74,17 @@ const columns: ColumnDef<LeaderboardEntry, unknown>[] = [
         </Link>
       )
     },
+    meta: {
+      skeleton: (
+        <div className="flex items-center gap-3">
+          <Skeleton className="size-9 shrink-0 rounded-lg" />
+          <div className="space-y-1.5">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+        </div>
+      ),
+    },
   },
   {
     accessorKey: 'categories',
