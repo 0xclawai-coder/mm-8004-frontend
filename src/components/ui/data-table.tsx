@@ -11,14 +11,6 @@ import {
 } from '@tanstack/react-table'
 import { useState } from 'react'
 import { ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
@@ -31,6 +23,7 @@ interface DataTableProps<TData, TValue> {
   emptyMessage?: string
   isLoading?: boolean
   skeletonRows?: number
+  className?: string
 }
 
 export function DataTable<TData, TValue>({
@@ -40,6 +33,7 @@ export function DataTable<TData, TValue>({
   emptyMessage = 'No results found',
   isLoading,
   skeletonRows = 5,
+  className,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
 
@@ -57,7 +51,6 @@ export function DataTable<TData, TValue>({
   const currentPage = table.getState().pagination.pageIndex
   const totalPages = table.getPageCount()
 
-  // Generate visible page numbers
   const pageNumbers: number[] = []
   const maxVisible = 5
   let startPage = Math.max(0, currentPage - Math.floor(maxVisible / 2))
@@ -70,84 +63,92 @@ export function DataTable<TData, TValue>({
   }
 
   return (
-    <div>
-      <div className="overflow-hidden rounded-xl border border-border/50 bg-card/40">
+    <div className="flex w-full flex-col gap-2">
+      <div className={cn("flex w-full overflow-hidden rounded-xl border border-border/50 bg-card/40", className)}>
         <ScrollArea className="w-1 flex-1" type="auto">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                key={headerGroup.id}
-                className="border-b border-border/50 hover:bg-transparent"
-              >
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className={cn(
-                      header.column.getCanSort() && 'cursor-pointer select-none'
-                    )}
-                    style={{ width: `${header.getSize()}px` }}
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    {header.isPlaceholder ? null : (
-                      <div className="flex items-center gap-1">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {header.column.getCanSort() && (
-                          <ArrowUpDown className="size-3 text-muted-foreground/50" />
-                        )}
-                      </div>
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              Array.from({ length: skeletonRows }).map((_, i) => (
-                <TableRow key={`skeleton-${i}`}>
-                  {columns.map((col, j) => (
-                    <TableCell key={`skeleton-${i}-${j}`}>
-                      {(col.meta as any)?.skeleton ?? <Skeleton className="h-4 w-full" />}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : table.getRowModel().rows.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
+          <table className="w-full caption-bottom text-sm">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr
+                  key={headerGroup.id}
+                  className="border-b border-border/50 hover:bg-transparent"
                 >
-                  {emptyMessage}
-                </TableCell>
-              </TableRow>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} style={{ width: `${cell.column.getSize()}px` }}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className={cn(
+                        'h-10 px-4 text-left align-middle text-xs font-medium uppercase tracking-wider text-muted-foreground',
+                        header.column.getCanSort() && 'cursor-pointer select-none'
                       )}
-                    </TableCell>
+                      style={{ width: `${header.getSize()}px` }}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {header.isPlaceholder ? null : (
+                        <div className="flex items-center gap-1">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {header.column.getCanSort() && (
+                            <ArrowUpDown className="size-3 text-muted-foreground/50" />
+                          )}
+                        </div>
+                      )}
+                    </th>
                   ))}
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-        <ScrollBar orientation="horizontal" className="h-2.5" />
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {isLoading ? (
+                Array.from({ length: skeletonRows }).map((_, i) => (
+                  <tr key={`skeleton-${i}`} className="border-b border-border/30">
+                    {columns.map((col, j) => (
+                      <td key={`skeleton-${i}-${j}`} className="px-4 py-3 align-middle">
+                        {(col.meta as any)?.skeleton ?? <Skeleton className="h-4 w-full" />}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : table.getRowModel().rows.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={columns.length}
+                    className="h-24 text-center text-muted-foreground"
+                  >
+                    {emptyMessage}
+                  </td>
+                </tr>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="border-b border-border/30 transition-colors hover:bg-accent/50"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="px-4 py-3 align-middle"
+                        style={{ width: `${cell.column.getSize()}px` }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+          <ScrollBar orientation="horizontal" className="h-2.5 w-full" />
         </ScrollArea>
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="mt-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
+        <div className="mt-2 flex flex-col items-center justify-between gap-3 sm:flex-row">
           <p className="text-sm text-muted-foreground">
             {table.getFilteredRowModel().rows.length} results
           </p>

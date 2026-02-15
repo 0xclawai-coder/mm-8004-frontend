@@ -240,7 +240,7 @@ export function AgentBrowseTable() {
         />
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border/50 bg-card/40">
+      <div className="flex w-full overflow-hidden rounded-xl border border-border/50 bg-card/40">
         <ScrollArea className="w-1 flex-1" type="auto">
         <table className="w-full">
           <thead>
