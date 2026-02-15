@@ -23,9 +23,6 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
-// Predefined skeleton widths to cycle through for visual variety
-const SKELETON_WIDTHS = ['w-full', 'w-3/4', 'w-2/3', 'w-1/2', 'w-full', 'w-4/5']
-
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
@@ -111,7 +108,7 @@ export function DataTable<TData, TValue>({
                 <TableRow key={`skeleton-${i}`}>
                   {columns.map((_, j) => (
                     <TableCell key={`skeleton-${i}-${j}`}>
-                      <Skeleton className={cn('h-4', SKELETON_WIDTHS[(i + j) % SKELETON_WIDTHS.length])} />
+                      <Skeleton className="h-4 w-full" />
                     </TableCell>
                   ))}
                 </TableRow>
