@@ -46,25 +46,32 @@ function isEnded(endTime: number): boolean {
 // Auction Card
 // ============================================================
 
-function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
-  const started = hasStarted(auction.start_time)
-  const ended = isEnded(auction.end_time)
-  const hasBids = auction.highest_bid !== null && parseFloat(auction.highest_bid) > 0
-  const token = getTokenLabel(auction.payment_token)
+function AuctionCard({ auction }: { auction: MarketplaceAuction | null }) {
+  const started = auction ? hasStarted(auction.start_time) : false
+  const ended = auction ? isEnded(auction.end_time) : false
+  const hasBids = auction ? auction.highest_bid !== null && parseFloat(auction.highest_bid) > 0 : false
+  const token = auction ? getTokenLabel(auction.payment_token) : ''
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card/60 transition-all duration-300 hover:scale-[1.02] hover:border-primary/30 hover:glow-violet">
+    <div className={cn(
+      'flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card/60 transition-all duration-300',
+      auction && 'group hover:scale-[1.02] hover:border-primary/30 hover:glow-violet'
+    )}>
       {/* Image area */}
       <div className="relative aspect-square bg-gradient-to-br from-primary/20 via-card to-cyan-accent/10">
-        <AgentImage
-          src={auction.agent_image}
-          alt={auction.agent_name ?? `Agent #${auction.token_id}`}
-          fallbackText={auction.agent_name ?? `#${auction.token_id}`}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
+        {auction ? (
+          <AgentImage
+            src={auction.agent_image}
+            alt={auction.agent_name ?? `Agent #${auction.token_id}`}
+            fallbackText={auction.agent_name ?? `#${auction.token_id}`}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        ) : (
+          <Skeleton className="absolute inset-0 rounded-none" />
+        )}
 
         {/* Status badge overlay */}
-        {ended ? (
+        {auction && (ended ? (
           <Badge className="absolute top-2 left-2 border-none bg-destructive/80 text-[10px] text-destructive-foreground">
             Ended
           </Badge>
@@ -76,10 +83,10 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
           <Badge className="absolute top-2 left-2 border-none bg-green-500/80 text-[10px] text-black">
             Live
           </Badge>
-        )}
+        ))}
 
         {/* Instant buy overlay — bottom of image */}
-        {parseFloat(auction.buy_now_price) > 0 && !ended && (
+        {auction && parseFloat(auction.buy_now_price) > 0 && !ended && (
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-2">
             <div className="flex items-center justify-center gap-1 text-[11px] font-medium text-primary">
               <Zap className="size-3 fill-primary" />
@@ -94,82 +101,76 @@ function AuctionCard({ auction }: { auction: MarketplaceAuction }) {
 
         {/* Name + bid count */}
         <div className="flex items-start justify-between gap-2">
-          <p className="truncate text-sm font-medium text-foreground">
-            {auction.agent_name || `Agent #${auction.token_id}`}
-          </p>
-          {(auction.bid_count ?? 0) > 0 && (
-            <div className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
-              <Gavel className="size-3" />
-              {auction.bid_count}
-            </div>
+          {auction ? (
+            <p className="truncate text-sm font-medium text-foreground">
+              {auction.agent_name || `Agent #${auction.token_id}`}
+            </p>
+          ) : (
+            <Skeleton className="h-4 w-28" />
+          )}
+          {auction ? (
+            (auction.bid_count ?? 0) > 0 && (
+              <div className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+                <Gavel className="size-3" />
+                {auction.bid_count}
+              </div>
+            )
+          ) : (
+            <Skeleton className="h-3 w-8 shrink-0" />
           )}
         </div>
 
         {/* Bid + Time */}
         <div className="flex items-end justify-between gap-2">
           <div>
-            <p className="text-[10px] text-muted-foreground">
-              {hasBids ? 'Leading Offer' : 'Floor Valuation'}
-            </p>
-            <div className="flex items-center gap-1">
-              <span
-                className={cn(
-                  'inline-block size-1.5 rounded-full',
-                  hasBids ? 'bg-green-400' : 'bg-muted-foreground'
-                )}
-              />
-              <span className="text-sm font-semibold text-foreground">
-                {formatPrice(hasBids ? auction.highest_bid! : auction.start_price)}
-              </span>
-              <span className="text-xs text-muted-foreground">{token}</span>
-            </div>
+            {auction ? (
+              <>
+                <p className="text-[10px] text-muted-foreground">
+                  {hasBids ? 'Leading Offer' : 'Floor Valuation'}
+                </p>
+                <div className="flex items-center gap-1">
+                  <span
+                    className={cn(
+                      'inline-block size-1.5 rounded-full',
+                      hasBids ? 'bg-green-400' : 'bg-muted-foreground'
+                    )}
+                  />
+                  <span className="text-sm font-semibold text-foreground">
+                    {formatPrice(hasBids ? auction.highest_bid! : auction.start_price)}
+                  </span>
+                  <span className="text-xs text-muted-foreground">{token}</span>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-1">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+            )}
           </div>
           <div className="text-right">
-            <p className="text-[10px] text-muted-foreground">Ends In</p>
-            <p
-              className={cn(
-                'text-sm font-medium',
-                ended
-                  ? 'text-destructive'
-                  : !started
-                    ? 'text-yellow-400'
-                    : 'text-foreground'
-              )}
-            >
-              {!started ? 'Not Started' : getTimeLeft(auction.end_time)}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ============================================================
-// Skeleton
-// ============================================================
-
-function AuctionCardSkeleton() {
-  return (
-    <div className="flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card/60">
-      {/* Image area */}
-      <Skeleton className="aspect-square w-full rounded-none" />
-      {/* Info */}
-      <div className="flex flex-1 flex-col gap-3 p-3">
-        {/* Name + bid count */}
-        <div className="flex items-start justify-between gap-2">
-          <Skeleton className="h-4 w-28" />
-          <Skeleton className="h-3 w-8 shrink-0" />
-        </div>
-        {/* Bid + Time */}
-        <div className="flex items-end justify-between gap-2">
-          <div className="space-y-1">
-            <Skeleton className="h-3 w-16" />
-            <Skeleton className="h-4 w-20" />
-          </div>
-          <div className="space-y-1 text-right">
-            <Skeleton className="ml-auto h-3 w-12" />
-            <Skeleton className="ml-auto h-4 w-16" />
+            {auction ? (
+              <>
+                <p className="text-[10px] text-muted-foreground">Ends In</p>
+                <p
+                  className={cn(
+                    'text-sm font-medium',
+                    ended
+                      ? 'text-destructive'
+                      : !started
+                        ? 'text-yellow-400'
+                        : 'text-foreground'
+                  )}
+                >
+                  {!started ? 'Not Started' : getTimeLeft(auction.end_time)}
+                </p>
+              </>
+            ) : (
+              <div className="space-y-1">
+                <Skeleton className="ml-auto h-3 w-12" />
+                <Skeleton className="ml-auto h-4 w-16" />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -269,7 +270,7 @@ export default function AuctionsPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {Array.from({ length: limit }).map((_, i) => (
-            <AuctionCardSkeleton key={i} />
+            <AuctionCard key={i} auction={null} />
           ))}
         </div>
       ) : auctions.length === 0 ? (

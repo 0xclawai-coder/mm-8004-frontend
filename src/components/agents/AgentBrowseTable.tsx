@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { cn, formatAddress } from "@/lib/utils";
 import TimeCounter from "@/components/ui/time-counter";
-import type { SortOrder } from "@/types";
+import type { Agent, SortOrder } from "@/types";
 
 function getScoreColor(score: number): string {
   if (score >= 70) return "text-green-400";
@@ -30,48 +30,122 @@ function getScoreColor(score: number): string {
 
 import { getChainLabel } from '@/lib/chain-utils'
 
-function TableSkeleton({ rows }: { rows: number }) {
+function AgentTableRow({ agent, index }: { agent: Agent | null; index: number }) {
+  const router = useRouter();
+  const agentPath = agent ? `/explore/agents/${agent.chain_id}/${agent.agent_id}` : undefined;
+
   return (
-    <>
-      {Array.from({ length: rows }).map((_, i) => (
-        <tr key={i} className="border-b border-border/30">
-          {/* Name: Avatar + text */}
-          <td className="px-4 py-3">
-            <div className="flex items-center gap-3">
-              <Skeleton className="size-8 shrink-0 rounded-full" />
-              <Skeleton className="h-4 w-full" />
-            </div>
-          </td>
-          {/* Chain: Badge */}
-          <td className="hidden px-4 py-3 sm:table-cell">
-            <Skeleton className="h-5 w-16 rounded-full" />
-          </td>
-          {/* Score: Star icon + value */}
-          <td className="px-4 py-3">
-            <div className="flex items-center gap-1">
-              <Skeleton className="size-3.5 rounded" />
-              <Skeleton className="h-4 w-full" />
-            </div>
-          </td>
-          {/* Feedback */}
-          <td className="hidden px-4 py-3 md:table-cell">
-            <Skeleton className="h-4 w-full" />
-          </td>
-          {/* Owner: mono address */}
-          <td className="hidden px-4 py-3 lg:table-cell">
-            <Skeleton className="h-3 w-full" />
-          </td>
-          {/* X402: Badge */}
-          <td className="hidden px-4 py-3 lg:table-cell">
-            <Skeleton className="h-5 w-10 rounded-full" />
-          </td>
-          {/* Created */}
-          <td className="hidden px-4 py-3 xl:table-cell">
-            <Skeleton className="h-3 w-full" />
-          </td>
-        </tr>
-      ))}
-    </>
+    <tr
+      className={cn(
+        "border-b border-border/30",
+        agent && "group cursor-pointer transition-colors hover:bg-accent/50"
+      )}
+      onClick={agentPath ? () => router.push(agentPath) : undefined}
+      onMouseEnter={agentPath ? () => router.prefetch(agentPath) : undefined}
+    >
+      {/* Name */}
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-3">
+          {agent ? (
+            <Avatar className="size-8 shrink-0 ring-1 ring-border">
+              <AvatarImage src={agent.image ?? undefined} alt={agent.name ?? undefined} />
+              <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
+                {agent.name?.charAt(0)?.toUpperCase() || "?"}
+              </AvatarFallback>
+            </Avatar>
+          ) : (
+            <Skeleton className="size-8 shrink-0 rounded-full" />
+          )}
+          {agent ? (
+            <span className="truncate text-sm font-medium text-foreground">
+              {agent.name || `Agent #${agent.agent_id}`}
+            </span>
+          ) : (
+            <Skeleton className="h-4 w-28" />
+          )}
+        </div>
+      </td>
+
+      {/* Chain */}
+      <td className="hidden px-4 py-3 sm:table-cell">
+        {agent ? (
+          <Badge
+            variant="outline"
+            className={cn(
+              "text-[10px]",
+              agent.chain_id === 143
+                ? "border-green-500/30 bg-green-500/10 text-green-400"
+                : "border-yellow-500/30 bg-yellow-500/10 text-yellow-400",
+            )}
+          >
+            {getChainLabel(agent.chain_id)}
+          </Badge>
+        ) : (
+          <Skeleton className="h-5 w-16 rounded-full" />
+        )}
+      </td>
+
+      {/* Score */}
+      <td className="px-4 py-3">
+        {agent ? (
+          <div className="flex items-center gap-1">
+            <Star className={cn("size-3.5", getScoreColor(agent.reputation_score ?? 0))} />
+            <span className={cn("text-sm font-semibold", getScoreColor(agent.reputation_score ?? 0))}>
+              {(agent.reputation_score ?? 0).toFixed(1)}
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1">
+            <Skeleton className="size-3.5 rounded" />
+            <Skeleton className="h-4 w-10" />
+          </div>
+        )}
+      </td>
+
+      {/* Feedback */}
+      <td className="hidden px-4 py-3 md:table-cell">
+        {agent ? (
+          <span className="text-sm text-muted-foreground">{agent.feedback_count}</span>
+        ) : (
+          <Skeleton className="h-4 w-8" />
+        )}
+      </td>
+
+      {/* Owner */}
+      <td className="hidden px-4 py-3 lg:table-cell">
+        {agent ? (
+          <span className="text-xs font-mono text-muted-foreground">{formatAddress(agent.owner)}</span>
+        ) : (
+          <Skeleton className="h-3 w-20" />
+        )}
+      </td>
+
+      {/* X402 */}
+      <td className="hidden px-4 py-3 lg:table-cell">
+        {agent ? (
+          agent.x402_support ? (
+            <Badge variant="outline" className="border-cyan-accent/30 bg-cyan-accent/10 text-cyan-accent text-[10px] px-1.5">
+              x402
+            </Badge>
+          ) : (
+            <span className="text-xs text-muted-foreground">-</span>
+          )
+        ) : (
+          <Skeleton className="h-5 w-10 rounded-full" />
+        )}
+      </td>
+
+      {/* Created */}
+      <td className="hidden px-4 py-3 xl:table-cell">
+        {agent ? (
+          <span className="text-xs text-muted-foreground">
+            <TimeCounter targetTime={new Date(agent.block_timestamp)} />
+          </span>
+        ) : (
+          <Skeleton className="h-3 w-16" />
+        )}
+      </td>
+    </tr>
   );
 }
 
@@ -180,7 +254,9 @@ export function AgentBrowseTable() {
           </thead>
           <tbody>
             {isLoading ? (
-              <TableSkeleton rows={limit} />
+              Array.from({ length: limit }).map((_, i) => (
+                <AgentTableRow key={i} agent={null} index={i} />
+              ))
             ) : agents.length === 0 ? (
               <tr>
                 <td colSpan={7}>
@@ -192,107 +268,9 @@ export function AgentBrowseTable() {
                 </td>
               </tr>
             ) : (
-              agents.map((agent) => {
-                const agentPath = `/explore/agents/${agent.chain_id}/${agent.agent_id}`;
-                return (
-                  <tr
-                    key={`${agent.chain_id}-${agent.agent_id}`}
-                    className="group cursor-pointer border-b border-border/30 transition-colors hover:bg-accent/50"
-                    onClick={() => router.push(agentPath)}
-                    onMouseEnter={() => router.prefetch(agentPath)}
-                  >
-                    {/* Name */}
-                    <td className="px-4 py-3">
-                      <div
-                        className="flex items-center gap-3"
-                      >
-                        <Avatar className="size-8 shrink-0 ring-1 ring-border">
-                          <AvatarImage
-                            src={agent.image ?? undefined}
-                            alt={agent.name ?? undefined}
-                          />
-                          <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
-                            {agent.name?.charAt(0)?.toUpperCase() || "?"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="truncate text-sm font-medium text-foreground">
-                          {agent.name || `Agent #${agent.agent_id}`}
-                        </span>
-                      </div>
-                    </td>
-
-                    {/* Chain */}
-                    <td className="hidden px-4 py-3 sm:table-cell">
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "text-[10px]",
-                          agent.chain_id === 143
-                            ? "border-green-500/30 bg-green-500/10 text-green-400"
-                            : "border-yellow-500/30 bg-yellow-500/10 text-yellow-400",
-                        )}
-                      >
-                        {getChainLabel(agent.chain_id)}
-                      </Badge>
-                    </td>
-
-                    {/* Score */}
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
-                        <Star
-                          className={cn(
-                            "size-3.5",
-                            getScoreColor(agent.reputation_score ?? 0),
-                          )}
-                        />
-                        <span
-                          className={cn(
-                            "text-sm font-semibold",
-                            getScoreColor(agent.reputation_score ?? 0),
-                          )}
-                        >
-                          {(agent.reputation_score ?? 0).toFixed(1)}
-                        </span>
-                      </div>
-                    </td>
-
-                    {/* Feedback */}
-                    <td className="hidden px-4 py-3 md:table-cell">
-                      <span className="text-sm text-muted-foreground">
-                        {agent.feedback_count}
-                      </span>
-                    </td>
-
-                    {/* Owner */}
-                    <td className="hidden px-4 py-3 lg:table-cell">
-                      <span className="text-xs font-mono text-muted-foreground">
-                        {formatAddress(agent.owner)}
-                      </span>
-                    </td>
-
-                    {/* X402 */}
-                    <td className="hidden px-4 py-3 lg:table-cell">
-                      {agent.x402_support ? (
-                        <Badge
-                          variant="outline"
-                          className="border-cyan-accent/30 bg-cyan-accent/10 text-cyan-accent text-[10px] px-1.5"
-                        >
-                          x402
-                        </Badge>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">-</span>
-                      )}
-                    </td>
-
-                    {/* Created */}
-                    <td className="hidden px-4 py-3 xl:table-cell">
-                      <span className="text-xs text-muted-foreground">
-                        <TimeCounter targetTime={new Date(agent.block_timestamp)} />
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })
+              agents.map((agent, i) => (
+                <AgentTableRow key={`${agent.chain_id}-${agent.agent_id}`} agent={agent} index={i} />
+              ))
             )}
           </tbody>
         </table>

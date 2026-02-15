@@ -186,77 +186,81 @@ const columns: ColumnDef<MarketplaceListing, unknown>[] = [
 ]
 
 // ============================================================
-// Mobile Card Skeleton
+// Mobile Card View (handles both data and skeleton states)
 // ============================================================
 
-function MobileCardSkeleton({ count }: { count: number }) {
-  return (
-    <div className="space-y-3">
-      {Array.from({ length: count }).map((_, i) => (
-        <div
-          key={i}
-          className="flex items-center gap-3 rounded-xl border border-border/50 bg-card/60 p-3"
-        >
-          <Skeleton className="size-14 shrink-0 rounded-lg" />
-          <div className="min-w-0 flex-1 space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-3 w-20" />
-          </div>
-          <div className="shrink-0 space-y-2 text-right">
-            <Skeleton className="ml-auto h-4 w-16" />
-            <Skeleton className="ml-auto h-5 w-14 rounded-full" />
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// ============================================================
-// Mobile Card View
-// ============================================================
-
-function MobileListingCard({ listing }: { listing: MarketplaceListing }) {
-  return (
-    <Link
-      href={`/trade/marketplace/${listing.chain_id}/${listing.listing_id}`}
-      className="flex items-center gap-3 rounded-xl border border-border/50 bg-card/60 p-3 transition-colors active:bg-muted/30"
-    >
+function MobileListingCard({ listing }: { listing: MarketplaceListing | null }) {
+  const inner = (
+    <div className={cn(
+      'flex items-center gap-3 rounded-xl border border-border/50 bg-card/60 p-3',
+      listing && 'transition-colors active:bg-muted/30'
+    )}>
       {/* Agent image */}
-      <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-primary/20 to-cyan-500/10 ring-1 ring-border">
-        <AgentImage
-          src={listing.agent_image}
-          alt={listing.agent_name ?? `Agent #${listing.token_id}`}
-          fallbackText={listing.agent_name ?? `#${listing.token_id}`}
-          sizes="56px"
-        />
-      </div>
+      {listing ? (
+        <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-primary/20 to-cyan-500/10 ring-1 ring-border">
+          <AgentImage
+            src={listing.agent_image}
+            alt={listing.agent_name ?? `Agent #${listing.token_id}`}
+            fallbackText={listing.agent_name ?? `#${listing.token_id}`}
+            sizes="56px"
+          />
+        </div>
+      ) : (
+        <Skeleton className="size-14 shrink-0 rounded-lg" />
+      )}
 
       {/* Info */}
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <p className="truncate text-sm font-semibold text-foreground">
-          {listing.agent_name || `Agent #${listing.token_id}`}
-        </p>
-        <p className="truncate font-mono text-[11px] text-muted-foreground">
-          {formatAddress(listing.seller)}
-        </p>
+        {listing ? (
+          <p className="truncate text-sm font-semibold text-foreground">
+            {listing.agent_name || `Agent #${listing.token_id}`}
+          </p>
+        ) : (
+          <Skeleton className="h-4 w-32" />
+        )}
+        {listing ? (
+          <p className="truncate font-mono text-[11px] text-muted-foreground">
+            {formatAddress(listing.seller)}
+          </p>
+        ) : (
+          <Skeleton className="h-3 w-20" />
+        )}
       </div>
 
       {/* Price + status */}
       <div className="flex shrink-0 flex-col gap-1 text-right">
-        <p className="text-sm font-semibold text-foreground">
-          {formatPrice(listing.price)}
-        </p>
-        <p className="text-[10px] text-muted-foreground">
-          {getTokenLabel(listing.payment_token)}
-        </p>
-        <Badge
-          variant="outline"
-          className={cn('text-[10px]', getStatusColor(listing.status))}
-        >
-          {listing.status}
-        </Badge>
+        {listing ? (
+          <>
+            <p className="text-sm font-semibold text-foreground">
+              {formatPrice(listing.price)}
+            </p>
+            <p className="text-[10px] text-muted-foreground">
+              {getTokenLabel(listing.payment_token)}
+            </p>
+            <Badge
+              variant="outline"
+              className={cn('text-[10px]', getStatusColor(listing.status))}
+            >
+              {listing.status}
+            </Badge>
+          </>
+        ) : (
+          <>
+            <Skeleton className="ml-auto h-4 w-16" />
+            <Skeleton className="ml-auto h-5 w-14 rounded-full" />
+          </>
+        )}
       </div>
+    </div>
+  )
+
+  if (!listing) return inner
+
+  return (
+    <Link
+      href={`/trade/marketplace/${listing.chain_id}/${listing.listing_id}`}
+    >
+      {inner}
     </Link>
   )
 }
@@ -331,7 +335,11 @@ export default function MarketplacePage() {
       {/* Mobile Card View */}
       <div className="sm:hidden">
         {isLoading ? (
-          <MobileCardSkeleton count={8} />
+          <div className="space-y-2">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <MobileListingCard key={i} listing={null} />
+            ))}
+          </div>
         ) : listings.length === 0 ? (
           <EmptyState
             icon={ShoppingBag}

@@ -30,104 +30,107 @@ function getStatusColor(status: string) {
 // Bundle Card
 // ============================================================
 
-function BundleCard({ bundle }: { bundle: MarketplaceBundle }) {
-  const token = getTokenLabel(bundle.payment_token)
-  const isExpired = bundle.expiry > 0 && Math.floor(Date.now() / 1000) >= bundle.expiry
+function BundleCard({ bundle }: { bundle: MarketplaceBundle | null }) {
+  const token = bundle ? getTokenLabel(bundle.payment_token) : ''
+  const isExpired = bundle ? bundle.expiry > 0 && Math.floor(Date.now() / 1000) >= bundle.expiry : false
 
   return (
-    <div className="group overflow-hidden rounded-xl border border-border/50 bg-card/60 transition-all duration-300 hover:scale-[1.02] hover:border-primary/30 hover:glow-violet">
+    <div className={cn(
+      'overflow-hidden rounded-xl border border-border/50 bg-card/60 transition-all duration-300',
+      bundle && 'group hover:scale-[1.02] hover:border-primary/30 hover:glow-violet'
+    )}>
       {/* Image area */}
       <div className="relative flex aspect-square items-center justify-center bg-gradient-to-br from-primary/20 via-card to-cyan-accent/10">
-        <div className="flex flex-col items-center gap-2">
-          <Package className="size-10 text-primary/40" />
-          <span className="text-sm font-semibold text-primary/60">
-            {bundle.item_count} items
-          </span>
-        </div>
-
-        {/* Status badge */}
-        <Badge
-          className={cn(
-            'absolute top-2 left-2 border-none text-[10px]',
-            isExpired
-              ? 'bg-destructive/80 text-destructive-foreground'
-              : bundle.status === 'Active'
-                ? 'bg-green-500/80 text-black'
-                : bundle.status === 'Sold'
-                  ? 'bg-blue-500/80 text-white'
-                  : 'bg-muted/80 text-muted-foreground'
-          )}
-        >
-          {isExpired ? 'Expired' : bundle.status}
-        </Badge>
+        {bundle ? (
+          <>
+            <div className="flex flex-col items-center gap-2">
+              <Package className="size-10 text-primary/40" />
+              <span className="text-sm font-semibold text-primary/60">
+                {bundle.item_count} items
+              </span>
+            </div>
+            <Badge
+              className={cn(
+                'absolute top-2 left-2 border-none text-[10px]',
+                isExpired
+                  ? 'bg-destructive/80 text-destructive-foreground'
+                  : bundle.status === 'Active'
+                    ? 'bg-green-500/80 text-black'
+                    : bundle.status === 'Sold'
+                      ? 'bg-blue-500/80 text-white'
+                      : 'bg-muted/80 text-muted-foreground'
+              )}
+            >
+              {isExpired ? 'Expired' : bundle.status}
+            </Badge>
+          </>
+        ) : (
+          <Skeleton className="absolute inset-0 rounded-none" />
+        )}
       </div>
 
       {/* Info */}
       <div className="space-y-3 p-3">
         <div className="flex items-start justify-between gap-2">
-          <p className="truncate text-sm font-medium text-foreground">
-            Bundle #{bundle.bundle_id}
-          </p>
-          <Badge variant="outline" className={cn('shrink-0 text-[10px]', getStatusColor(bundle.status))}>
-            {bundle.item_count} Identities
-          </Badge>
+          {bundle ? (
+            <p className="truncate text-sm font-medium text-foreground">
+              Bundle #{bundle.bundle_id}
+            </p>
+          ) : (
+            <Skeleton className="h-4 w-28" />
+          )}
+          {bundle ? (
+            <Badge variant="outline" className={cn('shrink-0 text-[10px]', getStatusColor(bundle.status))}>
+              {bundle.item_count} Identities
+            </Badge>
+          ) : (
+            <Skeleton className="h-5 w-14 shrink-0 rounded-full" />
+          )}
         </div>
 
         <div className="flex items-end justify-between gap-2">
           <div>
-            <p className="text-[10px] text-muted-foreground">Price</p>
-            <div className="flex items-center gap-1">
-              <span className="text-sm font-semibold text-foreground">
-                {formatPrice(bundle.price)}
-              </span>
-              <span className="text-xs text-muted-foreground">{token}</span>
-            </div>
+            {bundle ? (
+              <>
+                <p className="text-[10px] text-muted-foreground">Price</p>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm font-semibold text-foreground">
+                    {formatPrice(bundle.price)}
+                  </span>
+                  <span className="text-xs text-muted-foreground">{token}</span>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-1">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+            )}
           </div>
           <div className="text-right">
-            <p className="text-[10px] text-muted-foreground">Seller</p>
-            <p className="font-mono text-[11px] text-muted-foreground">
-              {formatAddress(bundle.seller)}
-            </p>
+            {bundle ? (
+              <>
+                <p className="text-[10px] text-muted-foreground">Seller</p>
+                <p className="font-mono text-[11px] text-muted-foreground">
+                  {formatAddress(bundle.seller)}
+                </p>
+              </>
+            ) : (
+              <div className="space-y-1">
+                <Skeleton className="ml-auto h-3 w-12" />
+                <Skeleton className="ml-auto h-3 w-16" />
+              </div>
+            )}
           </div>
         </div>
 
-        <p className="text-[10px] text-muted-foreground">
-          Listed <TimeCounter targetTime={new Date(bundle.block_timestamp)} />
-        </p>
-      </div>
-    </div>
-  )
-}
-
-// ============================================================
-// Skeleton
-// ============================================================
-
-function BundleCardSkeleton() {
-  return (
-    <div className="overflow-hidden rounded-xl border border-border/50 bg-card/60">
-      {/* Image area */}
-      <Skeleton className="aspect-square w-full rounded-none" />
-      {/* Info */}
-      <div className="space-y-3 p-3">
-        {/* Name + badge */}
-        <div className="flex items-start justify-between gap-2">
-          <Skeleton className="h-4 w-28" />
-          <Skeleton className="h-5 w-14 shrink-0 rounded-full" />
-        </div>
-        {/* Price + seller */}
-        <div className="flex items-end justify-between gap-2">
-          <div className="space-y-1">
-            <Skeleton className="h-3 w-16" />
-            <Skeleton className="h-4 w-20" />
-          </div>
-          <div className="space-y-1 text-right">
-            <Skeleton className="ml-auto h-3 w-12" />
-            <Skeleton className="ml-auto h-3 w-16" />
-          </div>
-        </div>
-        {/* Timestamp */}
-        <Skeleton className="h-3 w-24" />
+        {bundle ? (
+          <p className="text-[10px] text-muted-foreground">
+            Listed <TimeCounter targetTime={new Date(bundle.block_timestamp)} />
+          </p>
+        ) : (
+          <Skeleton className="h-3 w-24" />
+        )}
       </div>
     </div>
   )
@@ -191,7 +194,7 @@ export default function BundlesPage() {
           {/* Grid */}
           {isLoading ? (
             <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-              {Array.from({ length: 6 }).map((_, i) => <BundleCardSkeleton key={i} />)}
+              {Array.from({ length: 6 }).map((_, i) => <BundleCard key={i} bundle={null} />)}
             </div>
           ) : bundles.length === 0 ? (
             <EmptyState

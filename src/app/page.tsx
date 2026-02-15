@@ -97,25 +97,7 @@ function FeaturedAgents() {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {isLoading
           ? Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i} className="border-border/50 bg-card/80 py-0">
-                <CardContent className="flex flex-col gap-4 p-5">
-                  <div className="flex items-start gap-3">
-                    <Skeleton className="size-12 shrink-0 rounded-full" />
-                    <div className="min-w-0 flex-1 space-y-2">
-                      <Skeleton className="h-4 w-28" />
-                      <Skeleton className="h-3 w-20" />
-                    </div>
-                  </div>
-                  <div className="flex gap-1.5">
-                    <Skeleton className="h-5 w-14 rounded-full" />
-                    <Skeleton className="h-5 w-16 rounded-full" />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Skeleton className="h-4 w-28" />
-                    <Skeleton className="h-5 w-14 rounded-full" />
-                  </div>
-                </CardContent>
-              </Card>
+              <AgentCard key={i} agent={null} />
             ))
           : agents.map((agent) => (
               <AgentCard
@@ -148,48 +130,69 @@ function RecentListings() {
         </Link>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {isLoading
-          ? Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i} className="border-border/50 bg-card/80 py-0 overflow-hidden">
-                <Skeleton className="aspect-square w-full" />
-                <div className="space-y-2 p-3">
+        {(isLoading
+          ? Array.from({ length: 6 }).map((_, i) => ({ _skeleton: true, _key: i }))
+          : listings.map((listing) => ({ ...listing, _skeleton: false, _key: `${listing.chain_id}-${listing.listing_id}` }))
+        ).map((item: any) => {
+          const listing = item._skeleton ? null : item
+          const card = (
+            <Card className={cn(
+              'overflow-hidden border-border/50 bg-card/80 py-0 transition-all duration-300',
+              listing && 'group-hover:scale-[1.03] group-hover:border-primary/30 group-hover:glow-violet'
+            )}>
+              <div className="relative aspect-square w-full">
+                {listing ? (
+                  <AgentImage
+                    src={listing.agent_image}
+                    alt={listing.agent_name || `Agent #${listing.token_id}`}
+                    fallbackText={listing.agent_name}
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                  />
+                ) : (
+                  <Skeleton className="absolute inset-0" />
+                )}
+              </div>
+              <div className="flex flex-col gap-0.5 p-3">
+                {listing ? (
+                  <p className="truncate text-sm font-semibold text-foreground">
+                    {listing.agent_name || `Agent #${listing.token_id}`}
+                  </p>
+                ) : (
                   <Skeleton className="h-4 w-28" />
+                )}
+                {listing ? (
+                  <p className="text-xs font-medium text-primary">
+                    {formatPrice(listing.price)}{' '}
+                    <span className="text-muted-foreground">
+                      {getTokenLabel(listing.payment_token)}
+                    </span>
+                  </p>
+                ) : (
                   <Skeleton className="h-3 w-20" />
-                </div>
-              </Card>
-            ))
-          : listings.map((listing) => (
-              <Link
-                key={`${listing.chain_id}-${listing.listing_id}`}
-                href={`/trade/marketplace/${listing.chain_id}/${listing.listing_id}`}
-                className="group block"
-              >
-                <Card className="overflow-hidden border-border/50 bg-card/80 py-0 transition-all duration-300 group-hover:scale-[1.03] group-hover:border-primary/30 group-hover:glow-violet">
-                  <div className="relative aspect-square w-full">
-                    <AgentImage
-                      src={listing.agent_image}
-                      alt={listing.agent_name || `Agent #${listing.token_id}`}
-                      fallbackText={listing.agent_name}
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-0.5 p-3">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {listing.agent_name || `Agent #${listing.token_id}`}
-                    </p>
-                    <p className="text-xs font-medium text-primary">
-                      {formatPrice(listing.price)}{' '}
-                      <span className="text-muted-foreground">
-                        {getTokenLabel(listing.payment_token)}
-                      </span>
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {formatAddress(listing.seller)}
-                    </p>
-                  </div>
-                </Card>
-              </Link>
-            ))}
+                )}
+                {listing ? (
+                  <p className="text-[10px] text-muted-foreground">
+                    {formatAddress(listing.seller)}
+                  </p>
+                ) : (
+                  <Skeleton className="h-3 w-16" />
+                )}
+              </div>
+            </Card>
+          )
+
+          if (!listing) return <div key={item._key}>{card}</div>
+
+          return (
+            <Link
+              key={item._key}
+              href={`/trade/marketplace/${listing.chain_id}/${listing.listing_id}`}
+              className="group block"
+            >
+              {card}
+            </Link>
+          )
+        })}
       </div>
     </section>
   )
