@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { cn } from '@/lib/utils'
+import { cn, normalizeScore } from '@/lib/utils'
 import TimeCounter from '@/components/ui/time-counter'
 import { useAgent } from '@/hooks/useAgent'
 import { HoloCard } from '@/components/agents/HoloCard'
@@ -179,11 +179,11 @@ export default function AgentDetailPage({
         <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
           {agent ? (
             <>
-              {agent.reputation_score != null && agent.reputation_score > 0 && (
+              {agent.reputation_score != null && normalizeScore(agent.reputation_score) > 0 && (
                 <>
                   <span className="flex items-center gap-1 text-yellow-400 font-semibold">
                     <Star className="size-3 fill-yellow-400" />
-                    {Number(agent.reputation_score).toLocaleString()}
+                    {normalizeScore(agent.reputation_score).toFixed(1)}
                   </span>
                   <span className="h-3 w-px bg-border/50" />
                 </>

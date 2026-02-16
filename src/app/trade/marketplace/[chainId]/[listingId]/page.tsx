@@ -46,7 +46,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { EmptyState } from '@/components/ui/empty-state'
-import { cn, formatAddress, formatDistanceToNowSmart, formatPrice, getTokenLabel } from '@/lib/utils'
+import { cn, formatAddress, formatDistanceToNowSmart, formatPrice, getTokenLabel, normalizeScore } from '@/lib/utils'
 import TimeCounter from '@/components/ui/time-counter'
 import { useListing } from '@/hooks/useListing'
 import { useQueryClient } from '@tanstack/react-query'
@@ -215,7 +215,7 @@ function AgentPropertiesGrid({ agent }: { agent: AgentDetail }) {
 
   properties.push({
     label: 'Reputation',
-    value: agent.reputation_score !== null ? `${agent.reputation_score.toFixed(1)} / 100` : 'Unrated',
+    value: agent.reputation_score !== null ? `${normalizeScore(agent.reputation_score).toFixed(1)} / 100` : 'Unrated',
     sub: `${agent.feedback_count} feedback${agent.feedback_count !== 1 ? 's' : ''}`,
   })
 
@@ -1680,7 +1680,7 @@ export default function ListingDetailPage({
 
           {/* Reputation */}
           {agent && (
-            <ReputationBadge score={agent.reputation_score} feedbackCount={agent.feedback_count} />
+            <ReputationBadge score={normalizeScore(agent.reputation_score)} feedbackCount={agent.feedback_count} />
           )}
 
           {/* Top Offers */}

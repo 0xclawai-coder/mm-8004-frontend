@@ -5,7 +5,7 @@ import { AgentImage } from "@/components/ui/agent-image";
 import { Star, Shield, Zap, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+import { cn, normalizeScore } from "@/lib/utils";
 import { getChainLabel } from "@/lib/chain-utils";
 import type { AgentDetail } from "@/types";
 
@@ -95,7 +95,7 @@ export function HoloCard(props: HoloCardProps) {
       : agent?.description ?? null;
   const rawScore =
     props.score !== undefined ? props.score : agent?.reputation_score ?? null;
-  const score = rawScore ?? (props.name != null || agent != null ? 0 : null);
+  const score = rawScore != null ? normalizeScore(rawScore) : (props.name != null || agent != null ? 0 : null);
   const feedbackCount = props.feedbackCount ?? agent?.feedback_count ?? 0;
   const chainId = props.chainId ?? agent?.chain_id;
   const owner = props.owner ?? agent?.owner;
@@ -120,7 +120,7 @@ export function HoloCard(props: HoloCardProps) {
         className: "border-cyan-400/40 bg-cyan-400/10 text-cyan-400",
       });
     }
-    if ((agent.reputation_score ?? 0) >= 90) {
+    if (normalizeScore(agent.reputation_score ?? 0) >= 90) {
       tags.push({
         label: "High Score",
         icon: <Zap className="size-3" />,

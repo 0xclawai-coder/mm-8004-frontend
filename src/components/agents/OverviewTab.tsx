@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { Star, MessageSquare, ThumbsUp, ThumbsDown, Globe, ExternalLink, Tag } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/lib/utils'
+import { cn, normalizeScore } from '@/lib/utils'
 import TimeCounter from '@/components/ui/time-counter'
 import { RatingChart } from '@/components/agents/RatingChart'
 import { useAgentActivity } from '@/hooks/useAgentActivity'
@@ -163,11 +163,11 @@ export function OverviewTab({ agent, agentId, chainId, agentNumericId, onSwitchT
         <h3 className="text-sm font-semibold text-foreground">Statistics Overview</h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard
-            icon={<Star className={cn('size-4', getScoreColor(agent.reputation_score ?? 0))} />}
+            icon={<Star className={cn('size-4', getScoreColor(normalizeScore(agent.reputation_score)))} />}
             label="Average Score"
-            value={(agent.reputation_score ?? 0).toFixed(1)}
-            colorClass={getScoreColor(agent.reputation_score ?? 0)}
-            borderClass={getScoreBg(agent.reputation_score ?? 0)}
+            value={normalizeScore(agent.reputation_score).toFixed(1)}
+            colorClass={getScoreColor(normalizeScore(agent.reputation_score))}
+            borderClass={getScoreBg(normalizeScore(agent.reputation_score))}
           />
           <StatCard
             icon={<MessageSquare className="size-4 text-blue-400" />}

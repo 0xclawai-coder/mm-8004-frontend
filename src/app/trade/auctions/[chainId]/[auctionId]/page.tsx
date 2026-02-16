@@ -34,7 +34,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
-import { cn, formatAddress, formatPrice, getTokenLabel, formatDistanceToNowSmart } from '@/lib/utils'
+import { cn, formatAddress, formatPrice, getTokenLabel, formatDistanceToNowSmart, normalizeScore } from '@/lib/utils'
 import { useAuctionDetail } from '@/hooks/useAuctionDetail'
 import { useQueryClient } from '@tanstack/react-query'
 import { LiveTime } from '@/components/ui/live-time'
@@ -325,8 +325,8 @@ function AgentPropertiesSection({ agent, chainId }: { agent: AgentDetail; chainI
           {agent.reputation_score !== null && (
             <InfoRow label="Reputation">
               <div className="flex items-center gap-1.5">
-                <Star className={cn('size-3.5', (agent.reputation_score ?? 0) >= 70 ? 'text-green-400' : (agent.reputation_score ?? 0) >= 40 ? 'text-yellow-400' : 'text-red-400')} />
-                <span className="text-sm font-semibold text-foreground">{(agent.reputation_score ?? 0).toFixed(1)}</span>
+                <Star className={cn('size-3.5', normalizeScore(agent.reputation_score) >= 70 ? 'text-green-400' : normalizeScore(agent.reputation_score) >= 40 ? 'text-yellow-400' : 'text-red-400')} />
+                <span className="text-sm font-semibold text-foreground">{normalizeScore(agent.reputation_score).toFixed(1)}</span>
               </div>
             </InfoRow>
           )}

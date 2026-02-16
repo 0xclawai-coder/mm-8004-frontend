@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { DataTable } from '@/components/ui/data-table'
 import { cn, formatAddress, formatDistanceToNowSmart } from '@/lib/utils'
+import { formatAmountSmart } from '@/lib/format-string'
 import { getExplorerTxUrl as getTxUrl } from '@/lib/chain-utils'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { EventCategory, GlobalActivity as GlobalActivityType } from '@/types'
@@ -150,28 +151,28 @@ function getEventDetails(activity: GlobalActivityType): string {
     case 'ResponseAppended':
       return data.feedback_id ? `feedback #${data.feedback_id}` : ''
     case 'marketplace:Listed':
-      return data.price ? `${data.price} ${data.payment_token === '0x0000000000000000000000000000000000000000' ? 'MON' : 'ERC-20'}` : ''
+      return data.price ? `${formatAmountSmart(BigInt(data.price as string)).value} ${data.payment_token === '0x0000000000000000000000000000000000000000' ? 'MON' : 'ERC-20'}` : ''
     case 'marketplace:Bought':
       return [
-        data.price && `for ${data.price} MON`,
+        data.price && `for ${formatAmountSmart(BigInt(data.price as string)).value} MON`,
         data.buyer && `by ${formatAddress(data.buyer as string)}`,
       ].filter(Boolean).join(' · ')
     case 'marketplace:OfferMade':
       return [
-        data.amount && `${data.amount} WMON`,
+        data.amount && `${formatAmountSmart(BigInt(data.amount as string)).value} WMON`,
         data.offerer && `from ${formatAddress(data.offerer as string)}`,
       ].filter(Boolean).join(' · ')
     case 'marketplace:AuctionCreated':
     case 'marketplace:DutchAuctionCreated':
-      return data.starting_price ? `floor ${data.starting_price} MON` : ''
+      return data.starting_price ? `floor ${formatAmountSmart(BigInt(data.starting_price as string)).value} MON` : ''
     case 'marketplace:BidPlaced':
       return [
-        data.amount && `${data.amount} MON`,
+        data.amount && `${formatAmountSmart(BigInt(data.amount as string)).value} MON`,
         data.bidder && `by ${formatAddress(data.bidder as string)}`,
       ].filter(Boolean).join(' · ')
     case 'marketplace:AuctionSettled':
       return [
-        data.final_price && `for ${data.final_price} MON`,
+        data.final_price && `for ${formatAmountSmart(BigInt(data.final_price as string)).value} MON`,
         data.winner && `to ${formatAddress(data.winner as string)}`,
       ].filter(Boolean).join(' · ')
     default:

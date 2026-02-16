@@ -77,3 +77,14 @@ export const formatDistanceToNowSmart = (...parameter: FormatDistanceToNowParame
     locale: { formatDistance: (token, count) => getFormatDistanceLocale(token, count) },
   })
 }
+
+/** Normalize a reputation score that may be raw on-chain (scaled by 1e18 or 1e36) to 0-100. */
+export function normalizeScore(raw: number | null): number {
+  if (raw == null) return 0
+  if (raw >= 0 && raw <= 100) return raw
+  const scaled = raw / 1e18
+  if (scaled >= 0 && scaled <= 100) return scaled
+  const scaled2 = scaled / 1e18
+  if (scaled2 >= 0 && scaled2 <= 100) return scaled2
+  return Math.min(raw, 100)
+}

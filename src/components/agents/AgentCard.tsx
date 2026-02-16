@@ -6,13 +6,14 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/lib/utils'
+import { cn, normalizeScore } from '@/lib/utils'
 import TimeCounter from '@/components/ui/time-counter'
 import type { Agent } from '@/types'
 
 interface AgentCardProps {
   agent: Agent | null
 }
+
 
 function getScoreColor(score: number): string {
   if (score >= 70) return 'text-green-400'
@@ -107,10 +108,17 @@ export function AgentCard({ agent }: AgentCardProps) {
             <>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1">
-                  <Star className={cn('size-3.5', getScoreColor(agent.reputation_score ?? 0))} />
-                  <span className={cn('text-sm font-semibold', getScoreColor(agent.reputation_score ?? 0))}>
-                    {(agent.reputation_score ?? 0).toFixed(1)}
-                  </span>
+                  {(() => {
+                    const score = normalizeScore(agent.reputation_score)
+                    return (
+                      <>
+                        <Star className={cn('size-3.5', getScoreColor(score))} />
+                        <span className={cn('text-sm font-semibold', getScoreColor(score))}>
+                          {score.toFixed(1)}
+                        </span>
+                      </>
+                    )
+                  })()}
                 </div>
                 <span className="text-xs text-muted-foreground">
                   {agent.feedback_count} feedback{agent.feedback_count !== 1 ? 's' : ''}

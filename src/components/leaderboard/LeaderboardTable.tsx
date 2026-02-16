@@ -5,7 +5,7 @@ import { Trophy, Medal, Award, Star } from 'lucide-react'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
+import { cn, normalizeScore } from '@/lib/utils'
 import type { LeaderboardEntry } from '@/types'
 
 interface LeaderboardTableProps {
@@ -133,9 +133,9 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
                 {/* Score */}
                 <td className="whitespace-nowrap px-2 py-3 text-right sm:px-4">
                   <div className="flex items-center justify-end gap-1">
-                    <Star className={cn('size-3.5', getScoreColor(entry.reputation_score ?? 0))} />
-                    <span className={cn('text-sm font-semibold', getScoreColor(entry.reputation_score ?? 0))}>
-                      {(entry.reputation_score ?? 0).toFixed(1)}
+                    <Star className={cn('size-3.5', getScoreColor(normalizeScore(entry.reputation_score)))} />
+                    <span className={cn('text-sm font-semibold', getScoreColor(normalizeScore(entry.reputation_score)))}>
+                      {normalizeScore(entry.reputation_score).toFixed(1)}
                     </span>
                   </div>
                 </td>

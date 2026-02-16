@@ -59,7 +59,7 @@ function StatsBar() {
               {item.icon}
             </div>
             {isLoading ? (
-              <Skeleton className="mx-auto h-7 w-48" />
+              <Skeleton className="mx-auto h-7 w-16" />
             ) : (
               <p className="text-xl font-bold text-foreground">
                 {typeof item.value === 'number'

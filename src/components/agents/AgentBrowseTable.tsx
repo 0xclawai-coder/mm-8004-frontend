@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { cn, formatAddress } from "@/lib/utils";
+import { cn, formatAddress, normalizeScore } from "@/lib/utils";
 import TimeCounter from "@/components/ui/time-counter";
 import type { Agent, SortOrder } from "@/types";
 
@@ -90,9 +90,9 @@ function AgentTableRow({ agent, index }: { agent: Agent | null; index: number })
       <td className="px-4 py-3">
         {agent ? (
           <div className="flex items-center gap-1">
-            <Star className={cn("size-3.5", getScoreColor(agent.reputation_score ?? 0))} />
-            <span className={cn("text-sm font-semibold", getScoreColor(agent.reputation_score ?? 0))}>
-              {(agent.reputation_score ?? 0).toFixed(1)}
+            <Star className={cn("size-3.5", getScoreColor(normalizeScore(agent.reputation_score)))} />
+            <span className={cn("text-sm font-semibold", getScoreColor(normalizeScore(agent.reputation_score)))}>
+              {normalizeScore(agent.reputation_score).toFixed(1)}
             </span>
           </div>
         ) : (
