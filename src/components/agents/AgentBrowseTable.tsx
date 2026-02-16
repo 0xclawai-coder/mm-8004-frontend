@@ -68,7 +68,7 @@ function AgentTableRow({ agent, index }: { agent: Agent | null; index: number })
       </td>
 
       {/* Chain */}
-      <td className="hidden px-4 py-3 sm:table-cell">
+      <td className="px-4 py-3">
         {agent ? (
           <Badge
             variant="outline"
@@ -104,7 +104,7 @@ function AgentTableRow({ agent, index }: { agent: Agent | null; index: number })
       </td>
 
       {/* Feedback */}
-      <td className="hidden px-4 py-3 md:table-cell">
+      <td className="px-4 py-3">
         {agent ? (
           <span className="text-sm text-muted-foreground">{agent.feedback_count}</span>
         ) : (
@@ -113,7 +113,7 @@ function AgentTableRow({ agent, index }: { agent: Agent | null; index: number })
       </td>
 
       {/* Owner */}
-      <td className="hidden px-4 py-3 lg:table-cell">
+      <td className="px-4 py-3">
         {agent ? (
           <span className="text-xs font-mono text-muted-foreground">{formatAddress(agent.owner)}</span>
         ) : (
@@ -122,7 +122,7 @@ function AgentTableRow({ agent, index }: { agent: Agent | null; index: number })
       </td>
 
       {/* X402 */}
-      <td className="hidden px-4 py-3 lg:table-cell">
+      <td className="px-4 py-3">
         {agent ? (
           agent.x402_support ? (
             <Badge variant="outline" className="border-cyan-accent/30 bg-cyan-accent/10 text-cyan-accent text-[10px] px-1.5">
@@ -137,7 +137,7 @@ function AgentTableRow({ agent, index }: { agent: Agent | null; index: number })
       </td>
 
       {/* Created */}
-      <td className="hidden px-4 py-3 xl:table-cell">
+      <td className="px-4 py-3">
         {agent ? (
           <span className="text-xs text-muted-foreground">
             <TimeCounter targetTime={new Date(agent.block_timestamp)} />
@@ -242,16 +242,16 @@ export function AgentBrowseTable() {
 
       <div className="flex w-full overflow-hidden rounded-xl border border-border/50 bg-card/40">
         <ScrollArea className="w-1 flex-1" type="auto">
-        <table className="w-full">
+        <table className="w-full min-w-[640px]">
           <thead>
             <tr className="border-b border-border/50 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
               <th className="px-4 py-3">Name</th>
-              <th className="hidden px-4 py-3 sm:table-cell">Chain</th>
+              <th className="px-4 py-3">Chain</th>
               <th className="px-4 py-3">Score</th>
-              <th className="hidden px-4 py-3 md:table-cell">Feedback</th>
-              <th className="hidden px-4 py-3 lg:table-cell">Owner</th>
-              <th className="hidden px-4 py-3 lg:table-cell">X402</th>
-              <th className="hidden px-4 py-3 xl:table-cell">Created</th>
+              <th className="px-4 py-3">Feedback</th>
+              <th className="px-4 py-3">Owner</th>
+              <th className="px-4 py-3">X402</th>
+              <th className="px-4 py-3">Created</th>
             </tr>
           </thead>
           <tbody>
